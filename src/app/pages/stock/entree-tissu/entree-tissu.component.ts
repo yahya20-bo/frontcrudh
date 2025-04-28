@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { Router } from '@angular/router';
@@ -12,51 +12,45 @@ import { Router } from '@angular/router';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     NgxDatatableModule
   ]
 })
 export class EntreeTissuComponent {
-  formulaire: FormGroup;
-  liste: any[] = [];
-  listeFiltre: any[] = [];
-  searchText = '';
+  entreeForm: FormGroup;
+  tissus: any[] = [];
+  tissusFiltre: any[] = [];
+  searchText: string = '';
 
   colonnes = [
-    { prop: 'nom', name: 'Nom' },
+    { prop: 'nom', name: 'Nom du Tissu' },
     { prop: 'quantite', name: 'Quantité' },
-    { prop: 'tiers', name: 'Fournisseur/Client' },
-    { prop: 'date', name: 'Date' }
+    { prop: 'couleur', name: 'Couleur' }
   ];
 
   constructor(private fb: FormBuilder, private router: Router) {
-    this.formulaire = this.fb.group({
+    this.entreeForm = this.fb.group({
       nom: [''],
       quantite: [''],
-      tiers: [''],
-      date: ['']
+      couleur: ['']
     });
   }
 
   ajouter() {
-    if (this.formulaire.valid) {
-      const nouvelElement = this.formulaire.value;
-      this.liste.push(nouvelElement);
-      this.rechercher();
-      this.formulaire.reset();
+    if (this.entreeForm.valid) {
+      const nouveauTissu = this.entreeForm.value;
+      this.tissus.push(nouveauTissu);
+      this.tissusFiltre = [...this.tissus];
+      this.entreeForm.reset();
     }
   }
 
   rechercher() {
-    if (!this.searchText) {
-      this.listeFiltre = [...this.liste];
-    } else {
-      const recherche = this.searchText.toLowerCase();
-      this.listeFiltre = this.liste.filter(item =>
-        Object.values(item).some(val =>
-          String(val).toLowerCase().includes(recherche)
-        )
-      );
-    }
+    const texte = this.searchText.toLowerCase();
+    this.tissusFiltre = this.tissus.filter(tissu =>
+      tissu.nom.toLowerCase().includes(texte) ||
+      tissu.couleur.toLowerCase().includes(texte)
+    );
   }
 
   retour() {
