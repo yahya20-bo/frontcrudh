@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-breadcrumbs',
+  selector: 'app-breadcrumb',
   standalone: true,
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
-  imports: [CommonModule]
 })
-export class BreadcrumbsComponent {}
+export class BreadcrumbsComponent {} // <-- BIEN exporter le composant

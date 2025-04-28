@@ -1,4 +1,4 @@
-<ng-scrollbar class="scroll-container">
+<div class="scroll-container" style="overflow-y: auto; max-height: 100vh;">
   <ul class="nav pcoded-inner-navbar">
     <li *ngFor="let item of navItems" class="nav-item">
       <a *ngIf="!item.children" [routerLink]="item.url" class="nav-link">
@@ -19,4 +19,4 @@
       </div>
     </li>
   </ul>
-</ng-scrollbar>
+</div>

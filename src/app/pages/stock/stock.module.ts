@@ -1,12 +1,9 @@
+// src/app/pages/stock/stock.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { stockRoutes } from './stock-routing.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forChild(stockRoutes)
-  ]
+  imports: [RouterModule.forChild(stockRoutes)],
 })
 export class StockModule {}

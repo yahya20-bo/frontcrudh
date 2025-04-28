@@ -3,13 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
-    children: [
-      {
-        path: 'basic',
-        loadComponent: () => import('./basic-elements/basic-elements.component')
-      }
-    ]
+    path: 'basic-elements',
+    loadComponent: () => import('./basic-elements/basic-elements.component').then(m => m.BasicElementsComponent)
   }
 ];
 

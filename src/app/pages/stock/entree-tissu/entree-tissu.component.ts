@@ -1,61 +1,65 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms'; // 👉 Ajouter ici
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-entree-tissu',
-  templateUrl: './entree-tissu.component.html',
-  styleUrls: ['./entree-tissu.component.css'],
   standalone: true,
+  templateUrl: './entree-tissu.component.html',
+  styleUrls: ['./entree-tissu.component.scss'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule,            // 👉 Ajouter ici dans imports
     NgxDatatableModule
   ]
 })
 export class EntreeTissuComponent {
+  formulaire: FormGroup;
+  liste: any[] = [];
+  listeFiltre: any[] = [];
+  searchText = '';
 
-  entreeForm: FormGroup;
-  tissus: any[] = [];
-  tissusFiltre: any[] = [];
-  searchText: string = '';
-
-  columns = [
-    { prop: 'nom', name: 'Nom du tissu' },
+  colonnes = [
+    { prop: 'nom', name: 'Nom' },
     { prop: 'quantite', name: 'Quantité' },
-    { prop: 'fournisseur', name: 'Fournisseur' },
-    { prop: 'dateEntree', name: "Date d'entrée" }
+    { prop: 'tiers', name: 'Fournisseur/Client' },
+    { prop: 'date', name: 'Date' }
   ];
 
-  constructor(private fb: FormBuilder, private toastr: ToastrService) {
-    this.entreeForm = this.fb.group({
-      nom: ['', Validators.required],
-      quantite: ['', [Validators.required, Validators.min(1)]],
-      fournisseur: ['', Validators.required],
-      dateEntree: ['', Validators.required]
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.formulaire = this.fb.group({
+      nom: [''],
+      quantite: [''],
+      tiers: [''],
+      date: ['']
     });
   }
 
-  ajouterTissu() {
-    if (this.entreeForm.valid) {
-      this.tissus.push(this.entreeForm.value);
-      this.tissusFiltre = [...this.tissus];
-      this.toastr.success('Tissu ajouté avec succès !');
-      this.entreeForm.reset();
-    } else {
-      this.toastr.error('Veuillez remplir tous les champs correctement.');
+  ajouter() {
+    if (this.formulaire.valid) {
+      const nouvelElement = this.formulaire.value;
+      this.liste.push(nouvelElement);
+      this.rechercher();
+      this.formulaire.reset();
     }
   }
 
-  rechercherTissu() {
-    const keyword = this.searchText.toLowerCase();
-    this.tissusFiltre = this.tissus.filter(tissu =>
-      tissu.nom.toLowerCase().includes(keyword) ||
-      tissu.fournisseur.toLowerCase().includes(keyword)
-    );
+  rechercher() {
+    if (!this.searchText) {
+      this.listeFiltre = [...this.liste];
+    } else {
+      const recherche = this.searchText.toLowerCase();
+      this.listeFiltre = this.liste.filter(item =>
+        Object.values(item).some(val =>
+          String(val).toLowerCase().includes(recherche)
+        )
+      );
+    }
+  }
+
+  retour() {
+    this.router.navigate(['/stock']);
   }
 }
