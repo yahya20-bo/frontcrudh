@@ -1,0 +1,9 @@
+<div class="nav-collapse">
+  <div class="nav-collapse-header">{{ item.title }}</div>
+  <ul>
+    <li *ngFor="let child of item.children">
+      <app-nav-item *ngIf="!child.children" [item]="child"></app-nav-item>
+      <app-nav-collapse *ngIf="child.children" [item]="child"></app-nav-collapse>
+    </li>
+  </ul>
+</div>

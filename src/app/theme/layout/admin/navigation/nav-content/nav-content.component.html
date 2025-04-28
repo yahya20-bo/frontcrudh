@@ -1,0 +1,22 @@
+<ng-scrollbar class="scroll-container">
+  <ul class="nav pcoded-inner-navbar">
+    <li *ngFor="let item of navItems" class="nav-item">
+      <a *ngIf="!item.children" [routerLink]="item.url" class="nav-link">
+        <span class="pcoded-micon"><i class="{{ item.icon }}"></i></span>
+        <span class="pcoded-mtext">{{ item.title }}</span>
+      </a>
+
+      <div *ngIf="item.children" class="nav-item has-submenu">
+        <a href="javascript:void(0);" class="nav-link">
+          <span class="pcoded-micon"><i class="{{ item.icon }}"></i></span>
+          <span class="pcoded-mtext">{{ item.title }}</span>
+        </a>
+        <ul class="pcoded-submenu">
+          <li *ngFor="let child of item.children">
+            <a [routerLink]="child.url">{{ child.title }}</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</ng-scrollbar>

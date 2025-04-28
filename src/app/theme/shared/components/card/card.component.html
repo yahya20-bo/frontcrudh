@@ -1,0 +1,67 @@
+<div class="card" [ngClass]="cardClass" [@cardRemove]="cardRemove" #toAnimate>
+  <div *ngIf="!hidHeader" class="card-header" [ngClass]="headerClass">
+    <ng-container *ngIf="!customHeader; else customHeaderContent">
+      <h5>{{ cardTitle }}</h5>
+      <div *ngIf="options" class="card-header-right">
+        <div class="btn-group card-option dropdown" ngbDropdown>
+          <button type="button" class="btn dropdown-toggle btn-icon" ngbDropdownToggle>
+            <i class="feather icon-more-horizontal"></i>
+          </button>
+          <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <li class="dropdown-item full-card" (click)="fullCardToggle(toAnimate)">
+              <a href="javascript:void(0)">
+                <i class="feather" [ngClass]="fullIcon"></i> {{ cardClass === 'full-card' ? 'Restore' : 'Maximize' }}
+              </a>
+            </li>
+            <li class="dropdown-item minimize-card" (click)="collapsedCardToggle()">
+              <a href="javascript:void(0)">
+                <i class="feather" [ngClass]="collapsedIcon"></i> {{ collapsedCard === 'collapsed' ? 'Expand' : 'Collapse' }}
+              </a>
+            </li>
+            <li class="dropdown-item reload-card" (click)="cardRefresh()">
+              <a href="javascript:void(0)">
+                <i class="feather icon-refresh-cw"></i> Reload
+              </a>
+            </li>
+            <li class="dropdown-item close-card" (click)="cardRemoveAction()">
+              <a href="javascript:void(0)">
+                <i class="feather icon-trash"></i> Remove
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #customHeaderContent>
+      <ng-content select=".app-card-header"></ng-content>
+    </ng-template>
+  </div>
+  <div [@collapsedCard]="collapsedCard">
+    <div class="card-block" [ngClass]="blockClass">
+      <ng-content></ng-content>
+    </div>
+  </div>
+  <div *ngIf="loadCard" class="card-loader">
+    <i class="pct-loader1 anim-rotate"></i>
+  </div><div class="card" [ngClass]="cardClass" [@cardRemove]="cardRemove">
+    <div *ngIf="!hidHeader" class="card-header" [ngClass]="headerClass">
+      <h5 *ngIf="!customHeader">{{ cardTitle }}</h5>
+      <div *ngIf="options && !customHeader" class="card-header-right">
+        <button type="button" (click)="collapsedCardToggle()">Toggle</button>
+        <button type="button" (click)="cardRemoveAction()">Remove</button>
+      </div>
+      <ng-content select=".app-card-header"></ng-content>
+    </div>
+  
+    <div [@collapsedCard]="collapsedCard">
+      <div class="card-block" [ngClass]="blockClass">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  
+    <div *ngIf="loadCard" class="card-loader">
+      Loading...
+    </div>
+  </div>
+  
+</div>

@@ -1,0 +1,39 @@
+<div class="container">
+    <h2>Ajouter un Tissu</h2>
+  
+    <form [formGroup]="entreeForm" (ngSubmit)="ajouterTissu()">
+      <div class="mb-3">
+        <label class="form-label">Nom du Tissu</label>
+        <input type="text" class="form-control" formControlName="nom">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Quantité</label>
+        <input type="number" class="form-control" formControlName="quantite">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Fournisseur</label>
+        <input type="text" class="form-control" formControlName="fournisseur">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Date d'Entrée</label>
+        <input type="date" class="form-control" formControlName="dateEntree">
+      </div>
+      <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+  
+    <hr>
+  
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="Rechercher..." [(ngModel)]="searchText" (input)="rechercherTissu()">
+    </div>
+  
+    <ngx-datatable
+      class="bootstrap"
+      [rows]="tissusFiltre"
+      [columns]="columns"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      [rowHeight]="'auto'">
+    </ngx-datatable>
+  </div>
+  

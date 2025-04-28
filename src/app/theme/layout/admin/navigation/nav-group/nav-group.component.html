@@ -1,0 +1,8 @@
+<li class="pcoded-menu-caption">
+  <label>{{ item.title }}</label>
+</li>
+
+<li *ngFor="let subItem of item.children">
+  <app-nav-item *ngIf="!subItem.children" [item]="subItem"></app-nav-item>
+  <app-nav-collapse *ngIf="subItem.children" [item]="subItem"></app-nav-collapse>
+</li>
