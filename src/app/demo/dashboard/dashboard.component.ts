@@ -1,17 +1,11 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  imports: [CardComponent],
 })
-export class DashboardComponent {
-  sales = []; // mets les vraies données après
-  card = [];
-  social_card = [];
-  progressing = [];
-  tables = [];
-}
+export class DashboardComponent {}

@@ -1,12 +1,16 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 
 @Component({
   selector: 'app-nav-logo',
   standalone: true,
   templateUrl: './nav-logo.component.html',
   styleUrls: ['./nav-logo.component.scss'],
-  imports: [CommonModule, RouterModule]
 })
-export class NavLogoComponent {}
+export class NavLogoComponent {
+  @Input() navCollapsed!: boolean;
+  @Output() NavCollapse = new EventEmitter();
+
+  navCollapseEvent() {
+    this.NavCollapse.emit();
+  }
+}
