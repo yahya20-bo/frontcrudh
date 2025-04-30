@@ -1,13 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { NavSearchComponent } from './nav-search/nav-search.component';
 import screenfull from 'screenfull';
 
 @Component({
   selector: 'app-nav-left',
   standalone: true,
-  imports: [CommonModule, SharedModule, NavSearchComponent],
+  imports: [CommonModule, NavSearchComponent],
   templateUrl: './nav-left.component.html',
   styleUrls: ['./nav-left.component.scss']
 })

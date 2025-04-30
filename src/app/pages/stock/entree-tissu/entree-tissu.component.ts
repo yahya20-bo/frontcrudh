@@ -1,59 +1,65 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-entree-tissu',
   standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './entree-tissu.component.html',
-  styleUrls: ['./entree-tissu.component.scss'],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    NgxDatatableModule
-  ]
+  styleUrls: ['./entree-tissu.component.scss']
 })
 export class EntreeTissuComponent {
-  entreeForm: FormGroup;
-  tissus: any[] = [];
-  tissusFiltre: any[] = [];
-  searchText: string = '';
+  designation = '';
+  couleur = '';
+  quantite: number | null = null;
+  dateEntree = '';
 
-  colonnes = [
-    { prop: 'nom', name: 'Nom du Tissu' },
-    { prop: 'quantite', name: 'Quantité' },
-    { prop: 'couleur', name: 'Couleur' }
+  refRecherche = '';
+  designationRecherche = '';
+  dateDebut = '';
+  dateFin = '';
+
+  tableData = [
+    { reference: 'T001', designation: 'Coton Bleu', couleur: 'Bleu', quantite: 120, dateEntree: '2025-04-01' },
+    { reference: 'T002', designation: 'Linen Vert', couleur: 'Vert', quantite: 75, dateEntree: '2025-04-10' }
   ];
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.entreeForm = this.fb.group({
-      nom: [''],
-      quantite: [''],
-      couleur: ['']
-    });
-  }
+  filteredData = [...this.tableData];
 
-  ajouter() {
-    if (this.entreeForm.valid) {
-      const nouveauTissu = this.entreeForm.value;
-      this.tissus.push(nouveauTissu);
-      this.tissusFiltre = [...this.tissus];
-      this.entreeForm.reset();
+  addRow() {
+    if (this.designation && this.couleur && this.quantite && this.dateEntree) {
+      const newRow = {
+        reference: 'T' + (this.tableData.length + 1).toString().padStart(3, '0'),
+        designation: this.designation,
+        couleur: this.couleur,
+        quantite: this.quantite,
+        dateEntree: this.dateEntree
+      };
+      this.tableData.push(newRow);
+      this.filteredData = [...this.tableData];
+      this.designation = '';
+      this.couleur = '';
+      this.quantite = null;
+      this.dateEntree = '';
     }
   }
 
-  rechercher() {
-    const texte = this.searchText.toLowerCase();
-    this.tissusFiltre = this.tissus.filter(tissu =>
-      tissu.nom.toLowerCase().includes(texte) ||
-      tissu.couleur.toLowerCase().includes(texte)
-    );
+  resetFilters() {
+    this.refRecherche = '';
+    this.designationRecherche = '';
+    this.dateDebut = '';
+    this.dateFin = '';
+    this.filteredData = [...this.tableData];
   }
 
-  retour() {
-    this.router.navigate(['/stock']);
+  filter() {
+    this.filteredData = this.tableData.filter(item => {
+      const matchRef = this.refRecherche ? item.reference.toLowerCase().includes(this.refRecherche.toLowerCase()) : true;
+      const matchDesignation = this.designationRecherche ? item.designation.toLowerCase().includes(this.designationRecherche.toLowerCase()) : true;
+      const matchDateDebut = this.dateDebut ? item.dateEntree >= this.dateDebut : true;
+      const matchDateFin = this.dateFin ? item.dateEntree <= this.dateFin : true;
+      return matchRef && matchDesignation && matchDateDebut && matchDateFin;
+    });
   }
 }

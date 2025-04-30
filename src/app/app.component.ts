@@ -1,30 +1,21 @@
-// Angular imports
-import { Component, OnInit, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
-// project import
-// ⚠️ ATTENTION : SpinnerComponent n'est PAS standalone, donc on ne l'importe pas ici directement
-// import { SpinnerComponent } from './theme/shared/components/spinner/spinner.component'; // à enlever
+// 🛠️ Importer directement les composants Standalone
+import { NavBarComponent } from './theme/layout/admin/nav-bar/nav-bar.component';
+import { NavigationComponent } from './theme/layout/admin/navigation/navigation.component';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    NavBarComponent,
+    NavigationComponent
+  ],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  standalone: true, // ✅ Tu as bien ajouté standalone
-  imports: [RouterModule], // ✅ On garde uniquement RouterModule
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  private router = inject(Router);
-
-  title = 'datta-able';
-
-  // life cycle hook
-  ngOnInit() {
-    this.router.events.subscribe((evt) => {
-      if (!(evt instanceof NavigationEnd)) {
-        return;
-      }
-      window.scrollTo(0, 0);
-    });
-  }
+export class AppComponent {
+  title = 'PFE-FRONT';
 }

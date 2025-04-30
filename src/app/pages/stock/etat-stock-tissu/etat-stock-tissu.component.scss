@@ -1,0 +1,36 @@
+.etat-stock-tissu-container {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    animation: fadeIn 0.3s ease-in-out;
+  
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #343a40;
+    }
+  
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #f8f9fa;
+  
+      th, td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+      }
+  
+      th {
+        background-color: #e9ecef;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  

@@ -1,0 +1,23 @@
+<div class="etat-stock-tissu-container">
+    <h2>État du Stock Tissu</h2>
+  
+    <table>
+      <thead>
+        <tr>
+          <th>Référence</th>
+          <th>Désignation</th>
+          <th>Couleur</th>
+          <th>Quantité Disponible</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableData">
+          <td>{{ item.reference }}</td>
+          <td>{{ item.designation }}</td>
+          <td>{{ item.couleur }}</td>
+          <td>{{ item.quantiteDisponible }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

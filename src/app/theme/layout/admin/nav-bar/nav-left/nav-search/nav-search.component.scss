@@ -1,0 +1,21 @@
+#main-search {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    max-width: 170px;
+  }
+  
+  #main-search.open {
+    max-width: 170px;
+  }
+  
+  .input-group {
+    width: 100%;
+  }
+  
+  .search-close, .search-btn {
+    cursor: pointer;
+  }

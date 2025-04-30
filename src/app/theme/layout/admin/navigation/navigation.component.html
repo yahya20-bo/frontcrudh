@@ -1,42 +1,17 @@
-<nav class="pcoded-navbar">
-  <div class="pcoded-inner-navbar main-menu">
-    <div class="pcoded-navigation-label">Tissu</div>
-    <ul class="pcoded-item pcoded-left-item">
-      <li>
-        <a routerLink="/tissu/entree" routerLinkActive="active">Entrée Tissu</a>
-      </li>
-      <li>
-        <a routerLink="/tissu/sortie" routerLinkActive="active">Sortie Tissu</a>
-      </li>
-      <li>
-        <a routerLink="/tissu/etat" routerLinkActive="active">État Actuel Tissu</a>
-      </li>
-    </ul>
-
-    <div class="pcoded-navigation-label">Fourniture</div>
-    <ul class="pcoded-item pcoded-left-item">
-      <li>
-        <a routerLink="/fourniture/entree" routerLinkActive="active">Entrée Fourniture</a>
-      </li>
-      <li>
-        <a routerLink="/fourniture/sortie" routerLinkActive="active">Sortie Fourniture</a>
-      </li>
-      <li>
-        <a routerLink="/fourniture/etat" routerLinkActive="active">État Actuel Fourniture</a>
-      </li>
-    </ul>
-
-    <div class="pcoded-navigation-label">Divers</div>
-    <ul class="pcoded-item pcoded-left-item">
-      <li>
-        <a routerLink="/divers/entree" routerLinkActive="active">Entrée Divers</a>
-      </li>
-      <li>
-        <a routerLink="/divers/sortie" routerLinkActive="active">Sortie Divers</a>
-      </li>
-      <li>
-        <a routerLink="/divers/etat" routerLinkActive="active">État Actuel Divers</a>
-      </li>
-    </ul>
-  </div>
+<nav>
+  <ul class="pcoded-item pcoded-left-item">
+    <li *ngFor="let item of navItems">
+      <ng-container *ngIf="!item.title">
+        <a [routerLink]="item.url">
+          <i class="{{ item.icon }}"></i>
+          <span>{{ item.name }}</span>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="item.title">
+        <div class="nav-title">
+          {{ item.name }}
+        </div>
+      </ng-container>
+    </li>
+  </ul>
 </nav>

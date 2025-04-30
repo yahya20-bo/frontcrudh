@@ -1,19 +1,42 @@
 import { Routes } from '@angular/router';
 
-// Composants standalone
+// Layout principal
+import { StockLayoutComponent } from './layouts/stock-layout/stock-layout.component';
+
+// Tissu
 import { EntreeTissuComponent } from './entree-tissu/entree-tissu.component';
 import { SortieTissuComponent } from './sortie-tissu/sortie-tissu.component';
-import { EtatStockComponent } from './etat-stock/etat-stock.component';
-import { FournitureComponent } from './fourniture/fourniture.component';
-import { DiversComponent } from './divers/divers.component';
-import { RlxComponent } from './rlx/rlx.component';
+import { EtatStockTissuComponent } from './etat-stock-tissu/etat-stock-tissu.component';
+
+// Fourniture
+import { EntreeFournitureComponent } from './entree-fourniture/entree-fourniture.component';
+import { SortieFournitureComponent } from './sortie-fourniture/sortie-fourniture.component';
+import { EtatStockFournitureComponent } from './etat-stock-fourniture/etat-stock-fourniture.component';
+
+// Divers
+import { EntreeDiversComponent } from './entree-divers/entree-divers.component';
+import { SortieDiversComponent } from './sortie-divers/sortie-divers.component';
+import { EtatStockDiversComponent } from './etat-stock-divers/etat-stock-divers.component';
 
 export const stockRoutes: Routes = [
-  { path: 'entree-tissu', component: EntreeTissuComponent },
-  { path: 'sortie-tissu', component: SortieTissuComponent },
-  { path: 'etat-stock', component: EtatStockComponent },
-  { path: 'fourniture', component: FournitureComponent },
-  { path: 'divers', component: DiversComponent },
-  { path: 'rlx', component: RlxComponent },
-  { path: '', redirectTo: 'entree-tissu', pathMatch: 'full' } // redirige par défaut
+  {
+    path: '',
+    component: StockLayoutComponent,
+    children: [
+      // Tissu
+      { path: 'entree-tissu', component: EntreeTissuComponent },
+      { path: 'sortie-tissu', component: SortieTissuComponent },
+      { path: 'etat-stock-tissu', component: EtatStockTissuComponent },
+
+      // Fourniture
+      { path: 'entree-fourniture', component: EntreeFournitureComponent },
+      { path: 'sortie-fourniture', component: SortieFournitureComponent },
+      { path: 'etat-stock-fourniture', component: EtatStockFournitureComponent },
+
+      // Divers
+      { path: 'entree-divers', component: EntreeDiversComponent },
+      { path: 'sortie-divers', component: SortieDiversComponent },
+      { path: 'etat-stock-divers', component: EtatStockDiversComponent }
+    ]
+  }
 ];

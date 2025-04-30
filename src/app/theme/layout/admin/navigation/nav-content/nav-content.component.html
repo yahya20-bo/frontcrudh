@@ -1,22 +1,40 @@
-<div class="scroll-container" style="overflow-y: auto; max-height: 100vh;">
-  <ul class="nav pcoded-inner-navbar">
-    <li *ngFor="let item of navItems" class="nav-item">
-      <a *ngIf="!item.children" [routerLink]="item.url" class="nav-link">
-        <span class="pcoded-micon"><i class="{{ item.icon }}"></i></span>
-        <span class="pcoded-mtext">{{ item.title }}</span>
-      </a>
+<ul class="nav pcoded-inner-navbar">
+  <li class="nav-item pcoded-menu-caption">
+    <label class="nav-label">Tissu</label>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/entree-tissu" class="nav-link"><span class="pcoded-micon"><i class="feather icon-log-in"></i></span><span class="pcoded-mtext">Entrée</span></a>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/sortie-tissu" class="nav-link"><span class="pcoded-micon"><i class="feather icon-log-out"></i></span><span class="pcoded-mtext">Sortie</span></a>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/etat-stock-tissu" class="nav-link"><span class="pcoded-micon"><i class="feather icon-layers"></i></span><span class="pcoded-mtext">Etat Actuel</span></a>
+  </li>
 
-      <div *ngIf="item.children" class="nav-item has-submenu">
-        <a href="javascript:void(0);" class="nav-link">
-          <span class="pcoded-micon"><i class="{{ item.icon }}"></i></span>
-          <span class="pcoded-mtext">{{ item.title }}</span>
-        </a>
-        <ul class="pcoded-submenu">
-          <li *ngFor="let child of item.children">
-            <a [routerLink]="child.url">{{ child.title }}</a>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
-</div>
+  <li class="nav-item pcoded-menu-caption">
+    <label class="nav-label">Fourniture</label>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/entree-fourniture" class="nav-link"><span class="pcoded-micon"><i class="feather icon-log-in"></i></span><span class="pcoded-mtext">Entrée</span></a>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/sortie-fourniture" class="nav-link"><span class="pcoded-micon"><i class="feather icon-log-out"></i></span><span class="pcoded-mtext">Sortie</span></a>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/etat-stock-fourniture" class="nav-link"><span class="pcoded-micon"><i class="feather icon-layers"></i></span><span class="pcoded-mtext">Etat Actuel</span></a>
+  </li>
+
+  <li class="nav-item pcoded-menu-caption">
+    <label class="nav-label">Divers</label>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/entree-divers" class="nav-link"><span class="pcoded-micon"><i class="feather icon-log-in"></i></span><span class="pcoded-mtext">Entrée</span></a>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/sortie-divers" class="nav-link"><span class="pcoded-micon"><i class="feather icon-log-out"></i></span><span class="pcoded-mtext">Sortie</span></a>
+  </li>
+  <li class="nav-item">
+    <a routerLink="/stock/etat-stock-divers" class="nav-link"><span class="pcoded-micon"><i class="feather icon-layers"></i></span><span class="pcoded-mtext">Etat Actuel</span></a>
+  </li>
+</ul>

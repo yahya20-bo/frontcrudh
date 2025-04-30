@@ -1,0 +1,39 @@
+header {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .b-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    color: #000;
+  }
+  
+  .b-bg {
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+  }
+  
+  .pc-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+    display: none;
+  }
+  
+  .pc-menu-overlay.active {
+    display: block;
+  }

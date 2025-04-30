@@ -1,0 +1,25 @@
+.navbar-nav {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+  
+    li {
+      position: relative;
+      display: inline-block;
+      margin-right: 10px;
+  
+      a {
+        display: block;
+        color: #333;
+        padding: 8px 12px;
+        text-decoration: none;
+  
+        &:hover {
+          color: #007bff;
+          background-color: #f8f9fa;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+  

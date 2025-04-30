@@ -1,31 +1,74 @@
-<div class="container mt-4">
-  <button class="btn btn-secondary mb-3" (click)="retour()">Retour</button>
-
-  <form [formGroup]="entreeForm" (ngSubmit)="ajouter()" class="row g-3 mb-4">
-    <div class="col-md-4">
-      <input type="text" class="form-control" formControlName="nom" placeholder="Nom du tissu">
+<!-- entree-tissu.component.html -->
+<div class="card p-4 mb-4">
+  <h4 class="section-title">🔍 Critères de recherche</h4>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <input [(ngModel)]="refRecherche" type="text" class="form-control" placeholder="Réf. Entrée" />
     </div>
-    <div class="col-md-4">
-      <input type="number" class="form-control" formControlName="quantite" placeholder="Quantité">
+    <div class="col-md-3">
+      <input [(ngModel)]="designationRecherche" type="text" class="form-control" placeholder="Désignation" />
     </div>
-    <div class="col-md-4">
-      <input type="text" class="form-control" formControlName="couleur" placeholder="Couleur">
+    <div class="col-md-3">
+      <input [(ngModel)]="dateDebut" type="date" class="form-control" />
     </div>
-    <div class="col-12">
-      <button type="submit" class="btn btn-primary">Ajouter</button>
+    <div class="col-md-3">
+      <input [(ngModel)]="dateFin" type="date" class="form-control" />
     </div>
-  </form>
-
-  <div class="mb-3">
-    <input type="text" class="form-control" placeholder="Rechercher..." [(ngModel)]="searchText" (input)="rechercher()">
   </div>
+  <div class="text-end mt-3 d-flex justify-content-end gap-2">
+    <button (click)="filter()" class="btn btn-primary">Rechercher</button>
+    <button (click)="resetFilters()" class="btn btn-outline-secondary">Annuler</button>
+  </div>
+</div>
 
-  <ngx-datatable
-    class="bootstrap"
-    [rows]="tissusFiltre"
-    [columns]="colonnes"
-    [headerHeight]="50"
-    [footerHeight]="50"
-    [rowHeight]="'auto'">
-  </ngx-datatable>
+<div class="card p-4 mb-4">
+  <h4 class="section-title">➕ Ajouter une entrée de tissu</h4>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <input [(ngModel)]="designation" type="text" placeholder="Désignation" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="couleur" type="text" placeholder="Couleur" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="quantite" type="number" placeholder="Quantité" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="dateEntree" type="date" class="form-control" />
+    </div>
+    <div class="col-md-2 text-end">
+      <button (click)="addRow()" class="btn btn-success w-100">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="card p-4">
+  <h5 class="section-title">
+    <i class="bi bi-table me-2"></i>Liste des Entrées Tissu
+  </h5>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover mt-3">
+      <thead class="table-light">
+        <tr>
+          <th>Référence</th>
+          <th>Désignation</th>
+          <th>Couleur</th>
+          <th>Quantité</th>
+          <th>Date Entrée</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of filteredData">
+          <td>{{ item.reference }}</td>
+          <td>{{ item.designation }}</td>
+          <td>{{ item.couleur }}</td>
+          <td>{{ item.quantite }}</td>
+          <td>{{ item.dateEntree }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-end text-muted mt-2 text-sm">
+      {{ filteredData.length }} élément(s) au total
+    </div>
+  </div>
 </div>

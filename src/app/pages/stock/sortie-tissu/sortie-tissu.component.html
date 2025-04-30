@@ -1,57 +1,74 @@
-<div class="card">
-  <div class="card-header">
-    <h5>Ajouter une Sortie Tissu</h5>
+<!-- sortie-tissu.component.html -->
+<div class="card p-4 mb-4">
+  <h4 class="section-title">🔍 Critères de recherche</h4>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <input [(ngModel)]="refRecherche" type="text" class="form-control" placeholder="Réf. Sortie" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="designationRecherche" type="text" class="form-control" placeholder="Désignation" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="dateDebut" type="date" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="dateFin" type="date" class="form-control" />
+    </div>
   </div>
-  <div class="card-body">
-    <form (ngSubmit)="addSortie()">
-      <div class="form-group mb-3">
-        <label>Référence</label>
-        <input type="text" class="form-control" [(ngModel)]="model.reference" name="reference" required />
-      </div>
-
-      <div class="form-group mb-3">
-        <label>Désignation</label>
-        <input type="text" class="form-control" [(ngModel)]="model.designation" name="designation" required />
-      </div>
-
-      <div class="form-group mb-3">
-        <label>Quantité</label>
-        <input type="number" class="form-control" [(ngModel)]="model.quantite" name="quantite" required />
-      </div>
-
-      <button type="submit" class="btn btn-danger">Ajouter Sortie</button>
-
-      <div *ngIf="successMessage" class="alert alert-success mt-3" role="alert">
-        {{ successMessage }}
-      </div>
-    </form>
+  <div class="text-end mt-3 d-flex justify-content-end gap-2">
+    <button (click)="filter()" class="btn btn-primary">Rechercher</button>
+    <button (click)="resetFilters()" class="btn btn-outline-secondary">Annuler</button>
   </div>
 </div>
 
-<div class="card mt-4">
-  <div class="card-header">
-    <h5>Liste des Sorties Tissu</h5>
+<div class="card p-4 mb-4">
+  <h4 class="section-title">➕ Ajouter une entrée de tissu</h4>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <input [(ngModel)]="designation" type="text" placeholder="Désignation" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="couleur" type="text" placeholder="Couleur" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="quantite" type="number" placeholder="Quantité" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="dateSortie" type="date" class="form-control" />
+    </div>
+    <div class="col-md-2 text-end">
+      <button (click)="addRow()" class="btn btn-success w-100">Ajouter</button>
+    </div>
   </div>
-  <div class="card-body">
-    <table class="table table-striped table-bordered">
-      <thead>
+</div>
+
+<div class="card p-4">
+  <h5 class="section-title">
+    <i class="bi bi-table me-2"></i>Liste des Sorties Tissu
+  </h5>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover mt-3">
+      <thead class="table-light">
         <tr>
           <th>Référence</th>
           <th>Désignation</th>
+          <th>Couleur</th>
           <th>Quantité</th>
-          <th>Actions</th>
+          <th>Date Sortie</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let sortie of sorties; let i = index">
-          <td>{{ sortie.reference }}</td>
-          <td>{{ sortie.designation }}</td>
-          <td>{{ sortie.quantite }}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-danger" (click)="deleteSortie(i)">Supprimer</button>
-          </td>
+        <tr *ngFor="let item of filteredData">
+          <td>{{ item.reference }}</td>
+          <td>{{ item.designation }}</td>
+          <td>{{ item.couleur }}</td>
+          <td>{{ item.quantite }}</td>
+          <td>{{ item.dateSortie }}</td>
         </tr>
       </tbody>
     </table>
+    <div class="text-end text-muted mt-2 text-sm">
+      {{ filteredData.length }} élément(s) au total
+    </div>
   </div>
 </div>

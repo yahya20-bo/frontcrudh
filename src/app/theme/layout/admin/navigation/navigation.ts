@@ -1,36 +1,68 @@
 export const navItems = [
   {
     title: true,
-    name: 'Navigation',
+    name: 'Tissu'
   },
   {
     title: false,
-    name: 'Dashboard',
-    url: '/dashboard',
-    icon: 'feather icon-home',
+    name: 'Entrée',
+    url: '/stock/entree-tissu',
+    icon: 'feather icon-log-in'
   },
   {
     title: false,
-    name: 'Stock',
-    url: '/stock',
-    icon: 'feather icon-box',
+    name: 'Sortie',
+    url: '/stock/sortie-tissu',
+    icon: 'feather icon-log-out'
   },
   {
     title: false,
-    name: 'Tables',
-    url: '/tables',
-    icon: 'feather icon-server',
+    name: 'Etat Actuel',
+    url: '/stock/etat-stock-tissu',
+    icon: 'feather icon-layers'
+  },
+  {
+    title: true,
+    name: 'Fourniture'
   },
   {
     title: false,
-    name: 'UI Elements',
-    url: '/basic',
-    icon: 'feather icon-layers',
+    name: 'Entrée',
+    url: '/stock/entree-fourniture',
+    icon: 'feather icon-log-in'
   },
   {
     title: false,
-    name: 'Forms',
-    url: '/forms',
-    icon: 'feather icon-file-text',
+    name: 'Sortie',
+    url: '/stock/sortie-fourniture',
+    icon: 'feather icon-log-out'
+  },
+  {
+    title: false,
+    name: 'Etat Actuel',
+    url: '/stock/etat-stock-fourniture',
+    icon: 'feather icon-layers'
+  },
+  {
+    title: true,
+    name: 'Divers'
+  },
+  {
+    title: false,
+    name: 'Entrée',
+    url: '/stock/entree-divers',
+    icon: 'feather icon-log-in'
+  },
+  {
+    title: false,
+    name: 'Sortie',
+    url: '/stock/sortie-divers',
+    icon: 'feather icon-log-out'
+  },
+  {
+    title: false,
+    name: 'Etat Actuel',
+    url: '/stock/etat-stock-divers',
+    icon: 'feather icon-layers'
   }
 ];
