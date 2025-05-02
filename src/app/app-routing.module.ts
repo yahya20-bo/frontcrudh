@@ -1,7 +1,6 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: 'stock/entree-tissu', pathMatch: 'full' },
 
   { path: 'stock/entree-tissu', loadComponent: () => import('./pages/stock/entree-tissu/entree-tissu.component').then(m => m.EntreeTissuComponent) },
@@ -14,11 +13,7 @@ const routes: Routes = [
 
   { path: 'stock/entree-divers', loadComponent: () => import('./pages/stock/entree-divers/entree-divers.component').then(m => m.EntreeDiversComponent) },
   { path: 'stock/sortie-divers', loadComponent: () => import('./pages/stock/sortie-divers/sortie-divers.component').then(m => m.SortieDiversComponent) },
-  { path: 'stock/etat-stock-divers', loadComponent: () => import('./pages/stock/etat-stock-divers/etat-stock-divers.component').then(m => m.EtatStockDiversComponent) }
-];
+  { path: 'stock/etat-stock-divers', loadComponent: () => import('./pages/stock/etat-stock-divers/etat-stock-divers.component').then(m => m.EtatStockDiversComponent) },
 
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule {}
+  { path: 'stock/entree-article', loadComponent: () => import('./pages/stock/entree-article/entree-article.component').then(m => m.EntreeArticleComponent) }
+];

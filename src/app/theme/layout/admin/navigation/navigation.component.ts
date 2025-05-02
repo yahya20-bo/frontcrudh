@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-// 🔥 Tu dois importer ton tableau "navItems"
 import { navItems } from './navigation';
 
 @Component({

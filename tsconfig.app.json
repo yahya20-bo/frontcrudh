@@ -2,7 +2,15 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "lib": ["ES2022", "DOM"],
+    "skipLibCheck": true
   },
   "files": [
     "src/main.ts",
@@ -10,5 +18,13 @@
   ],
   "include": [
     "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/test.ts",
+    "**/*.spec.ts",
+    "src/environments/environment.prod.ts",
+    "src/app/demo/**",
+    "src/app/pages/stock/layouts/stock-layout",
+    "src/app/theme/shared/components/**"
   ]
 }

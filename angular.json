@@ -17,9 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": [
-              "apexcharts"
-            ],
+            "allowedCommonJsDependencies": ["apexcharts"],
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -45,7 +43,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
-                  "maximumError": "2mb"
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -59,7 +57,12 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true,
+              "namedChunks": false,
+              "vendorChunk": false
             },
             "development": {
               "buildOptimizer": false,
@@ -70,7 +73,7 @@
               "namedChunks": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "development"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -121,7 +124,6 @@
     }
   },
   "cli": {
-  "analytics": "0eaad924-6e2a-434b-aad5-51d9f46776fc"
-}
-
+    "analytics": false
+  }
 }
