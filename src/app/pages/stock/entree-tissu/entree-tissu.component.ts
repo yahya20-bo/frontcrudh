@@ -1,90 +1,96 @@
-// ✅ entree-tissu.component.ts (complet, relié au backend avec design moderne)
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
+import { ArticleService } from 'src/app/services/article.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-entree-tissu',
-  standalone: true,
   templateUrl: './entree-tissu.component.html',
-  styleUrls: ['./entree-tissu.component.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule,
-    NgxDatatableModule,
-    HttpClientModule
+    HttpClientModule,
+    RouterModule
   ]
 })
 export class EntreeTissuComponent implements OnInit {
-  entreeForm: FormGroup;
-  tissus: any[] = [];
-  tissusFiltre: any[] = [];
-  searchText: string = '';
+  searchForm!: FormGroup;
+  addForm!: FormGroup;
 
-  colonnes = [
-    { prop: 'designation', name: 'Nom du Tissu' },
-    { prop: 'quantite', name: 'Quantité' },
-    { prop: 'couleur', name: 'Couleur' },
-    { prop: 'prixUnitaire', name: 'Prix Unitaire' }
-  ];
+  articles: any[] = [];
+  stocks: any[] = [];
+  resultats: any[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
-    private http: HttpClient
-  ) {
-    this.entreeForm = this.fb.group({
-      designation: ['', Validators.required],
-      quantite: ['', Validators.required],
-      couleur: ['', Validators.required],
-      prixUnitaire: ['']
+    private mouvementService: BonMouvementService,
+    private articleService: ArticleService,
+    private stockService: EntiteStockService
+  ) {}
+
+  ngOnInit(): void {
+    this.initForms();
+    this.loadArticles();
+    this.loadStocks();
+    this.getAllEntrees();
+  }
+
+  initForms(): void {
+    this.searchForm = this.fb.group({
+      articleId: [''],
+      dateMin: [''],
+      dateMax: ['']
+    });
+
+    this.addForm = this.fb.group({
+      articleId: ['', Validators.required],
+      entiteStockId: ['', Validators.required],
+      quantite: ['', [Validators.required, Validators.min(1)]],
+      date: ['', Validators.required]
     });
   }
 
-  ngOnInit(): void {
-    this.chargerTissus();
+  loadArticles(): void {
+    this.articleService.getAll().subscribe((data: any) => {
+      this.articles = data;
+    });
   }
 
-  chargerTissus(): void {
-    this.http.get<any[]>('http://localhost:8080/api/articles').subscribe(
-      data => {
-        this.tissus = data;
-        this.tissusFiltre = [...data];
-      },
-      error => {
-        console.error('Erreur lors du chargement des tissus', error);
-      }
-    );
+  loadStocks(): void {
+    this.stockService.getAll().subscribe((data: any) => {
+      this.stocks = data;
+    });
   }
 
-  ajouter(): void {
-    if (this.entreeForm.valid) {
-      const nouveauTissu = this.entreeForm.value;
-      this.http.post('http://localhost:8080/api/articles', nouveauTissu).subscribe(
-        () => {
-          this.chargerTissus();
-          this.entreeForm.reset();
-        },
-        error => {
-          console.error('Erreur lors de l’ajout', error);
-        }
-      );
-    }
+  getAllEntrees(): void {
+    this.mouvementService.getEntreesTissu().subscribe((res: any) => {
+      this.resultats = res.bonMouvements || [];
+    });
   }
 
   rechercher(): void {
-    const texte = this.searchText.toLowerCase();
-    this.tissusFiltre = this.tissus.filter(tissu =>
-      tissu.designation.toLowerCase().includes(texte) ||
-      tissu.couleur?.toLowerCase().includes(texte)
-    );
+    const params = this.searchForm.value;
+    this.mouvementService.rechercherEntreesTissu(params).subscribe((res: any) => {
+      this.resultats = res.bonMouvements || [];
+    });
   }
 
-  retour(): void {
-    this.router.navigate(['/stock']);
+  annulerRecherche(): void {
+    this.searchForm.reset();
+    this.getAllEntrees();
+  }
+
+  ajouterEntree(): void {
+    if (this.addForm.invalid) return;
+    const payload = this.addForm.value;
+    this.mouvementService.ajouterEntreeTissu(payload).subscribe(() => {
+      this.addForm.reset();
+      this.getAllEntrees();
+    });
   }
 }

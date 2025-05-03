@@ -1,18 +1,61 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { ArticleService } from 'src/app/services/article.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-etat-stock-tissu',
   standalone: true,
-  imports: [CommonModule],
   templateUrl: './etat-stock-tissu.component.html',
-  styleUrls: ['./etat-stock-tissu.component.scss']
+  styleUrls: ['./etat-stock-tissu.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
-export class EtatStockTissuComponent {
-  tableHeaders = ['Référence', 'Désignation', 'Couleur', 'Quantité Disponible'];
+export class EtatStockTissuComponent implements OnInit {
+  searchForm!: FormGroup;
+  stocks: any[] = [];
+  articles: any[] = [];
+  resultats: any[] = [];
 
-  tableData = [
-    { reference: 'T001', designation: 'Coton', couleur: 'Bleu', quantiteDisponible: 120 },
-    { reference: 'T002', designation: 'Soie', couleur: 'Rouge', quantiteDisponible: 45 }
-  ];
+  constructor(
+    private fb: FormBuilder,
+    private stockService: EntiteStockService,
+    private articleService: ArticleService
+  ) {}
+
+  ngOnInit(): void {
+    this.searchForm = this.fb.group({
+      articleId: [''],
+      nomStock: ['']
+    });
+
+    this.loadAllData();
+  }
+
+  loadAllData(): void {
+    this.articleService.getAll().subscribe(data => {
+      this.articles = data.filter((a: any) => a.type === 'TISSU');
+    });
+
+    this.stockService.getAll().subscribe(data => {
+      this.stocks = data.filter((s: any) => s.article?.type === 'TISSU');
+      this.resultats = this.stocks;
+    });
+  }
+
+  filtrer(): void {
+    const { articleId, nomStock } = this.searchForm.value;
+
+    this.resultats = this.stocks.filter(stock => {
+      const matchArticle = !articleId || stock.article?.id == articleId;
+      const matchStock = !nomStock || stock.nom?.toLowerCase().includes(nomStock.toLowerCase());
+      return matchArticle && matchStock;
+    });
+  }
+
+  reinitialiser(): void {
+    this.searchForm.reset();
+    this.resultats = this.stocks;
+  }
 }

@@ -1,65 +1,86 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
+import { ArticleService } from 'src/app/services/article.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
 
 @Component({
   selector: 'app-sortie-tissu',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './sortie-tissu.component.html',
-  styleUrls: ['./sortie-tissu.component.scss']
+  styleUrls: ['./sortie-tissu.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule], // ✅ ICI
 })
-export class SortieTissuComponent {
-  designation = '';
-  couleur = '';
-  quantite: number | null = null;
-  dateSortie = '';
+export class SortieTissuComponent implements OnInit {
+  searchForm!: FormGroup;
+  addForm!: FormGroup;
 
-  refRecherche = '';
-  designationRecherche = '';
-  dateDebut = '';
-  dateFin = '';
+  articles: any[] = [];
+  stocks: any[] = [];
+  resultats: any[] = [];
 
-  tableData = [
-    { reference: 'TS001', designation: 'Soie Noire', couleur: 'Noir', quantite: 50, dateSortie: '2025-04-15' },
-    { reference: 'TS002', designation: 'Lin Beige', couleur: 'Beige', quantite: 60, dateSortie: '2025-04-20' }
-  ];
+  constructor(
+    private fb: FormBuilder,
+    private mouvementService: BonMouvementService,
+    private articleService: ArticleService,
+    private stockService: EntiteStockService
+  ) {}
 
-  filteredData = [...this.tableData];
-
-  addRow() {
-    if (this.designation && this.couleur && this.quantite && this.dateSortie) {
-      const newRow = {
-        reference: 'TS' + (this.tableData.length + 1).toString().padStart(3, '0'),
-        designation: this.designation,
-        couleur: this.couleur,
-        quantite: this.quantite,
-        dateSortie: this.dateSortie
-      };
-      this.tableData.push(newRow);
-      this.filteredData = [...this.tableData];
-      this.designation = '';
-      this.couleur = '';
-      this.quantite = null;
-      this.dateSortie = '';
-    }
+  ngOnInit(): void {
+    this.initForms();
+    this.loadArticles();
+    this.loadStocks();
+    this.getAllSorties();
   }
 
-  resetFilters() {
-    this.refRecherche = '';
-    this.designationRecherche = '';
-    this.dateDebut = '';
-    this.dateFin = '';
-    this.filteredData = [...this.tableData];
+  initForms(): void {
+    this.searchForm = this.fb.group({
+      articleId: [''],
+      dateMin: [''],
+      dateMax: [''],
+    });
+
+    this.addForm = this.fb.group({
+      articleId: ['', Validators.required],
+      entiteStockId: ['', Validators.required],
+      quantite: ['', [Validators.required, Validators.min(1)]],
+      date: ['', Validators.required],
+    });
   }
 
-  filter() {
-    this.filteredData = this.tableData.filter(item => {
-      const matchRef = this.refRecherche ? item.reference.toLowerCase().includes(this.refRecherche.toLowerCase()) : true;
-      const matchDesignation = this.designationRecherche ? item.designation.toLowerCase().includes(this.designationRecherche.toLowerCase()) : true;
-      const matchDateDebut = this.dateDebut ? item.dateSortie >= this.dateDebut : true;
-      const matchDateFin = this.dateFin ? item.dateSortie <= this.dateFin : true;
-      return matchRef && matchDesignation && matchDateDebut && matchDateFin;
+  loadArticles(): void {
+    this.articleService.getAll().subscribe((data: any) => this.articles = data);
+  }
+
+  loadStocks(): void {
+    this.stockService.getAll().subscribe((data: any) => this.stocks = data);
+  }
+
+  getAllSorties(): void {
+    this.mouvementService.getSortiesTissu().subscribe((res: any) => {
+      this.resultats = res.bonMouvements || [];
+    });
+  }
+
+  rechercher(): void {
+    const params = this.searchForm.value;
+    this.mouvementService.rechercherSortiesTissu(params).subscribe((res: any) => {
+      this.resultats = res.bonMouvements || [];
+    });
+  }
+
+  annulerRecherche(): void {
+    this.searchForm.reset();
+    this.getAllSorties();
+  }
+
+  ajouterSortie(): void {
+    if (this.addForm.invalid) return;
+    const payload = this.addForm.value;
+    this.mouvementService.ajouterSortieTissu(payload).subscribe(() => {
+      this.addForm.reset();
+      this.getAllSorties();
     });
   }
 }

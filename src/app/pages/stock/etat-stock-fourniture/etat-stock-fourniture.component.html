@@ -1,21 +1,51 @@
-<div class="etat-stock-fourniture-container">
-    <h2>État du Stock Fourniture</h2>
-  
-    <table>
-      <thead>
+<!-- 🔍 Recherche -->
+<div class="card mb-4">
+  <div class="card-header"><h5>🔍 Recherche État Fourniture</h5></div>
+  <div class="card-body">
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let a of articles" [value]="a.id">{{ a.libelle }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nom de stock</label>
+        <input type="text" class="form-control" formControlName="stockName" />
+      </div>
+      <div class="col-md-4 d-flex justify-content-end">
+        <button class="btn btn-primary me-2" type="submit">Filtrer</button>
+        <button class="btn btn-light" type="reset" (click)="getEtatStock()">Réinitialiser</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 📋 Résultats -->
+<div class="card">
+  <div class="card-header"><h5>📦 État Actuel des Fournitures</h5></div>
+  <div class="card-body table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-light">
         <tr>
+          <th>Article</th>
           <th>Référence</th>
-          <th>Désignation</th>
+          <th>Stock</th>
           <th>Quantité Disponible</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of tableData">
-          <td>{{ item.reference }}</td>
-          <td>{{ item.designation }}</td>
-          <td>{{ item.quantiteDisponible }}</td>
+        <tr *ngFor="let s of stocks">
+          <td>{{ s.article?.libelle }}</td>
+          <td>{{ s.article?.reference }}</td>
+          <td>{{ s.nom }}</td>
+          <td>{{ s.quantite }}</td>
+        </tr>
+        <tr *ngIf="stocks.length === 0">
+          <td colspan="4" class="text-center text-muted">Aucune donnée.</td>
         </tr>
       </tbody>
     </table>
   </div>
-  
+</div>

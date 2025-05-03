@@ -1,74 +1,102 @@
-<!-- entree-tissu.component.html -->
-<div class="card p-4 mb-4">
-  <h4 class="section-title">🔍 Critères de recherche</h4>
-  <div class="row g-3">
-    <div class="col-md-3">
-      <input [(ngModel)]="refRecherche" type="text" class="form-control" placeholder="Réf. Entrée" />
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="designationRecherche" type="text" class="form-control" placeholder="Désignation" />
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="dateDebut" type="date" class="form-control" />
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="dateFin" type="date" class="form-control" />
-    </div>
-  </div>
-  <div class="text-end mt-3 d-flex justify-content-end gap-2">
-    <button (click)="filter()" class="btn btn-primary">Rechercher</button>
-    <button (click)="resetFilters()" class="btn btn-outline-secondary">Annuler</button>
-  </div>
-</div>
+<div class="container mt-4">
 
-<div class="card p-4 mb-4">
-  <h4 class="section-title">➕ Ajouter une entrée de tissu</h4>
-  <div class="row g-3 align-items-end">
-    <div class="col-md-3">
-      <input [(ngModel)]="designation" type="text" placeholder="Désignation" class="form-control" />
+  <!-- 🔍 Formulaire de recherche -->
+  <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="card p-3 mb-4 shadow-sm">
+    <h5 class="mb-3">🔍 Recherche des entrées tissu</h5>
+    <div class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Tous les articles --</option>
+          <option *ngFor="let article of articles" [value]="article.id">
+            {{ article.libelle }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Date min</label>
+        <input type="date" class="form-control" formControlName="dateMin" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Date max</label>
+        <input type="date" class="form-control" formControlName="dateMax" />
+      </div>
     </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="couleur" type="text" placeholder="Couleur" class="form-control" />
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="quantite" type="number" placeholder="Quantité" class="form-control" />
-    </div>
-    <div class="col-md-3">
-      <input [(ngModel)]="dateEntree" type="date" class="form-control" />
-    </div>
-    <div class="col-md-2 text-end">
-      <button (click)="addRow()" class="btn btn-success w-100">Ajouter</button>
-    </div>
-  </div>
-</div>
 
-<div class="card p-4">
-  <h5 class="section-title">
-    <i class="bi bi-table me-2"></i>Liste des Entrées Tissu
-  </h5>
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover mt-3">
-      <thead class="table-light">
-        <tr>
-          <th>Référence</th>
-          <th>Désignation</th>
-          <th>Couleur</th>
-          <th>Quantité</th>
-          <th>Date Entrée</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of filteredData">
-          <td>{{ item.reference }}</td>
-          <td>{{ item.designation }}</td>
-          <td>{{ item.couleur }}</td>
-          <td>{{ item.quantite }}</td>
-          <td>{{ item.dateEntree }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="text-end text-muted mt-2 text-sm">
-      {{ filteredData.length }} élément(s) au total
+    <div class="mt-4 d-flex gap-2 justify-content-end">
+      <button type="submit" class="btn btn-primary d-flex align-items-center">
+        <i class="bi bi-search me-2"></i> Rechercher
+      </button>
+      <button type="button" class="btn btn-outline-danger d-flex align-items-center" (click)="annulerRecherche()">
+        <i class="bi bi-x-circle me-2"></i> Annuler
+      </button>
+    </div>
+  </form>
+
+  <!-- ➕ Formulaire d'ajout -->
+  <form [formGroup]="addForm" (ngSubmit)="ajouterEntree()" class="card p-3 mb-4 shadow-sm">
+    <h5 class="mb-3">➕ Ajouter une entrée tissu</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Choisir --</option>
+          <option *ngFor="let article of articles" [value]="article.id">
+            {{ article.libelle }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Entité de stock</label>
+        <select class="form-select" formControlName="entiteStockId">
+          <option value="">-- Choisir --</option>
+          <option *ngFor="let stock of stocks" [value]="stock.id">
+            {{ stock.libelle }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Quantité</label>
+        <input type="number" class="form-control" formControlName="quantite" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" formControlName="date" />
+      </div>
+    </div>
+
+    <div class="mt-4 text-end">
+      <button type="submit" class="btn btn-success d-flex align-items-center">
+        <i class="bi bi-plus-circle me-2"></i> Ajouter
+      </button>
+    </div>
+  </form>
+
+  <!-- 📋 Résultats -->
+  <div class="card shadow-sm p-3">
+    <h5 class="mb-3">📋 Résultats des entrées tissu</h5>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Article</th>
+            <th>Quantité</th>
+            <th>Date</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resultats; index as i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.articleLibelle }}</td>
+            <td>{{ item.quantite }}</td>
+            <td>{{ item.date | date: 'shortDate' }}</td>
+            <td>{{ item.entiteStockLibelle }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+
 </div>

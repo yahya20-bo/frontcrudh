@@ -1,62 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ArticleService } from 'src/app/services/article.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 
 @Component({
   selector: 'app-entree-fourniture',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './entree-fourniture.component.html',
-  styleUrls: ['./entree-fourniture.component.scss']
+  styleUrls: ['./entree-fourniture.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
-export class EntreeFournitureComponent {
-  designation = '';
-  quantite: number | null = null;
-  dateEntree = '';
+export class EntreeFournitureComponent implements OnInit {
+  articles: any[] = [];
+  stocks: any[] = [];
+  mouvements: any[] = [];
 
-  refRecherche = '';
-  designationRecherche = '';
-  dateDebut = '';
-  dateFin = '';
+  searchForm!: FormGroup;
+  ajoutForm!: FormGroup;
 
-  tableData = [
-    { reference: 'F001', designation: 'Stylo', quantite: 50, dateEntree: '2025-04-01' },
-    { reference: 'F002', designation: 'Classeur', quantite: 20, dateEntree: '2025-04-03' }
-  ];
+  constructor(
+    private fb: FormBuilder,
+    private articleService: ArticleService,
+    private stockService: EntiteStockService,
+    private mouvementService: BonMouvementService
+  ) {}
 
-  filteredData = [...this.tableData];
+  ngOnInit(): void {
+    this.searchForm = this.fb.group({
+      ref: [''],
+      designation: [''],
+      dateDebut: [''],
+      dateFin: ['']
+    });
 
-  addRow() {
-    if (this.designation && this.quantite && this.dateEntree) {
-      const newRow = {
-        reference: 'F' + (this.tableData.length + 1).toString().padStart(3, '0'),
-        designation: this.designation,
-        quantite: this.quantite,
-        dateEntree: this.dateEntree
-      };
-      this.tableData.push(newRow);
-      this.filteredData = [...this.tableData];
-      this.designation = '';
-      this.quantite = null;
-      this.dateEntree = '';
-    }
+    this.ajoutForm = this.fb.group({
+      articleId: ['', Validators.required],
+      stockId: ['', Validators.required],
+      quantite: ['', Validators.required],
+      dateEntree: ['', Validators.required]
+    });
+
+    this.loadData();
   }
 
-  resetFilters() {
-    this.refRecherche = '';
-    this.designationRecherche = '';
-    this.dateDebut = '';
-    this.dateFin = '';
-    this.filteredData = [...this.tableData];
+  loadData() {
+    this.articleService.getAll().subscribe(data => this.articles = data);
+    this.stockService.getAll().subscribe(data => this.stocks = data);
+    this.getAllMouvements();
   }
 
-  filter() {
-    this.filteredData = this.tableData.filter(item => {
-      const matchRef = this.refRecherche ? item.reference.toLowerCase().includes(this.refRecherche.toLowerCase()) : true;
-      const matchDesignation = this.designationRecherche ? item.designation.toLowerCase().includes(this.designationRecherche.toLowerCase()) : true;
-      const matchDateDebut = this.dateDebut ? item.dateEntree >= this.dateDebut : true;
-      const matchDateFin = this.dateFin ? item.dateEntree <= this.dateFin : true;
-      return matchRef && matchDesignation && matchDateDebut && matchDateFin;
+  getAllMouvements() {
+    this.mouvementService.getAll('entrees/fourniture').subscribe(data => this.mouvements = data);
+  }
+
+  onSearch() {
+    const params = this.searchForm.value;
+    this.mouvementService.search('entrees/fourniture', params).subscribe(data => this.mouvements = data);
+  }
+
+  onAdd() {
+    if (this.ajoutForm.invalid) return;
+
+    const formData = this.ajoutForm.value;
+    const payload = {
+      articleId: formData.articleId,
+      stockId: formData.stockId,
+      quantite: formData.quantite,
+      dateMouvement: formData.dateEntree
+    };
+
+    this.mouvementService.create('entrees/fourniture', payload).subscribe(() => {
+      this.ajoutForm.reset();
+      this.getAllMouvements();
     });
   }
 }

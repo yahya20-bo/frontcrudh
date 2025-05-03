@@ -1,18 +1,4 @@
-.container {
-    max-width: 900px;
-    margin: auto;
-  
-    h3 {
-      color: #2c3e50;
-      font-weight: bold;
-    }
-  
-    table {
-      font-size: 0.95rem;
-    }
-  
-    .btn {
-      padding: 0.25rem 0.5rem;
-    }
-  }
-  
+.card {
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}

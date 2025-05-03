@@ -1,65 +1,77 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ArticleService } from 'src/app/services/article.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 
 @Component({
   selector: 'app-entree-divers',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './entree-divers.component.html',
-  styleUrls: ['./entree-divers.component.scss']
+  styleUrls: ['./entree-divers.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
-export class EntreeDiversComponent {
-  // Champs du formulaire d'ajout
-  designation = '';
-  quantite: number | null = null;
-  dateEntree = '';
+export class EntreeDiversComponent implements OnInit {
+  articles: any[] = [];
+  stocks: any[] = [];
+  mouvements: any[] = [];
 
-  // Champs de recherche
-  refRecherche = '';
-  designationRecherche = '';
-  dateDebut = '';
-  dateFin = '';
+  searchForm!: FormGroup;
+  ajoutForm!: FormGroup;
 
-  // Données de base
-  tableData = [
-    { reference: 'E001', designation: 'Papier', quantite: 20, dateEntree: '2025-04-05' },
-    { reference: 'E002', designation: 'Plastique', quantite: 10, dateEntree: '2025-04-08' }
-  ];
+  constructor(
+    private fb: FormBuilder,
+    private articleService: ArticleService,
+    private stockService: EntiteStockService,
+    private mouvementService: BonMouvementService
+  ) {}
 
-  filteredData = [...this.tableData];
+  ngOnInit(): void {
+    this.searchForm = this.fb.group({
+      ref: [''],
+      designation: [''],
+      dateDebut: [''],
+      dateFin: ['']
+    });
 
-  addRow() {
-    if (this.designation && this.quantite && this.dateEntree) {
-      const newRow = {
-        reference: 'E' + (this.tableData.length + 1).toString().padStart(3, '0'),
-        designation: this.designation,
-        quantite: this.quantite,
-        dateEntree: this.dateEntree
-      };
-      this.tableData.push(newRow);
-      this.filteredData = [...this.tableData];
-      this.designation = '';
-      this.quantite = null;
-      this.dateEntree = '';
-    }
+    this.ajoutForm = this.fb.group({
+      articleId: ['', Validators.required],
+      stockId: ['', Validators.required],
+      quantite: ['', Validators.required],
+      dateEntree: ['', Validators.required]
+    });
+
+    this.loadData();
   }
 
-  resetFilters() {
-    this.refRecherche = '';
-    this.designationRecherche = '';
-    this.dateDebut = '';
-    this.dateFin = '';
-    this.filteredData = [...this.tableData];
+  loadData() {
+    this.articleService.getAll().subscribe(data => this.articles = data);
+    this.stockService.getAll().subscribe(data => this.stocks = data);
+    this.getAllMouvements();
   }
 
-  filter() {
-    this.filteredData = this.tableData.filter(item => {
-      const matchRef = this.refRecherche ? item.reference.toLowerCase().includes(this.refRecherche.toLowerCase()) : true;
-      const matchDesignation = this.designationRecherche ? item.designation.toLowerCase().includes(this.designationRecherche.toLowerCase()) : true;
-      const matchDateDebut = this.dateDebut ? item.dateEntree >= this.dateDebut : true;
-      const matchDateFin = this.dateFin ? item.dateEntree <= this.dateFin : true;
-      return matchRef && matchDesignation && matchDateDebut && matchDateFin;
+  getAllMouvements() {
+    this.mouvementService.getAll('entrees/divers').subscribe(data => this.mouvements = data);
+  }
+
+  onSearch() {
+    const params = this.searchForm.value;
+    this.mouvementService.search('entrees/divers', params).subscribe(data => this.mouvements = data);
+  }
+
+  onAdd() {
+    if (this.ajoutForm.invalid) return;
+    const formData = this.ajoutForm.value;
+    const payload = {
+      articleId: formData.articleId,
+      stockId: formData.stockId,
+      quantite: formData.quantite,
+      dateMouvement: formData.dateEntree
+    };
+    this.mouvementService.create('entrees/divers', payload).subscribe(() => {
+      this.ajoutForm.reset();
+      this.getAllMouvements();
     });
   }
 }

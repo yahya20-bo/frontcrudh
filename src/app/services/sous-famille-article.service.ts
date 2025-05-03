@@ -2,16 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Article {
-  id: number;
-  libelle: string;
-  reference: string;
-  // autres champs
-}
-
 @Injectable({ providedIn: 'root' })
-export class ArticleService {
-  private apiUrl = '/api/articles';
+export class SousFamilleArticleService {
+  private apiUrl = '/api/sous-famille-articles';
 
   constructor(private http: HttpClient) {}
 
@@ -23,15 +16,11 @@ export class ArticleService {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
-  search(criteria: any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/search`, { params: criteria });
-  }
-
-  create(data: Article): Observable<any> {
+  create(data: any): Observable<any> {
     return this.http.post(this.apiUrl, data);
   }
 
-  update(id: number, data: Article): Observable<any> {
+  update(id: number, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
 

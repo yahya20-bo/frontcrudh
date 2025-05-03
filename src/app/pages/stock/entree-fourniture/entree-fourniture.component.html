@@ -1,69 +1,89 @@
-<!-- entree-fourniture.component.html -->
-<div class="card p-4 mb-4">
-    <h4 class="section-title">🔍 Critères de recherche</h4>
-    <div class="row g-3">
-      <div class="col-md-3">
-        <input [(ngModel)]="refRecherche" type="text" class="form-control" placeholder="Réf. Fourniture" />
-      </div>
-      <div class="col-md-3">
-        <input [(ngModel)]="designationRecherche" type="text" class="form-control" placeholder="Désignation" />
-      </div>
-      <div class="col-md-3">
-        <input [(ngModel)]="dateDebut" type="date" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <input [(ngModel)]="dateFin" type="date" class="form-control" />
-      </div>
+<div class="container mt-4">
+
+  <!-- 🔍 Formulaire de recherche -->
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label for="ref">Référence</label>
+      <input type="text" formControlName="ref" class="form-control" id="ref" />
     </div>
-    <div class="text-end mt-3 d-flex justify-content-end gap-2">
-      <button (click)="filter()" class="btn btn-primary">Rechercher</button>
-      <button (click)="resetFilters()" class="btn btn-outline-secondary">Annuler</button>
+    <div class="col-md-3">
+      <label for="designation">Désignation</label>
+      <input type="text" formControlName="designation" class="form-control" id="designation" />
     </div>
+    <div class="col-md-3">
+      <label for="dateDebut">Date Début</label>
+      <input type="date" formControlName="dateDebut" class="form-control" id="dateDebut" />
+    </div>
+    <div class="col-md-3">
+      <label for="dateFin">Date Fin</label>
+      <input type="date" formControlName="dateFin" class="form-control" id="dateFin" />
+    </div>
+    <div class="col-md-12 text-end">
+      <button type="submit" class="btn btn-primary">Rechercher</button>
+      <button type="button" class="btn btn-secondary ms-2" (click)="loadData()">Réinitialiser</button>
+    </div>
+  </form>
+
+  <hr class="my-4">
+
+  <!-- ➕ Formulaire d'ajout -->
+  <form [formGroup]="ajoutForm" (ngSubmit)="onAdd()" class="row g-3">
+    <div class="col-md-4">
+      <label for="article">Article</label>
+      <select class="form-select" formControlName="articleId">
+        <option value="" disabled selected>-- Choisir un article --</option>
+        <option *ngFor="let article of articles" [value]="article.id">
+          {{ article.ref }} - {{ article.designation }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="stock">Stock</label>
+      <select class="form-select" formControlName="stockId">
+        <option value="" disabled selected>-- Choisir un stock --</option>
+        <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.nom }}</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label for="quantite">Quantité</label>
+      <input type="number" class="form-control" formControlName="quantite" />
+    </div>
+    <div class="col-md-2">
+      <label for="dateEntree">Date</label>
+      <input type="date" class="form-control" formControlName="dateEntree" />
+    </div>
+    <div class="col-md-12 text-end">
+      <button type="submit" class="btn btn-success">Ajouter</button>
+    </div>
+  </form>
+
+  <hr class="my-4">
+
+  <!-- 📋 Tableau des mouvements -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Référence</th>
+          <th>Désignation</th>
+          <th>Quantité</th>
+          <th>Date</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of mouvements">
+          <td>{{ m.article?.ref }}</td>
+          <td>{{ m.article?.designation }}</td>
+          <td>{{ m.quantite }}</td>
+          <td>{{ m.dateMouvement | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ m.entiteStock?.nom }}</td>
+        </tr>
+        <tr *ngIf="mouvements.length === 0">
+          <td colspan="5" class="text-center text-muted">Aucun mouvement trouvé</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  
-  <div class="card p-4 mb-4">
-    <h4 class="section-title">➕ Ajouter une entrée de tissu</h4>
-    <div class="row g-3 align-items-end">
-      <div class="col-md-4">
-        <input [(ngModel)]="designation" type="text" placeholder="Désignation" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <input [(ngModel)]="quantite" type="number" placeholder="Quantité" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <input [(ngModel)]="dateEntree" type="date" class="form-control" />
-      </div>
-      <div class="col-md-2 text-end">
-        <button (click)="addRow()" class="btn btn-success w-100">Ajouter</button>
-      </div>
-    </div>
-  </div>
-  
-  <div class="card p-4">
-    <h5 class="section-title">
-      <i class="bi bi-table me-2"></i>Liste des Entrées Fourniture
-    </h5>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover mt-3">
-        <thead class="table-light">
-          <tr>
-            <th>Référence</th>
-            <th>Désignation</th>
-            <th>Quantité</th>
-            <th>Date Entrée</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of filteredData">
-            <td>{{ item.reference }}</td>
-            <td>{{ item.designation }}</td>
-            <td>{{ item.quantite }}</td>
-            <td>{{ item.dateEntree }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="text-end text-muted mt-2 text-sm">
-        {{ filteredData.length }} élément(s) au total
-      </div>
-    </div>
-  </div>
+
+</div>

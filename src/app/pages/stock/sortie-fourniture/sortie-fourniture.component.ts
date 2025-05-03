@@ -1,62 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ArticleService } from 'src/app/services/article.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 
 @Component({
   selector: 'app-sortie-fourniture',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './sortie-fourniture.component.html',
-  styleUrls: ['./sortie-fourniture.component.scss']
+  styleUrls: ['./sortie-fourniture.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
-export class SortieFournitureComponent {
-  designation = '';
-  quantite: number | null = null;
-  dateSortie = '';
+export class SortieFournitureComponent implements OnInit {
+  articles: any[] = [];
+  stocks: any[] = [];
+  mouvements: any[] = [];
 
-  refRecherche = '';
-  designationRecherche = '';
-  dateDebut = '';
-  dateFin = '';
+  searchForm!: FormGroup;
+  ajoutForm!: FormGroup;
 
-  tableData = [
-    { reference: 'SF001', designation: 'Agrafeuse', quantite: 5, dateSortie: '2025-04-07' },
-    { reference: 'SF002', designation: 'Cartouche', quantite: 3, dateSortie: '2025-04-09' }
-  ];
+  constructor(
+    private fb: FormBuilder,
+    private articleService: ArticleService,
+    private stockService: EntiteStockService,
+    private mouvementService: BonMouvementService
+  ) {}
 
-  filteredData = [...this.tableData];
+  ngOnInit(): void {
+    this.searchForm = this.fb.group({
+      ref: [''],
+      designation: [''],
+      dateDebut: [''],
+      dateFin: ['']
+    });
 
-  addRow() {
-    if (this.designation && this.quantite && this.dateSortie) {
-      const newRow = {
-        reference: 'SF' + (this.tableData.length + 1).toString().padStart(3, '0'),
-        designation: this.designation,
-        quantite: this.quantite,
-        dateSortie: this.dateSortie
-      };
-      this.tableData.push(newRow);
-      this.filteredData = [...this.tableData];
-      this.designation = '';
-      this.quantite = null;
-      this.dateSortie = '';
-    }
+    this.ajoutForm = this.fb.group({
+      articleId: ['', Validators.required],
+      stockId: ['', Validators.required],
+      quantite: ['', Validators.required],
+      dateSortie: ['', Validators.required]
+    });
+
+    this.loadData();
   }
 
-  resetFilters() {
-    this.refRecherche = '';
-    this.designationRecherche = '';
-    this.dateDebut = '';
-    this.dateFin = '';
-    this.filteredData = [...this.tableData];
+  loadData() {
+    this.articleService.getAll().subscribe(data => this.articles = data);
+    this.stockService.getAll().subscribe(data => this.stocks = data);
+    this.getAllMouvements();
   }
 
-  filter() {
-    this.filteredData = this.tableData.filter(item => {
-      const matchRef = this.refRecherche ? item.reference.toLowerCase().includes(this.refRecherche.toLowerCase()) : true;
-      const matchDesignation = this.designationRecherche ? item.designation.toLowerCase().includes(this.designationRecherche.toLowerCase()) : true;
-      const matchDateDebut = this.dateDebut ? item.dateSortie >= this.dateDebut : true;
-      const matchDateFin = this.dateFin ? item.dateSortie <= this.dateFin : true;
-      return matchRef && matchDesignation && matchDateDebut && matchDateFin;
+  getAllMouvements() {
+    this.mouvementService.getAll('sorties/fourniture').subscribe(data => this.mouvements = data);
+  }
+
+  onSearch() {
+    const params = this.searchForm.value;
+    this.mouvementService.search('sorties/fourniture', params).subscribe(data => this.mouvements = data);
+  }
+
+  onAdd() {
+    if (this.ajoutForm.invalid) return;
+
+    const formData = this.ajoutForm.value;
+    const payload = {
+      articleId: formData.articleId,
+      stockId: formData.stockId,
+      quantite: formData.quantite,
+      dateMouvement: formData.dateSortie
+    };
+
+    this.mouvementService.create('sorties/fourniture', payload).subscribe(() => {
+      this.ajoutForm.reset();
+      this.getAllMouvements();
     });
   }
 }

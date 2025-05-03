@@ -1,14 +1,32 @@
-<div class="container mt-4">
-    <h3>📦 Liste des Articles</h3>
-  
-    <div *ngIf="loading" class="alert alert-info">Chargement...</div>
-    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-  
-    <table *ngIf="articles.length > 0" class="table table-striped table-bordered mt-3">
-      <thead class="table-dark">
+<div class="card">
+  <div class="card-header">
+    <h5>Ajouter un article</h5>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label>Libellé</label>
+        <input type="text" class="form-control" formControlName="libelle" />
+      </div>
+      <div class="mb-3">
+        <label>Référence</label>
+        <input type="text" class="form-control" formControlName="reference" />
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="articleForm.invalid">Enregistrer</button>
+    </form>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
+    <h5>Liste des articles</h5>
+  </div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
         <tr>
           <th>ID</th>
-          <th>Désignation</th>
+          <th>Libellé</th>
           <th>Référence</th>
           <th>Actions</th>
         </tr>
@@ -16,18 +34,13 @@
       <tbody>
         <tr *ngFor="let article of articles">
           <td>{{ article.id }}</td>
-          <td>{{ article.designation }}</td>
+          <td>{{ article.libelle }}</td>
           <td>{{ article.reference }}</td>
           <td>
-            <button class="btn btn-sm btn-warning me-2">✏️ Modifier</button>
-            <button class="btn btn-sm btn-danger">🗑️ Supprimer</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteArticle(article.id)">Supprimer</button>
           </td>
         </tr>
       </tbody>
     </table>
-  
-    <div *ngIf="!loading && articles.length === 0" class="alert alert-warning mt-3">
-      Aucun article disponible.
-    </div>
   </div>
-  
+</div>
