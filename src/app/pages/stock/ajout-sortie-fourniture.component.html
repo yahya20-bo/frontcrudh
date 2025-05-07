@@ -1,0 +1,39 @@
+<div class="card p-4 shadow-sm mt-4 mx-3">
+    <h5 class="mb-3 text-success">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter Sortie Fourniture
+    </h5>
+    <form [formGroup]="addForm" (ngSubmit)="onSubmit()" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Sélectionner un article --</option>
+          <option *ngFor="let article of articles" [value]="article.id">
+            {{ article.ref }} - {{ article.designation }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Stock</label>
+        <select class="form-select" formControlName="stockId">
+          <option value="">-- Sélectionner un stock --</option>
+          <option *ngFor="let stock of stocks" [value]="stock.id">
+            {{ stock.nom }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Quantité</label>
+        <input type="number" class="form-control" formControlName="quantite" />
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" formControlName="dateSortie" />
+      </div>
+      <div class="col-md-2 text-end">
+        <button class="btn btn-success" type="submit">
+          <i class="bi bi-check-circle me-2"></i> Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+  

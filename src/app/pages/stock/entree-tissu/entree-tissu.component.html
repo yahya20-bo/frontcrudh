@@ -1,102 +1,125 @@
 <div class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-4 text-primary">
+      <i class="bi bi-search me-2"></i> Recherche des entrées tissu
+    </h5>
 
-  <!-- 🔍 Formulaire de recherche -->
-  <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="card p-3 mb-4 shadow-sm">
-    <h5 class="mb-3">🔍 Recherche des entrées tissu</h5>
-    <div class="row g-3 align-items-center">
-      <div class="col-md-4">
+    <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="row g-3 align-items-end">
+      <div class="col-md-3">
         <label class="form-label">Article</label>
         <select class="form-select" formControlName="articleId">
           <option value="">-- Tous les articles --</option>
-          <option *ngFor="let article of articles" [value]="article.id">
-            {{ article.libelle }}
-          </option>
+          <option *ngFor="let article of articles" [value]="article.id">{{ article.libelle }}</option>
         </select>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label">Date min</label>
         <input type="date" class="form-control" formControlName="dateMin" />
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label">Date max</label>
         <input type="date" class="form-control" formControlName="dateMax" />
       </div>
-    </div>
-
-    <div class="mt-4 d-flex gap-2 justify-content-end">
-      <button type="submit" class="btn btn-primary d-flex align-items-center">
-        <i class="bi bi-search me-2"></i> Rechercher
-      </button>
-      <button type="button" class="btn btn-outline-danger d-flex align-items-center" (click)="annulerRecherche()">
-        <i class="bi bi-x-circle me-2"></i> Annuler
-      </button>
-    </div>
-  </form>
-
-  <!-- ➕ Formulaire d'ajout -->
-  <form [formGroup]="addForm" (ngSubmit)="ajouterEntree()" class="card p-3 mb-4 shadow-sm">
-    <h5 class="mb-3">➕ Ajouter une entrée tissu</h5>
-    <div class="row g-3">
       <div class="col-md-3">
-        <label class="form-label">Article</label>
-        <select class="form-select" formControlName="articleId">
-          <option value="">-- Choisir --</option>
-          <option *ngFor="let article of articles" [value]="article.id">
-            {{ article.libelle }}
-          </option>
+        <label class="form-label">N° BE</label>
+        <input type="text" class="form-control" formControlName="numeroBE" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Fournisseur</label>
+        <select class="form-select" formControlName="fournisseurId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
         </select>
       </div>
       <div class="col-md-3">
-        <label class="form-label">Entité de stock</label>
-        <select class="form-select" formControlName="entiteStockId">
-          <option value="">-- Choisir --</option>
-          <option *ngFor="let stock of stocks" [value]="stock.id">
-            {{ stock.libelle }}
-          </option>
+        <label class="form-label">Client</label>
+        <input type="text" class="form-control" formControlName="client" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Origine</label>
+        <input type="text" class="form-control" formControlName="origine" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Responsable</label>
+        <input type="text" class="form-control" formControlName="responsable" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Raison d’entrée</label>
+        <select class="form-select" formControlName="raisonEntree">
+          <option value="">-- Toutes --</option>
+          <option value="ACHAT DIVERS">ACHAT DIVERS</option>
+          <option value="DON">DON</option>
         </select>
       </div>
       <div class="col-md-3">
-        <label class="form-label">Quantité</label>
-        <input type="number" class="form-control" formControlName="quantite" />
+        <label class="form-label">SPL</label>
+        <input type="text" class="form-control" formControlName="spl" />
       </div>
       <div class="col-md-3">
-        <label class="form-label">Date</label>
-        <input type="date" class="form-control" formControlName="date" />
+        <label class="form-label">Magasin</label>
+        <select class="form-select" formControlName="magasinId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let m of magasins" [value]="m.id">{{ m.nom }}</option>
+        </select>
       </div>
-    </div>
+      <div class="col-md-3">
+        <label class="form-label">Valeur BE</label>
+        <input type="number" class="form-control" formControlName="valeurBE" />
+      </div>
 
-    <div class="mt-4 text-end">
-      <button type="submit" class="btn btn-success d-flex align-items-center">
-        <i class="bi bi-plus-circle me-2"></i> Ajouter
-      </button>
-    </div>
-  </form>
-
-  <!-- 📋 Résultats -->
-  <div class="card shadow-sm p-3">
-    <h5 class="mb-3">📋 Résultats des entrées tissu</h5>
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>#</th>
-            <th>Article</th>
-            <th>Quantité</th>
-            <th>Date</th>
-            <th>Stock</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of resultats; index as i">
-            <td>{{ i + 1 }}</td>
-            <td>{{ item.articleLibelle }}</td>
-            <td>{{ item.quantite }}</td>
-            <td>{{ item.date | date: 'shortDate' }}</td>
-            <td>{{ item.entiteStockLibelle }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="col-md-3">
+        <label class="form-label">État</label>
+        <select class="form-select" formControlName="etat">
+          <option value="">-- Tous --</option>
+          <option value="BON">BON</option>
+          <option value="MAUVAIS">MAUVAIS</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">DAE / Facture</label>
+        <input type="text" class="form-control" formControlName="facture" />
+      </div>
+      <div class="col-md-6 d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">🔍 Rechercher</button>
+        <button type="button" class="btn btn-outline-danger" (click)="annulerRecherche()">❌ Annuler</button>
+      </div>
+    </form>
   </div>
 
+  <div class="mt-4 d-flex justify-content-end">
+    <a [routerLink]="['/ajout-entree-tissu']" class="btn btn-success">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée tissu
+    </a>
+  </div>
+</div>
+<div class="card p-4 shadow-sm mt-4">
+  <h5 class="mb-3 text-info">
+    <i class="bi bi-card-checklist me-2"></i> Liste des Sorties
+  </h5>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Article</th>
+          <th>Stock</th>
+          <th>Quantité</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of resultats">
+          <td>{{ item.articleDesignation }}</td>
+          <td>{{ item.entiteStockDesignation }}</td>
+          <td>{{ item.quantite }}</td>
+          <td>{{ item.date | date: 'yyyy-MM-dd' }}</td>
+        </tr>
+        <tr *ngIf="resultats.length === 0">
+          <td colspan="4" class="text-muted text-center">Aucune sortie trouvée.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

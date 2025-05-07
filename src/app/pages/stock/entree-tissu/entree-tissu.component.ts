@@ -1,28 +1,24 @@
+// ✅ entree-tissu.component.ts
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
-import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-entree-tissu',
   templateUrl: './entree-tissu.component.html',
+  styleUrls: ['./entree-tissu.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    RouterModule
-  ]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
 })
 export class EntreeTissuComponent implements OnInit {
   searchForm!: FormGroup;
-  addForm!: FormGroup;
-
   articles: any[] = [];
+  fournisseurs: any[] = [];
+  magasins: any[] = [];
   stocks: any[] = [];
   resultats: any[] = [];
 
@@ -36,7 +32,9 @@ export class EntreeTissuComponent implements OnInit {
   ngOnInit(): void {
     this.initForms();
     this.loadArticles();
+    this.loadFournisseurs();
     this.loadStocks();
+    this.loadMagasins();
     this.getAllEntrees();
   }
 
@@ -44,39 +42,55 @@ export class EntreeTissuComponent implements OnInit {
     this.searchForm = this.fb.group({
       articleId: [''],
       dateMin: [''],
-      dateMax: ['']
-    });
-
-    this.addForm = this.fb.group({
-      articleId: ['', Validators.required],
-      entiteStockId: ['', Validators.required],
-      quantite: ['', [Validators.required, Validators.min(1)]],
-      date: ['', Validators.required]
+      dateMax: [''],
+      numeroBE: [''],
+      fournisseurId: [''],
+      client: [''],
+      origine: [''],
+      responsable: [''],
+      raisonEntree: [''],
+      spl: [''],
+      valeurBE: [''],
+      etat: [''],
+      facture: [''],
+      magasinId: [''],
     });
   }
 
   loadArticles(): void {
-    this.articleService.getAll().subscribe((data: any) => {
-      this.articles = data;
+    this.articleService.getAll().subscribe((res: any) => {
+      this.articles = res.articles || res;
+    });
+  }
+
+  loadFournisseurs(): void {
+    this.articleService.getAll().subscribe((res: any) => {
+      this.fournisseurs = res.fournisseurs || res;
     });
   }
 
   loadStocks(): void {
-    this.stockService.getAll().subscribe((data: any) => {
-      this.stocks = data;
+    this.stockService.getAll().subscribe((res: any) => {
+      this.stocks = res;
+    });
+  }
+
+  loadMagasins(): void {
+    this.stockService.getAll().subscribe((res: any) => {
+      this.magasins = res.magasins || res;
     });
   }
 
   getAllEntrees(): void {
     this.mouvementService.getEntreesTissu().subscribe((res: any) => {
-      this.resultats = res.bonMouvements || [];
+      this.resultats = res.bonMouvements || res;
     });
   }
 
   rechercher(): void {
     const params = this.searchForm.value;
     this.mouvementService.rechercherEntreesTissu(params).subscribe((res: any) => {
-      this.resultats = res.bonMouvements || [];
+      this.resultats = res.bonMouvements || res;
     });
   }
 
@@ -84,13 +98,5 @@ export class EntreeTissuComponent implements OnInit {
     this.searchForm.reset();
     this.getAllEntrees();
   }
-
-  ajouterEntree(): void {
-    if (this.addForm.invalid) return;
-    const payload = this.addForm.value;
-    this.mouvementService.ajouterEntreeTissu(payload).subscribe(() => {
-      this.addForm.reset();
-      this.getAllEntrees();
-    });
-  }
 }
+

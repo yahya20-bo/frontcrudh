@@ -1,7 +1,11 @@
-<div class="stock-layout-container">
-    <div class="content-card">
-      <h2>Liste des Entrées</h2>
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-  
+<div class="d-flex" style="height: 100vh;">
+  <!-- ✅ SIDEBAR -->
+  <aside class="sidebar" style="min-width: 240px; background-color: #2a3f54;">
+    <app-nav-left></app-nav-left> <!-- ✅ insère la vraie sidebar ici -->
+  </aside>
+
+  <!-- ✅ CONTENU -->
+  <main class="flex-grow-1 p-4 bg-light">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,77 +1,144 @@
-<div class="card mb-4 p-3">
-  <h5 class="mb-3">🔍 Recherche des sorties fourniture</h5>
-  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-3">
+<!-- 🔍 Recherche des sorties fourniture -->
+<div class="card p-4 shadow-sm mb-4">
+  <h5 class="mb-3 text-primary">
+    <i class="bi bi-search"></i> Recherche des sorties fourniture
+  </h5>
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-3 align-items-end">
+
     <div class="col-md-3">
-      <input formControlName="ref" type="text" class="form-control" placeholder="Référence" />
+      <label class="form-label">Référence</label>
+      <input class="form-control" placeholder="Référence" formControlName="ref" />
     </div>
+
     <div class="col-md-3">
-      <input formControlName="designation" type="text" class="form-control" placeholder="Désignation" />
+      <label class="form-label">Désignation</label>
+      <input class="form-control" placeholder="Désignation" formControlName="designation" />
     </div>
+
     <div class="col-md-3">
-      <input formControlName="dateDebut" type="date" class="form-control" />
+      <label class="form-label">Fournisseur</label>
+      <select class="form-select" formControlName="fournisseur">
+        <option value="">-- Tous --</option>
+        <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+      </select>
     </div>
+
     <div class="col-md-3">
-      <input formControlName="dateFin" type="date" class="form-control" />
+      <label class="form-label">Magasin</label>
+      <select class="form-select" formControlName="magasin">
+        <option value="">-- Tous --</option>
+        <option *ngFor="let m of magasins" [value]="m.id">{{ m.nom }}</option>
+      </select>
     </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Date début</label>
+      <input class="form-control" type="date" formControlName="dateDebut" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Date fin</label>
+      <input class="form-control" type="date" formControlName="dateFin" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">N° BE</label>
+      <input class="form-control" formControlName="numeroBE" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Client</label>
+      <input class="form-control" formControlName="client" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Origine</label>
+      <input class="form-control" formControlName="origine" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Responsable</label>
+      <input class="form-control" formControlName="responsable" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Raison</label>
+      <select class="form-select" formControlName="raison">
+        <option value="">-- Toutes --</option>
+        <option value="VENTE">Vente</option>
+        <option value="TRANSFERT">Transfert</option>
+        <option value="DIVERS">Divers</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">SPL</label>
+      <input class="form-control" formControlName="spl" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">État</label>
+      <select class="form-select" formControlName="etat">
+        <option value="">-- Tous --</option>
+        <option value="BROUILLON">Brouillon</option>
+        <option value="VALIDE">Validé</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">DAE / Facture</label>
+      <input class="form-control" formControlName="facture" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Valeur BE</label>
+      <input class="form-control" formControlName="valeurBE" />
+    </div>
+
     <div class="col-12 text-end">
-      <button type="submit" class="btn btn-primary me-2">Rechercher</button>
-      <button type="button" class="btn btn-secondary" (click)="loadData()">Réinitialiser</button>
+      <button type="submit" class="btn btn-primary me-2">
+        <i class="bi bi-search"></i> Rechercher
+      </button>
+      <button type="button" class="btn btn-outline-danger" (click)="onReset()">
+        <i class="bi bi-x-circle"></i> Réinitialiser
+      </button>
     </div>
   </form>
 </div>
 
-<div class="card mb-4 p-3">
-  <h5 class="mb-3">➖ Ajouter une sortie fourniture</h5>
-  <form [formGroup]="ajoutForm" (ngSubmit)="onAdd()" class="row g-3">
-    <div class="col-md-3">
-      <select formControlName="articleId" class="form-select">
-        <option value="" disabled selected>Article</option>
-        <option *ngFor="let article of articles" [value]="article.id">{{ article.designation }}</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <select formControlName="stockId" class="form-select">
-        <option value="" disabled selected>Entité de stock</option>
-        <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.nom }}</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <input formControlName="quantite" type="number" class="form-control" placeholder="Quantité" />
-    </div>
-    <div class="col-md-3">
-      <input formControlName="dateSortie" type="date" class="form-control" />
-    </div>
-    <div class="col-12 text-end">
-      <button type="submit" class="btn btn-success" [disabled]="ajoutForm.invalid">Ajouter</button>
-    </div>
-  </form>
+<!-- ➕ Redirection vers l'interface d'ajout -->
+<div class="d-flex justify-content-end mb-3">
+  <a [routerLink]="['/ajout-sortie-fourniture']" class="btn btn-success">
+    <i class="bi bi-plus-circle me-2"></i> Ajouter une sortie fourniture
+  </a>
 </div>
 
-<div class="card p-3">
-  <h5 class="mb-3">📦 Liste des mouvements</h5>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Réf</th>
-          <th>Désignation</th>
-          <th>Quantité</th>
-          <th>Stock</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let mvt of mouvements">
-          <td>{{ mvt.article?.ref }}</td>
-          <td>{{ mvt.article?.designation }}</td>
-          <td>{{ mvt.quantite }}</td>
-          <td>{{ mvt.entiteStock?.nom }}</td>
-          <td>{{ mvt.dateMouvement | date: 'dd/MM/yyyy' }}</td>
-        </tr>
-        <tr *ngIf="mouvements.length === 0">
-          <td colspan="5" class="text-center text-muted">Aucun mouvement trouvé</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<!-- 📋 Résultats -->
+<div class="card p-4 shadow-sm">
+  <h5 class="mb-3 text-info">
+    <i class="bi bi-box-arrow-up"></i> Liste des mouvements
+  </h5>
+  <table class="table table-bordered align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Réf</th>
+        <th>Désignation</th>
+        <th>Quantité</th>
+        <th>Stock</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of mouvements">
+        <td>{{ m.article?.ref }}</td>
+        <td>{{ m.article?.designation }}</td>
+        <td>{{ m.quantite }}</td>
+        <td>{{ m.entiteStock?.nom }}</td>
+        <td>{{ m.dateMouvement | date:'yyyy-MM-dd' }}</td>
+      </tr>
+      <tr *ngIf="mouvements.length === 0">
+        <td colspan="5" class="text-center text-muted">Aucun mouvement trouvé</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

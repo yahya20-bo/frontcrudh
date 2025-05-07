@@ -1,41 +1,70 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Article } from '../models/article.model';
+import { ArticleResult } from '../models/ArticleResult';
+import { environment } from '../../environments/environment';
 
-export interface Article {
-  id: number;
-  libelle: string;
-  reference: string;
-  // autres champs
-}
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class ArticleService {
-  private apiUrl = '/api/articles';
+  private apiUrl = `${environment.apiUrl}/articles`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  /**
+   * Récupère tous les articles (avec structure ArticleResult { articles: Article[] })
+   */
+  getAll(): Observable<ArticleResult> {
+    return this.http.get<ArticleResult>(this.apiUrl);
   }
 
-  getById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+  /**
+   * Récupère un article par ID
+   */
+  getById(id: number): Observable<Article> {
+    return this.http.get<Article>(`${this.apiUrl}/${id}`);
   }
 
-  search(criteria: any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/search`, { params: criteria });
+  /**
+   * Recherche d'articles selon des critères
+   */
+  search(criteria: any): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}/search`, { params: criteria });
   }
 
-  create(data: Article): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+  /**
+   * Crée un nouvel article
+   */
+  create(article: Article): Observable<Article> {
+    return this.http.post<Article>(this.apiUrl, article);
   }
 
-  update(id: number, data: Article): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+  /**
+   * Met à jour un article existant
+   */
+  update(id: number, article: Article): Observable<Article> {
+    return this.http.put<Article>(`${this.apiUrl}/${id}`, article);
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  /**
+   * Supprime un article
+   */
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Récupère la liste des fournisseurs (externe à l'article)
+   */
+  getFournisseurs(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/fournisseurs`);
+  }
+
+
+  getArticleById(id: number): Observable<Article> {
+    return this.http.get<Article>(`${this.apiUrl}/${id}`);
   }
 }

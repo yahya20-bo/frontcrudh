@@ -5,12 +5,12 @@
   <div class="card-body">
     <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
       <div class="mb-3">
-        <label>Libellé</label>
-        <input type="text" class="form-control" formControlName="libelle" />
+        <label>Référence</label>
+        <input type="text" class="form-control" formControlName="ref" />
       </div>
       <div class="mb-3">
-        <label>Référence</label>
-        <input type="text" class="form-control" formControlName="reference" />
+        <label>Désignation</label>
+        <input type="text" class="form-control" formControlName="designation" />
       </div>
       <button class="btn btn-primary" type="submit" [disabled]="articleForm.invalid">Enregistrer</button>
     </form>
@@ -22,22 +22,24 @@
     <h5>Liste des articles</h5>
   </div>
   <div class="card-body">
-    <table class="table table-striped">
+    <table class="table table-bordered table-hover table-striped">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Libellé</th>
           <th>Référence</th>
-          <th>Actions</th>
+          <th>Désignation</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let article of articles">
-          <td>{{ article.id }}</td>
-          <td>{{ article.libelle }}</td>
-          <td>{{ article.reference }}</td>
+        <tr *ngFor="let a of articles">
+          <td>{{ a.id }}</td>
+          <td>{{ a.ref }}</td>
+          <td>{{ a.designation }}</td>
           <td>
-            <button class="btn btn-danger btn-sm" (click)="deleteArticle(article.id)">Supprimer</button>
+            <button *ngIf="a.id !== undefined" class="btn btn-danger btn-sm" (click)="deleteArticle(a.id)">
+              Supprimer
+            </button>
           </td>
         </tr>
       </tbody>

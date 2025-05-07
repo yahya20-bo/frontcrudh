@@ -1,18 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ArticleService, Article } from 'src/app/services/article.service';
+import { ArticleService } from 'src/app/services/article.service';
+import { Article } from 'src/app/models/article.model';
+import { ArticleResult } from 'src/app/models/ArticleResult';
 
 @Component({
   selector: 'app-entree-article',
   standalone: true,
   templateUrl: './entree-article.component.html',
   styleUrls: ['./entree-article.component.scss'],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule
-  ]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
 export class EntreeArticleComponent implements OnInit {
   articles: Article[] = [];
@@ -20,24 +18,25 @@ export class EntreeArticleComponent implements OnInit {
   isLoading = false;
 
   constructor(
-    private articleService: ArticleService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private articleService: ArticleService
   ) {}
 
   ngOnInit(): void {
     this.articleForm = this.fb.group({
-      libelle: ['', Validators.required],
-      reference: ['', Validators.required]
+      ref: ['', Validators.required],
+      designation: ['', Validators.required]
     });
 
-    this.getAllArticles();
+    this.loadArticles();
   }
 
-  getAllArticles() {
+  loadArticles() {
     this.isLoading = true;
     this.articleService.getAll().subscribe({
-      next: (data: any) => {
-        this.articles = data.results || data;
+      next: (response :ArticleResult) => {
+        this.articles = response.articles;
+
         this.isLoading = false;
       },
       error: () => this.isLoading = false
@@ -48,14 +47,14 @@ export class EntreeArticleComponent implements OnInit {
     if (this.articleForm.valid) {
       this.articleService.create(this.articleForm.value).subscribe(() => {
         this.articleForm.reset();
-        this.getAllArticles();
+        this.loadArticles();
       });
     }
   }
 
   deleteArticle(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer cet article ?')) {
-      this.articleService.delete(id).subscribe(() => this.getAllArticles());
+    if (confirm('Supprimer cet article ?')) {
+      this.articleService.delete(id).subscribe(() => this.loadArticles());
     }
   }
 }

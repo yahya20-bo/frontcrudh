@@ -1,25 +1,29 @@
 <ul class="navbar-nav">
-  <li>
-    <div class="dropdown" ngbDropdown placement="bottom-right">
-      <a ngbDropdownToggle href="javascript:"><i class="icon feather icon-bell"></i></a>
-      <div ngbDropdownMenu class="dropdown-menu notification">
-        <div class="notification-head">
-          <h6 class="m-0">Notifications</h6>
-        </div>
-        <ul class="notification-body">
-          <li class="notification">
-            <div class="d-flex">
-              <img class="img-radius" src="assets/images/user/avatar-1.jpg" alt="Avatar" />
-              <div>
-                <p><strong>John Doe</strong></p>
-                <p>New ticket added</p>
-              </div>
+  <li class="nav-item dropdown" ngbDropdown>
+    <a class="nav-link" ngbDropdownToggle href="javascript:void(0)">
+      <i class="icon feather icon-bell"></i>
+    </a>
+
+    <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right notification">
+      <div class="notification-head">
+        <h6 class="m-0">Notifications</h6>
+      </div>
+
+      <ul class="notification-body list-unstyled mb-0">
+        <li class="notification mb-2">
+          <div class="d-flex align-items-center">
+            <img class="img-radius" src="assets/images/user/avatar-1.jpg" alt="Avatar" />
+            <div>
+              <p class="mb-0"><strong>John Doe</strong></p>
+              <small>New ticket added</small>
             </div>
-          </li>
-        </ul>
-        <div class="notification-footer">
-          <a href="javascript:">Show all</a>
-        </div>
+          </div>
+        </li>
+        <!-- ➕ Tu peux ajouter plus de notifications ici -->
+      </ul>
+
+      <div class="notification-footer text-center">
+        <a href="javascript:void(0)">Show all</a>
       </div>
     </div>
   </li>

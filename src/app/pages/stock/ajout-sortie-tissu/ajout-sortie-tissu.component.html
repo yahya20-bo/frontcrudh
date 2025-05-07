@@ -1,0 +1,42 @@
+<div class="container mt-4">
+    <div class="card p-4 shadow">
+      <h4 class="mb-3 text-success">➕ Ajouter une sortie tissu</h4>
+      <form [formGroup]="addForm" (ngSubmit)="ajouter()">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Article</label>
+            <select class="form-select" formControlName="articleId">
+              <option value="">-- Choisir --</option>
+              <option *ngFor="let article of articles" [value]="article.id">
+                {{ article.designation }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Entité de stock</label>
+            <select class="form-select" formControlName="entiteStockId">
+              <option value="">-- Choisir --</option>
+              <option *ngFor="let stock of stocks" [value]="stock.id">
+                {{ stock.designation }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Quantité</label>
+            <input type="number" class="form-control" formControlName="quantite" />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" formControlName="date" />
+          </div>
+        </div>
+  
+        <div class="text-end mt-4">
+          <button type="submit" class="btn btn-success">
+            ✅ Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

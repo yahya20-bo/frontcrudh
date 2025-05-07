@@ -15,5 +15,48 @@ export const routes: Routes = [
   { path: 'stock/sortie-divers', loadComponent: () => import('./pages/stock/sortie-divers/sortie-divers.component').then(m => m.SortieDiversComponent) },
   { path: 'stock/etat-stock-divers', loadComponent: () => import('./pages/stock/etat-stock-divers/etat-stock-divers.component').then(m => m.EtatStockDiversComponent) },
 
-  { path: 'stock/entree-article', loadComponent: () => import('./pages/stock/entree-article/entree-article.component').then(m => m.EntreeArticleComponent) }
+  { path: 'stock/entree-article', loadComponent: () => import('./pages/stock/entree-article/entree-article.component').then(m => m.EntreeArticleComponent) },
+  {
+    path: 'ajout-entree-tissu',
+    loadComponent: () =>
+      import('./pages/stock/ajout-entree-tissu.component').then(m => m.AjoutEntreeTissuComponent)
+  },
+  {
+    path: 'ajout-sortie-tissu',
+    loadComponent: () =>
+      import('./pages/stock/ajout-sortie-tissu/ajout-sortie-tissu.component').then(m => m.AjoutSortieTissuComponent)
+  },
+  {
+    path: 'ajout-entree-fourniture',
+    loadComponent: () =>
+      import('./pages/stock/ajout-entree-fourniture/ajout-entree-fourniture.component')
+        .then(m => m.AjoutEntreeFournitureComponent)
+  },
+
+  {
+  path: 'ajout-sortie-fourniture',
+  loadComponent: () =>
+    import('./pages/stock/ajout-sortie-fourniture.component').then(m => m.AjoutSortieFournitureComponent)
+},
+
+
+{
+  path: 'ajout-entree-divers',
+  loadComponent: () =>
+    import('./pages/stock/ajout-entree-divers.component').then(m => m.AjoutEntreeDiversComponent)
+},
+{
+  path: 'ajout-sortie-divers',
+  loadComponent: () => import('./pages/stock/ajout-sortie-divers.component')
+    .then(m => m.AjoutSortieDiversComponent)
+},
+{
+  path: 'stock/article',
+  loadComponent: () => import('./pages/stock/article/article.component').then(m => m.ArticleComponent)
+}
+
+
+
+  
+
 ];

@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BonMouvementService {
-  private apiUrl = `${environment.apiUrl}/bonmouvements`;
+  private apiUrl = 'http://localhost:8080/api/bonmouvements';
+
 
   constructor(private http: HttpClient) {}
 
-  // Spécifique Tissu
+  // 🎯 Méthodes spécifiques à TISSU
   getEntreesTissu(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/entrees/tissu`);
   }
@@ -36,7 +37,7 @@ export class BonMouvementService {
     return this.http.post<any>(`${this.apiUrl}/sorties/tissu`, data);
   }
 
-  // Génériques (Divers, Fourniture, etc.)
+  // ✅ Méthodes GÉNÉRIQUES (si besoin de réutiliser dans d’autres modules)
   getAll(type: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${type}`);
   }

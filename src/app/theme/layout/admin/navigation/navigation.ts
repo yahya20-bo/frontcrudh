@@ -19,5 +19,9 @@ export const navItems: NavItem[] = [
   { title: true, name: 'Divers' },
   { title: false, name: 'Entrée', url: '/stock/entree-divers', icon: 'feather icon-log-in' },
   { title: false, name: 'Sortie', url: '/stock/sortie-divers', icon: 'feather icon-log-out' },
-  { title: false, name: 'Etat Actuel', url: '/stock/etat-stock-divers', icon: 'feather icon-layers' }
+  { title: false, name: 'Etat Actuel', url: '/stock/etat-stock-divers', icon: 'feather icon-layers' },
+
+  { title: true, name: 'Article' },
+  { title: false, name: 'Gestion Article', url: '/stock/article', icon: 'feather icon-file-text' }
 ];
+

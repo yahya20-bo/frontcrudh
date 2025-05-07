@@ -36,7 +36,14 @@ export const stockRoutes: Routes = [
       // Divers
       { path: 'entree-divers', component: EntreeDiversComponent },
       { path: 'sortie-divers', component: SortieDiversComponent },
-      { path: 'etat-stock-divers', component: EtatStockDiversComponent }
+      { path: 'etat-stock-divers', component: EtatStockDiversComponent },
+
+      // ✅ Article (Standalone Component avec Lazy Loading)
+      {
+        path: 'article',
+        loadComponent: () =>
+          import('src/app/pages/stock/article/article.component').then(m => m.ArticleComponent)
+      }
     ]
   }
 ];

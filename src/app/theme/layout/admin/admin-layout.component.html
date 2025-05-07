@@ -1,1 +1,35 @@
-<router-outlet></router-outlet>
+<div class="pc-container d-flex">
+
+    <!-- ✅ Barre latérale (gauche) -->
+    <aside class="sidebar">
+      <ul class="pc-navbar">
+        <!-- SECTION TISSU -->
+        <li class="pc-item pc-caption"><label>TISSU</label></li>
+        <!-- ... Entrée, Sortie, État Actuel ... -->
+  
+        <!-- SECTION FOURNITURE -->
+        <li class="pc-item pc-caption"><label>FOURNITURE</label></li>
+        <!-- ... Entrée, Sortie, État Actuel ... -->
+  
+        <!-- SECTION DIVERS -->
+        <li class="pc-item pc-caption"><label>DIVERS</label></li>
+        <!-- ... Entrée, Sortie, État Actuel ... -->
+  
+        <!-- ✅ SECTION ARTICLE -->
+        <li class="pc-item pc-caption"><label>ARTICLE</label></li>
+        <li class="pc-item">
+          <a class="pc-link" routerLink="/stock/article" routerLinkActive="active">
+            <span class="pc-micon"><i class="bi bi-file-earmark-text"></i></span>
+            <span class="pc-mtext">Gestion Article</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+  
+    <!-- ✅ Contenu principal -->
+    <main class="content flex-grow-1 p-4">
+      <router-outlet></router-outlet>
+    </main>
+  
+  </div>
+  

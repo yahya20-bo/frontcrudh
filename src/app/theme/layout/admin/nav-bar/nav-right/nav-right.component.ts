@@ -14,5 +14,6 @@ export class NavRightComponent {
   constructor() {
     const config = inject(NgbDropdownConfig);
     config.placement = 'bottom-right';
+    config.autoClose = true;
   }
 }

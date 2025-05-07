@@ -1,0 +1,23 @@
+<div class="card mt-4 p-4">
+    <h4 class="mb-4">Gestion des Articles</h4>
+  
+    <form [formGroup]="searchForm" (ngSubmit)="rechercher()">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label>Référence</label>
+          <input type="text" class="form-control" formControlName="reference">
+        </div>
+        <div class="col-md-6">
+          <label>Nature</label>
+          <input type="text" class="form-control" formControlName="nature">
+        </div>
+      </div>
+  
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <button type="button" class="btn btn-success" (click)="ajouter()">Ajouter</button>
+        <button type="button" class="btn btn-secondary" (click)="annuler()">Annuler</button>
+      </div>
+    </form>
+  </div>
+  

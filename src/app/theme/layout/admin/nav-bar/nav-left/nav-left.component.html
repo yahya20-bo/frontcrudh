@@ -1,10 +1,76 @@
-<ul class="navbar-nav">
-  <li>
-    <a href="javascript:" class="full-screen" (click)="toggleFullscreen()">
-      <i class="feather" [ngClass]="screenFull ? 'icon-minimize' : 'icon-maximize'"></i>
+<ul class="pc-navbar">
+
+  <!-- SECTION TISSU -->
+  <li class="pc-item pc-caption"><label>TISSU</label></li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/entree-tissu" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-box-arrow-in-down"></i></span>
+      <span class="pc-mtext">Entrée</span>
     </a>
   </li>
-  <li class="nav-item">
-    <app-nav-search />
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/sortie-tissu" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-box-arrow-up"></i></span>
+      <span class="pc-mtext">Sortie</span>
+    </a>
   </li>
-</ul>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/etat-stock-tissu" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-layers"></i></span>
+      <span class="pc-mtext">État Actuel</span>
+    </a>
+  </li>
+
+  <!-- SECTION FOURNITURE -->
+  <li class="pc-item pc-caption"><label>FOURNITURE</label></li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/entree-fourniture" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-box-arrow-in-down"></i></span>
+      <span class="pc-mtext">Entrée</span>
+    </a>
+  </li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/sortie-fourniture" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-box-arrow-up"></i></span>
+      <span class="pc-mtext">Sortie</span>
+    </a>
+  </li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/etat-stock-fourniture" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-layers"></i></span>
+      <span class="pc-mtext">État Actuel</span>
+    </a>
+  </li>
+
+  <!-- SECTION DIVERS -->
+  <li class="pc-item pc-caption"><label>DIVERS</label></li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/entree-divers" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-box-arrow-in-down"></i></span>
+      <span class="pc-mtext">Entrée</span>
+    </a>
+  </li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/sortie-divers" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-box-arrow-up"></i></span>
+      <span class="pc-mtext">Sortie</span>
+    </a>
+  </li>
+  <li class="pc-item">
+    <a class="pc-link" routerLink="/stock/etat-stock-divers" routerLinkActive="active">
+      <span class="pc-micon"><i class="bi bi-layers"></i></span>
+      <span class="pc-mtext">État Actuel</span>
+    </a>
+  </li>
+  <li class="pc-item pc-caption">
+    <label style="color: red; font-weight: bold;">TEST 🔥</label>
+  </li>
+  
+  <!-- ✅ SECTION ARTICLE (corrigée et visible) -->
+<li class="pc-item pc-caption"><label>ARTICLE</label></li>
+<li class="pc-item">
+  <a class="pc-link" routerLink="/stock/article" routerLinkActive="active">
+    <span class="pc-micon"><i class="bi bi-file-earmark-text"></i></span>
+    <span class="pc-mtext">Gestion Article</span>
+  </a>
+</li>

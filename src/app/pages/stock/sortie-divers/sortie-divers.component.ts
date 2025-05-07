@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
@@ -10,15 +11,14 @@ import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
   standalone: true,
   templateUrl: './sortie-divers.component.html',
   styleUrls: ['./sortie-divers.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule]
 })
 export class SortieDiversComponent implements OnInit {
-  articles: any[] = [];
-  stocks: any[] = [];
-  mouvements: any[] = [];
-
   searchForm!: FormGroup;
-  ajoutForm!: FormGroup;
+  articles: any[] = [];
+  mouvements: any[] = [];
+  fournisseurs: any[] = [];
+  stocks: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -32,26 +32,40 @@ export class SortieDiversComponent implements OnInit {
       ref: [''],
       designation: [''],
       dateDebut: [''],
-      dateFin: ['']
+      dateFin: [''],
+      responsable: [''],
+      spl: [''],
+      origine: [''],
+      raison: [''],
+      fournisseur: [''],
+      magasin: ['']
     });
 
-    this.ajoutForm = this.fb.group({
-      articleId: ['', Validators.required],
-      stockId: ['', Validators.required],
-      quantite: ['', Validators.required],
-      dateSortie: ['', Validators.required]
+    this.loadArticles();
+    this.loadStocks();
+    this.loadFournisseurs();
+    this.getAll();
+  }
+
+  loadArticles() {
+    this.articleService.getAll().subscribe(res => {
+      this.articles = res.articles || res;
     });
-
-    this.loadData();
   }
 
-  loadData() {
-    this.articleService.getAll().subscribe(data => this.articles = data);
-    this.stockService.getAll().subscribe(data => this.stocks = data);
-    this.getAllMouvements();
+  loadStocks() {
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = res;
+    });
   }
 
-  getAllMouvements() {
+  loadFournisseurs() {
+    this.articleService.getFournisseurs().subscribe((data: any) => {
+      this.fournisseurs = data;
+    });
+  }
+
+  getAll() {
     this.mouvementService.getAll('sorties/divers').subscribe(data => this.mouvements = data);
   }
 
@@ -60,20 +74,8 @@ export class SortieDiversComponent implements OnInit {
     this.mouvementService.search('sorties/divers', params).subscribe(data => this.mouvements = data);
   }
 
-  onAdd() {
-    if (this.ajoutForm.invalid) return;
-
-    const formData = this.ajoutForm.value;
-    const payload = {
-      articleId: formData.articleId,
-      stockId: formData.stockId,
-      quantite: formData.quantite,
-      dateMouvement: formData.dateSortie
-    };
-
-    this.mouvementService.create('sorties/divers', payload).subscribe(() => {
-      this.ajoutForm.reset();
-      this.getAllMouvements();
-    });
+  resetSearch() {
+    this.searchForm.reset();
+    this.getAll();
   }
 }

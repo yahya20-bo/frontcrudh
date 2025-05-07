@@ -2,10 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
+    "lib": ["ES2022", "DOM"],
     "allowJs": false,
     "declaration": false,
     "sourceMap": true,
@@ -17,18 +14,20 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
-    "baseUrl": "./",
-    "paths": {
-      "src/*": ["src/*"]
-    },
+   "baseUrl": "./",
+"paths": {
+  "src/*": ["src/*"]
+}
+
+,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "src/test.ts",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["src/test.ts", "**/*.spec.ts"]
 }

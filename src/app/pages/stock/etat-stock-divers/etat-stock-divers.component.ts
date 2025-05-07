@@ -35,7 +35,7 @@ export class EtatStockDiversComponent implements OnInit {
 
   loadAllData(): void {
     this.articleService.getAll().subscribe(data => {
-      this.articles = data.filter((a: any) => a.type === 'DIVERS');
+      this.articles = data.articles; ;
     });
 
     this.stockService.getAll().subscribe(data => {

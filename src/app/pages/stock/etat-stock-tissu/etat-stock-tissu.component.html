@@ -9,7 +9,7 @@
         <label>Article</label>
         <select class="form-select" formControlName="articleId">
           <option value="">-- Tous --</option>
-          <option *ngFor="let a of articles" [value]="a.id">{{ a.libelle }}</option>
+          <option *ngFor="let a of articles" [value]="a.id">{{ a.ref }}</option>
         </select>
       </div>
       <div class="col-md-4">

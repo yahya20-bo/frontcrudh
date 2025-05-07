@@ -1,0 +1,35 @@
+<div class="container mt-4">
+    <form [formGroup]="addForm" (ngSubmit)="ajouterEntree()" class="card p-4 shadow-sm">
+      <h4 class="mb-4">➕ Ajouter une entrée tissu</h4>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Article</label>
+          <select class="form-select" formControlName="articleId">
+            <option value="">-- Choisir --</option>
+            <option *ngFor="let article of articles" [value]="article.id">{{ article.libelle }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Entité de stock</label>
+          <select class="form-select" formControlName="entiteStockId">
+            <option value="">-- Choisir --</option>
+            <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.libelle }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Quantité</label>
+          <input type="number" class="form-control" formControlName="quantite" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-control" formControlName="date" />
+        </div>
+      </div>
+      <div class="text-end mt-4">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-check-circle me-2"></i> Valider
+        </button>
+      </div>
+    </form>
+  </div>
+  

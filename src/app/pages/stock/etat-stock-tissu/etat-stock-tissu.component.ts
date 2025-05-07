@@ -4,6 +4,7 @@ import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ArticleResult } from 'src/app/models/ArticleResult';
 
 @Component({
   selector: 'app-etat-stock-tissu',
@@ -34,8 +35,9 @@ export class EtatStockTissuComponent implements OnInit {
   }
 
   loadAllData(): void {
-    this.articleService.getAll().subscribe(data => {
-      this.articles = data.filter((a: any) => a.type === 'TISSU');
+    this.articleService.getAll().subscribe((data :ArticleResult) => {
+      this.articles  = data.articles ;
+      console.log(this.articles);
     });
 
     this.stockService.getAll().subscribe(data => {

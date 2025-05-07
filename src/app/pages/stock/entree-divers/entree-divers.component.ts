@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ArticleService } from 'src/app/services/article.service';
+import { RouterModule } from '@angular/router';
+import { ArticleService } from '../../../services/article.service'; // adapté à la profondeur
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 
@@ -10,15 +11,15 @@ import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
   standalone: true,
   templateUrl: './entree-divers.component.html',
   styleUrls: ['./entree-divers.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule]
 })
 export class EntreeDiversComponent implements OnInit {
   articles: any[] = [];
   stocks: any[] = [];
+  fournisseurs: any[] = [];
   mouvements: any[] = [];
 
   searchForm!: FormGroup;
-  ajoutForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -32,26 +33,32 @@ export class EntreeDiversComponent implements OnInit {
       ref: [''],
       designation: [''],
       dateDebut: [''],
-      dateFin: ['']
-    });
-
-    this.ajoutForm = this.fb.group({
-      articleId: ['', Validators.required],
-      stockId: ['', Validators.required],
-      quantite: ['', Validators.required],
-      dateEntree: ['', Validators.required]
+      dateFin: [''],
+      responsable: [''],
+      spl: [''],
+      origine: [''],
+      raison: [''],
+      fournisseur: [''],
+      magasin: [''],
+      numeroBE: [''],
+      client: [''],
+      etat: [''],
+      facture: [''],
+      valeurBE: ['']
     });
 
     this.loadData();
   }
 
   loadData() {
-    this.articleService.getAll().subscribe(data => this.articles = data);
+    this.articleService.getAll().subscribe(data => this.articles = data.articles);
     this.stockService.getAll().subscribe(data => this.stocks = data);
-    this.getAllMouvements();
+    // ✅ Correction : appel via articleService (pas mouvementService)
+    this.articleService.getFournisseurs().subscribe((data: any) => this.fournisseurs = data);
+    this.getAll();
   }
 
-  getAllMouvements() {
+  getAll() {
     this.mouvementService.getAll('entrees/divers').subscribe(data => this.mouvements = data);
   }
 
@@ -60,18 +67,8 @@ export class EntreeDiversComponent implements OnInit {
     this.mouvementService.search('entrees/divers', params).subscribe(data => this.mouvements = data);
   }
 
-  onAdd() {
-    if (this.ajoutForm.invalid) return;
-    const formData = this.ajoutForm.value;
-    const payload = {
-      articleId: formData.articleId,
-      stockId: formData.stockId,
-      quantite: formData.quantite,
-      dateMouvement: formData.dateEntree
-    };
-    this.mouvementService.create('entrees/divers', payload).subscribe(() => {
-      this.ajoutForm.reset();
-      this.getAllMouvements();
-    });
+  resetSearch() {
+    this.searchForm.reset();
+    this.getAll();
   }
 }

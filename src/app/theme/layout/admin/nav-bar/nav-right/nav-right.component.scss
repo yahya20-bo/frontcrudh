@@ -1,27 +1,31 @@
 .notification {
-    min-width: 300px;
-    padding: 10px;
-  }
-  
-  .notification-head,
-  .notification-footer {
+  min-width: 300px;
+  padding: 10px;
+
+  &-head,
+  &-footer {
     padding: 10px;
     background-color: #f8f9fa;
   }
-  
-  .notification-body {
+
+  &-body {
     max-height: 300px;
     overflow-y: auto;
   }
-  
-  .img-radius {
+
+  img.img-radius {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     margin-right: 10px;
   }
-  
-  .d-flex {
-    display: flex;
-    align-items: center;
+
+  li.notification {
+    padding: 5px 10px;
+    transition: background 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #f1f1f1;
+    }
   }
+}
