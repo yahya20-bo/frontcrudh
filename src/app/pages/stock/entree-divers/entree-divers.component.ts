@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ArticleService } from '../../../services/article.service'; // adapté à la profondeur
+import { ArticleService } from '../../../services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
+import { ExportService } from 'src/app/services/export.service';
 
 @Component({
   selector: 'app-entree-divers',
@@ -18,14 +19,14 @@ export class EntreeDiversComponent implements OnInit {
   stocks: any[] = [];
   fournisseurs: any[] = [];
   mouvements: any[] = [];
-
   searchForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
-    private mouvementService: BonMouvementService
+    private mouvementService: BonMouvementService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -51,9 +52,8 @@ export class EntreeDiversComponent implements OnInit {
   }
 
   loadData() {
-    this.articleService.getAll().subscribe(data => this.articles = data.articles);
+    this.articleService.getAll().subscribe(data => this.articles = data.articles || data);
     this.stockService.getAll().subscribe(data => this.stocks = data);
-    // ✅ Correction : appel via articleService (pas mouvementService)
     this.articleService.getFournisseurs().subscribe((data: any) => this.fournisseurs = data);
     this.getAll();
   }
@@ -70,5 +70,21 @@ export class EntreeDiversComponent implements OnInit {
   resetSearch() {
     this.searchForm.reset();
     this.getAll();
+  }
+
+  exportExcel(): void {
+    this.exportService.exportToExcel(this.mouvements, 'entrees-divers');
+  }
+
+  exportPDF(): void {
+    const headers = ['article.ref', 'article.designation', 'quantite', 'entiteStock.nom', 'dateMouvement'];
+    const data = this.mouvements.map((m: any) => ({
+      'article.ref': m.article?.ref,
+      'article.designation': m.article?.designation,
+      'quantite': m.quantite,
+      'entiteStock.nom': m.entiteStock?.nom,
+      'dateMouvement': m.dateMouvement
+    }));
+    this.exportService.exportToPDF(headers, data, 'entrees-divers');
   }
 }

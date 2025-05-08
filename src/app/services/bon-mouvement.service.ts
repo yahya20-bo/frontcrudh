@@ -1,43 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BonMouvementService {
-  private apiUrl = 'http://localhost:8080/api/bonmouvements';
-
+  private apiUrl = 'http://localhost:8080/api/bonmouvement';
 
   constructor(private http: HttpClient) {}
 
-  // 🎯 Méthodes spécifiques à TISSU
+  // ✅ ENTREE TISSU
   getEntreesTissu(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/entrees/tissu`);
+    return this.http.get<any[]>(`${this.apiUrl}/entree-tissu`);
   }
 
   rechercherEntreesTissu(criteria: any): Observable<any[]> {
-    return this.http.post<any[]>(`${this.apiUrl}/entrees/tissu/search`, criteria);
+    return this.http.post<any[]>(`${this.apiUrl}/entree-tissu/recherche`, criteria);
   }
 
   ajouterEntreeTissu(data: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/entrees/tissu`, data);
+    return this.http.post<any>(`${this.apiUrl}/entree-tissu/create`, data);
   }
 
+  // ✅ SORTIE TISSU
   getSortiesTissu(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/sorties/tissu`);
+    return this.http.get<any[]>(`${this.apiUrl}/sortie-tissu`);
   }
 
   rechercherSortiesTissu(criteria: any): Observable<any[]> {
-    return this.http.post<any[]>(`${this.apiUrl}/sorties/tissu/search`, criteria);
+    return this.http.post<any[]>(`${this.apiUrl}/sortie-tissu/recherche`, criteria);
   }
 
   ajouterSortieTissu(data: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/sorties/tissu`, data);
+    return this.http.post<any>(`${this.apiUrl}/sortie-tissu/create`, data);
   }
 
-  // ✅ Méthodes GÉNÉRIQUES (si besoin de réutiliser dans d’autres modules)
+  // ✅ MÉTHODES GÉNÉRIQUES
   getAll(type: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${type}`);
   }

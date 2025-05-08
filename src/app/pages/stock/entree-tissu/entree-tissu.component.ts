@@ -1,10 +1,10 @@
-// ✅ entree-tissu.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { ExportService } from 'src/app/services/export.service';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -26,7 +26,8 @@ export class EntreeTissuComponent implements OnInit {
     private fb: FormBuilder,
     private mouvementService: BonMouvementService,
     private articleService: ArticleService,
-    private stockService: EntiteStockService
+    private stockService: EntiteStockService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -98,5 +99,13 @@ export class EntreeTissuComponent implements OnInit {
     this.searchForm.reset();
     this.getAllEntrees();
   }
-}
 
+  exportExcel(): void {
+    this.exportService.exportToExcel(this.resultats, 'entrees-tissu');
+  }
+
+  exportPDF(): void {
+    const headers = ['articleDesignation', 'entiteStockDesignation', 'quantite', 'date'];
+    this.exportService.exportToPDF(headers, this.resultats, 'entrees-tissu');
+  }
+}

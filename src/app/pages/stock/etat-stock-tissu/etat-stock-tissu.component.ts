@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { EntiteStockService } from 'src/app/services/entite-stock.service';
-import { ArticleService } from 'src/app/services/article.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ArticleService } from 'src/app/services/article.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { ExportService } from 'src/app/services/export.service';
 import { ArticleResult } from 'src/app/models/ArticleResult';
 
 @Component({
@@ -22,7 +22,8 @@ export class EtatStockTissuComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private stockService: EntiteStockService,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -35,9 +36,8 @@ export class EtatStockTissuComponent implements OnInit {
   }
 
   loadAllData(): void {
-    this.articleService.getAll().subscribe((data :ArticleResult) => {
-      this.articles  = data.articles ;
-      console.log(this.articles);
+    this.articleService.getAll().subscribe((data: ArticleResult) => {
+      this.articles = data.articles;
     });
 
     this.stockService.getAll().subscribe(data => {
@@ -59,5 +59,21 @@ export class EtatStockTissuComponent implements OnInit {
   reinitialiser(): void {
     this.searchForm.reset();
     this.resultats = this.stocks;
+  }
+
+  exportExcel(): void {
+    this.exportService.exportToExcel(this.resultats, 'etat-stock-tissu');
+  }
+
+  exportPDF(): void {
+    const headers = ['article.libelle', 'article.reference', 'article.couleur', 'nom', 'quantite'];
+    const data = this.resultats.map((s: any) => ({
+      'article.libelle': s.article?.libelle,
+      'article.reference': s.article?.reference,
+      'article.couleur': s.article?.couleur,
+      'nom': s.nom,
+      'quantite': s.quantite
+    }));
+    this.exportService.exportToPDF(headers, data, 'etat-stock-tissu');
   }
 }

@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { ExportService } from 'src/app/services/export.service';
 
 @Component({
   selector: 'app-sortie-fourniture',
@@ -27,7 +28,8 @@ export class SortieFournitureComponent implements OnInit {
     private fb: FormBuilder,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
-    private mouvementService: BonMouvementService
+    private mouvementService: BonMouvementService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class SortieFournitureComponent implements OnInit {
 
     this.stockService.getAll().subscribe(data => {
       this.stocks = data || [];
-      this.magasins = data || [];
+      this.magasins = data.magasins || [];
     });
 
     this.getAllMouvements();
@@ -84,5 +86,21 @@ export class SortieFournitureComponent implements OnInit {
   onReset(): void {
     this.searchForm.reset();
     this.getAllMouvements();
+  }
+
+  exportExcel(): void {
+    this.exportService.exportToExcel(this.mouvements, 'sorties-fourniture');
+  }
+
+  exportPDF(): void {
+    const headers = ['article.ref', 'article.designation', 'quantite', 'entiteStock.nom', 'dateMouvement'];
+    const mapped = this.mouvements.map((m: any) => ({
+      'article.ref': m.article?.ref,
+      'article.designation': m.article?.designation,
+      'quantite': m.quantite,
+      'entiteStock.nom': m.entiteStock?.nom,
+      'dateMouvement': m.dateMouvement
+    }));
+    this.exportService.exportToPDF(headers, mapped, 'sorties-fourniture');
   }
 }

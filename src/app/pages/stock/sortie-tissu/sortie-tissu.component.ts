@@ -1,4 +1,3 @@
-// ✅ Ajout des champs manquants dans sortie-tissu.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -6,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
+import { ExportService } from 'src/app/services/export.service';
 
 @Component({
   selector: 'app-sortie-tissu',
@@ -26,7 +26,8 @@ export class SortieTissuComponent implements OnInit {
     private fb: FormBuilder,
     private mouvementService: BonMouvementService,
     private articleService: ArticleService,
-    private stockService: EntiteStockService
+    private stockService: EntiteStockService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -97,5 +98,14 @@ export class SortieTissuComponent implements OnInit {
   annulerRecherche(): void {
     this.searchForm.reset();
     this.getAllSorties();
+  }
+
+  exportExcel(): void {
+    this.exportService.exportToExcel(this.resultats, 'sorties-tissu');
+  }
+
+  exportPDF(): void {
+    const headers = ['articleDesignation', 'entiteStockDesignation', 'quantite', 'date'];
+    this.exportService.exportToPDF(headers, this.resultats, 'sorties-tissu');
   }
 }

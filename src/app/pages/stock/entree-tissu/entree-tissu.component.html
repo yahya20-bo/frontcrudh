@@ -93,33 +93,39 @@
       <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée tissu
     </a>
   </div>
-</div>
-<div class="card p-4 shadow-sm mt-4">
-  <h5 class="mb-3 text-info">
-    <i class="bi bi-card-checklist me-2"></i> Liste des Sorties
-  </h5>
 
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle text-center">
-      <thead class="table-light">
-        <tr>
-          <th>Article</th>
-          <th>Stock</th>
-          <th>Quantité</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of resultats">
-          <td>{{ item.articleDesignation }}</td>
-          <td>{{ item.entiteStockDesignation }}</td>
-          <td>{{ item.quantite }}</td>
-          <td>{{ item.date | date: 'yyyy-MM-dd' }}</td>
-        </tr>
-        <tr *ngIf="resultats.length === 0">
-          <td colspan="4" class="text-muted text-center">Aucune sortie trouvée.</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card p-4 shadow-sm mt-4">
+    <h5 class="mb-3 text-info">
+      <i class="bi bi-card-checklist me-2"></i> Liste des entrées
+    </h5>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Article</th>
+            <th>Stock</th>
+            <th>Quantité</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resultats">
+            <td>{{ item.articleDesignation }}</td>
+            <td>{{ item.entiteStockDesignation }}</td>
+            <td>{{ item.quantite }}</td>
+            <td>{{ item.date | date: 'yyyy-MM-dd' }}</td>
+          </tr>
+          <tr *ngIf="resultats.length === 0">
+            <td colspan="4" class="text-muted text-center">Aucune entrée trouvée.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button class="btn btn-outline-success" (click)="exportExcel()">📊 Exporter Excel</button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">🧾 Exporter PDF</button>
+    </div>
   </div>
 </div>

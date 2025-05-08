@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { ArticleService } from 'src/app/services/article.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ExportService } from 'src/app/services/export.service';
 
 @Component({
   selector: 'app-etat-stock-divers',
@@ -21,7 +21,8 @@ export class EtatStockDiversComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private stockService: EntiteStockService,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -35,7 +36,7 @@ export class EtatStockDiversComponent implements OnInit {
 
   loadAllData(): void {
     this.articleService.getAll().subscribe(data => {
-      this.articles = data.articles; ;
+      this.articles = data.articles || data;
     });
 
     this.stockService.getAll().subscribe(data => {
@@ -57,5 +58,20 @@ export class EtatStockDiversComponent implements OnInit {
   reinitialiser(): void {
     this.searchForm.reset();
     this.resultats = this.stocks;
+  }
+
+  exportExcel(): void {
+    this.exportService.exportToExcel(this.resultats, 'etat-stock-divers');
+  }
+
+  exportPDF(): void {
+    const headers = ['article.libelle', 'article.reference', 'nom', 'quantite'];
+    const data = this.resultats.map((s: any) => ({
+      'article.libelle': s.article?.libelle,
+      'article.reference': s.article?.reference,
+      'nom': s.nom,
+      'quantite': s.quantite
+    }));
+    this.exportService.exportToPDF(headers, data, 'etat-stock-divers');
   }
 }
