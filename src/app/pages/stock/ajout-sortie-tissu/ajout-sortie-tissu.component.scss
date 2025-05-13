@@ -1,0 +1,32 @@
+.btn-export {
+  border-width: 2px;
+  font-weight: 500;
+  padding: 8px 20px;
+  transition: all 0.3s ease-in-out;
+  i {
+    font-size: 1rem;
+    margin-right: 6px;
+  }
+}
+
+.btn-export-excel {
+  @extend .btn-export;
+  color: #0dcaf0;
+  border-color: #0dcaf0;
+  background-color: white;
+  &:hover {
+    color: white;
+    background-color: #0dcaf0;
+  }
+}
+
+.btn-export-pdf {
+  @extend .btn-export;
+  color: #f1416c;
+  border-color: #f1416c;
+  background-color: white;
+  &:hover {
+    color: white;
+    background-color: #f1416c;
+  }
+}

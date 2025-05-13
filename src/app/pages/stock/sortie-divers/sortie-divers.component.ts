@@ -55,9 +55,10 @@ export class SortieDiversComponent implements OnInit {
   }
 
   loadArticles() {
-    this.articleService.getAll().subscribe(res => {
-      this.articles = res.articles || res;
-    });
+    this.articleService.getAll().subscribe((res: any) => {
+  this.articles = Array.isArray(res) ? res : (res.articles || []);
+});
+
   }
 
   loadStocks() {

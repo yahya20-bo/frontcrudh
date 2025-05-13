@@ -1,35 +1,129 @@
 <div class="container mt-4">
-    <form [formGroup]="addForm" (ngSubmit)="ajouterEntree()" class="card p-4 shadow-sm">
-      <h4 class="mb-4">➕ Ajouter une entrée tissu</h4>
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label">Article</label>
-          <select class="form-select" formControlName="articleId">
-            <option value="">-- Choisir --</option>
-            <option *ngFor="let article of articles" [value]="article.id">{{ article.libelle }}</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Entité de stock</label>
-          <select class="form-select" formControlName="entiteStockId">
-            <option value="">-- Choisir --</option>
-            <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.libelle }}</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Quantité</label>
-          <input type="number" class="form-control" formControlName="quantite" />
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Date</label>
-          <input type="date" class="form-control" formControlName="date" />
-        </div>
-      </div>
-      <div class="text-end mt-4">
-        <button type="submit" class="btn btn-success">
-          <i class="bi bi-check-circle me-2"></i> Valider
+
+  <!-- 📋 Résultats -->
+  <div *ngIf="resultats.length > 0" class="card shadow-sm p-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <h5 class="mb-0">📋 Résultats trouvés : {{ resultats.length }}</h5>
+      <div>
+        <button type="button" class="btn btn-outline-success me-2" (click)="exportToExcel()">
+          <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
+        </button>
+        <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()">
+          <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
         </button>
       </div>
-    </form>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Ref Fournisseur</th>
+            <th>Réf.</th>
+            <th>Désignation</th>
+            <th>Couleur</th>
+            <th>Lot</th>
+            <th>OA</th>
+            <th>Laize</th>
+            <th>Qte Yard</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resultats">
+            <td>{{ item.refFournisseur || '-' }}</td>
+            <td>{{ item.reference || '-' }}</td>
+            <td>{{ item.libelle || '-' }}</td>
+            <td>{{ item.couleur || '-' }}</td>
+            <td>{{ item.lot || '-' }}</td>
+            <td>{{ item.oa || '-' }}</td>
+            <td>{{ item.laize || '-' }}</td>
+            <td>{{ item.qteYard || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  
+
+  <!-- ➕ Formulaire d'ajout -->
+  <div class="card shadow-sm p-4 mt-5">
+    <h4 class="mb-4">➕ Ajouter une entrée tissu</h4>
+    <form [formGroup]="addForm" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+
+        <div class="col-md-2"><label>N° BE</label><input class="form-control" formControlName="numeroBE" /></div>
+        <div class="col-md-2"><label>Fournisseur</label>
+          <select class="form-select" formControlName="fournisseur">
+            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+          </select>
+        </div>
+        <div class="col-md-2"><label>Client</label>
+          <select class="form-select" formControlName="client">
+            <option *ngFor="let c of clients" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="col-md-2"><label>Origine</label><input class="form-control" formControlName="origine" /></div>
+        <div class="col-md-2"><label>Date Entrée</label><input type="date" class="form-control" formControlName="dateEntree" /></div>
+        <div class="col-md-2"><label>Responsable</label><input class="form-control" formControlName="responsable" /></div>
+
+        <div class="col-md-2"><label>Raison d'entrée</label>
+          <select class="form-select" formControlName="raisonEntree">
+            <option>ACHAT DIVERS</option>
+            <option>DONS</option>
+            <option>RETOUR</option>
+          </select>
+        </div>
+        <div class="col-md-2"><label>SPL</label><input class="form-control" formControlName="spl" /></div>
+        <div class="col-md-2"><label>Valeur BE</label><input class="form-control" formControlName="valeurBE" /></div>
+        <div class="col-md-2"><label>État</label><input class="form-control" formControlName="etat" /></div>
+        <div class="col-md-2"><label>DAE / Facture</label><input class="form-control" formControlName="facture" /></div>
+        <div class="col-md-2"><label>Magasin</label>
+          <select class="form-select" formControlName="magasin">
+            <option *ngFor="let m of magasins" [value]="m.nom">{{ m.nom }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-12"><label>Description</label>
+          <textarea class="form-control" rows="2" formControlName="description"></textarea>
+        </div>
+
+        <hr class="my-2">
+
+        <div class="col-md-3"><label>Article</label>
+          <select class="form-select" formControlName="articleId">
+            <option *ngFor="let a of articles" [value]="a.id">{{ a.ref }} - {{ a.libelle }}</option>
+          </select>
+        </div>
+        <div class="col-md-3"><label>Entité de stock</label>
+          <select class="form-select" formControlName="entiteStockId">
+            <option *ngFor="let s of magasins" [value]="s.id">{{ s.nom }}</option>
+          </select>
+        </div>
+        <div class="col-md-3"><label>Quantité</label><input type="number" class="form-control" formControlName="quantite" /></div>
+        <div class="col-md-3"><label>Date</label><input type="date" class="form-control" formControlName="date" /></div>
+
+        <div class="col-md-2"><label>Couleur</label><input class="form-control" formControlName="couleur" /></div>
+        <div class="col-md-2"><label>Lot</label><input class="form-control" formControlName="lot" /></div>
+        <div class="col-md-2"><label>OA</label><input class="form-control" formControlName="oa" /></div>
+        <div class="col-md-2"><label>Laize</label><input class="form-control" formControlName="laize" /></div>
+        <div class="col-md-2"><label>Qte Yard</label><input class="form-control" formControlName="qteYard" /></div>
+
+        <div class="col-12 text-end mt-3">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> Valider
+          </button>
+        </div>
+
+      </div>
+    </form>
+    <!-- 🔽 Boutons Export Excel/PDF sous le formulaire -->
+<div class="col-12 text-end mt-4">
+  <button type="button" class="btn btn-outline-success me-2" (click)="exportToExcel()">
+    <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
+  </button>
+  <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()">
+    <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
+  </button>
+</div>
+
+  </div>
+</div>

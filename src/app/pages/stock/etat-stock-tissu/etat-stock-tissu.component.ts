@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { ExportService } from 'src/app/services/export.service';
-import { ArticleResult } from 'src/app/models/ArticleResult';
 
 @Component({
   selector: 'app-etat-stock-tissu',
@@ -36,13 +35,14 @@ export class EtatStockTissuComponent implements OnInit {
   }
 
   loadAllData(): void {
-    this.articleService.getAll().subscribe((data: ArticleResult) => {
-      this.articles = data.articles;
+    this.articleService.getAll().subscribe((data: any) => {
+      // ✅ si data est un tableau
+      this.articles = Array.isArray(data) ? data : data.articles || [];
     });
 
-    this.stockService.getAll().subscribe(data => {
+    this.stockService.getAll().subscribe((data: any[]) => {
       this.stocks = data.filter((s: any) => s.article?.type === 'TISSU');
-      this.resultats = this.stocks;
+      this.resultats = [...this.stocks];
     });
   }
 
@@ -58,7 +58,7 @@ export class EtatStockTissuComponent implements OnInit {
 
   reinitialiser(): void {
     this.searchForm.reset();
-    this.resultats = this.stocks;
+    this.resultats = [...this.stocks];
   }
 
   exportExcel(): void {

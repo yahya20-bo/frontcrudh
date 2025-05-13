@@ -35,11 +35,12 @@ export class EtatStockDiversComponent implements OnInit {
   }
 
   loadAllData(): void {
-    this.articleService.getAll().subscribe(data => {
-      this.articles = data.articles || data;
+    // ✅ Correction du typage et gestion .articles
+    this.articleService.getAll().subscribe((data: any) => {
+      this.articles = Array.isArray(data) ? data : data.articles || [];
     });
 
-    this.stockService.getAll().subscribe(data => {
+    this.stockService.getAll().subscribe((data: any[]) => {
       this.stocks = data.filter((s: any) => s.article?.type === 'DIVERS');
       this.resultats = this.stocks;
     });

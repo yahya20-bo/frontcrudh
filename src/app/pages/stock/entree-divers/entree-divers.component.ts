@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ArticleService } from '../../../services/article.service';
+
+import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ExportService } from 'src/app/services/export.service';
@@ -51,23 +52,36 @@ export class EntreeDiversComponent implements OnInit {
     this.loadData();
   }
 
-  loadData() {
-    this.articleService.getAll().subscribe(data => this.articles = data.articles || data);
-    this.stockService.getAll().subscribe(data => this.stocks = data);
-    this.articleService.getFournisseurs().subscribe((data: any) => this.fournisseurs = data);
+  loadData(): void {
+   this.articleService.getAll().subscribe((data: any) => {
+  this.articles = Array.isArray(data) ? data : data.articles || [];
+});
+
+    this.stockService.getAll().subscribe(data => {
+      this.stocks = data || [];
+    });
+
+    this.articleService.getFournisseurs().subscribe((data: any[]) => {
+      this.fournisseurs = data;
+    });
+
     this.getAll();
   }
 
-  getAll() {
-    this.mouvementService.getAll('entrees/divers').subscribe(data => this.mouvements = data);
+  getAll(): void {
+    this.mouvementService.getAll('entrees/divers').subscribe(data => {
+      this.mouvements = data || [];
+    });
   }
 
-  onSearch() {
+  onSearch(): void {
     const params = this.searchForm.value;
-    this.mouvementService.search('entrees/divers', params).subscribe(data => this.mouvements = data);
+    this.mouvementService.search('entrees/divers', params).subscribe(data => {
+      this.mouvements = data || [];
+    });
   }
 
-  resetSearch() {
+  resetSearch(): void {
     this.searchForm.reset();
     this.getAll();
   }

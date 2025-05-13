@@ -1,0 +1,54 @@
+<div class="container mt-4">
+  <div class="card shadow-sm p-4 mb-4">
+    <h5 class="mb-3 text-primary"><i class="bi bi-search me-2"></i> Recherche État Article</h5>
+    <form [formGroup]="searchForm" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let a of articles" [value]="a.id">{{ a.designation }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nom de stock</label>
+        <input type="text" class="form-control" formControlName="stockName" />
+      </div>
+      <div class="col-md-4 d-flex gap-2">
+        <button type="button" class="btn btn-primary" (click)="filtrer()">Filtrer</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="reset()">Réinitialiser</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card shadow-sm p-4">
+    <h5 class="mb-3 text-info"><i class="bi bi-box-seam me-2"></i> État Actuel des Articles</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Article</th>
+            <th>Référence</th>
+            <th>Stock</th>
+            <th>Quantité Disponible</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of resultats">
+            <td>{{ r.article }}</td>
+            <td>{{ r.reference }}</td>
+            <td>{{ r.stock }}</td>
+            <td>{{ r.quantite }}</td>
+          </tr>
+          <tr *ngIf="resultats.length === 0">
+            <td colspan="4" class="text-muted">Aucune donnée.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button class="btn btn-outline-success" (click)="exportExcel()">📊 Exporter Excel</button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">📄 Exporter PDF</button>
+    </div>
+  </div>
+</div>

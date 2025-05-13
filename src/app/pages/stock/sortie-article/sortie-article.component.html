@@ -1,0 +1,98 @@
+<div class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <h5 class="text-primary mb-4">
+      <i class="bi bi-search me-2"></i> Recherche des sorties article
+    </h5>
+
+    <form [formGroup]="searchForm" class="row g-3">
+      <div class="col-md-3"><label>Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Tous les articles --</option>
+          <option *ngFor="let a of articles" [value]="a.id">{{ a.designation }}</option>
+        </select>
+      </div>
+      <div class="col-md-3"><label>Date min</label><input type="date" class="form-control" formControlName="dateMin" /></div>
+      <div class="col-md-3"><label>Date max</label><input type="date" class="form-control" formControlName="dateMax" /></div>
+      <div class="col-md-3"><label>N° BE</label><input type="text" class="form-control" formControlName="numeroBE" /></div>
+
+      <div class="col-md-3"><label>Fournisseur</label>
+        <select class="form-select" formControlName="fournisseurId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+        </select>
+      </div>
+      <div class="col-md-3"><label>Client</label><input type="text" class="form-control" formControlName="client" /></div>
+      <div class="col-md-3"><label>Origine</label><input type="text" class="form-control" formControlName="origine" /></div>
+      <div class="col-md-3"><label>Responsable</label><input type="text" class="form-control" formControlName="responsable" /></div>
+
+      <div class="col-md-3"><label>Raison de sortie</label>
+        <select class="form-select" formControlName="raisonSortie">
+          <option value="">-- Toutes --</option>
+          <option value="UTILISATION">UTILISATION</option>
+          <option value="RETOUR">RETOUR</option>
+        </select>
+      </div>
+      <div class="col-md-3"><label>SPL</label><input type="text" class="form-control" formControlName="spl" /></div>
+      <div class="col-md-3"><label>Magasin</label>
+        <select class="form-select" formControlName="magasinId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let m of stocks" [value]="m.id">{{ m.nom }}</option>
+        </select>
+      </div>
+      <div class="col-md-3"><label>Valeur BE</label><input type="text" class="form-control" formControlName="valeurBE" /></div>
+
+      <div class="col-md-3"><label>État</label>
+        <select class="form-select" formControlName="etat">
+          <option value="">-- Tous --</option>
+          <option value="BON">BON</option>
+          <option value="MAUVAIS">MAUVAIS</option>
+        </select>
+      </div>
+      <div class="col-md-3"><label>DAE / Facture</label><input type="text" class="form-control" formControlName="facture" /></div>
+
+      <div class="col-12 d-flex justify-content-end mt-3 gap-2">
+        <button type="button" class="btn btn-primary" (click)="rechercher()">🔍 Rechercher</button>
+        <button type="button" class="btn btn-outline-danger" (click)="annuler()">❌ Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-4 d-flex justify-content-end">
+    <button class="btn btn-success" (click)="goToAjout()">➕ Ajouter une sortie article</button>
+  </div>
+
+  <div class="card p-4 shadow-sm mt-4">
+    <h5 class="mb-3 text-info">
+      <i class="bi bi-card-checklist me-2"></i> Liste des sorties
+    </h5>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Article</th>
+            <th>Stock</th>
+            <th>Quantité</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resultats">
+            <td>{{ item.designation }}</td>
+            <td>{{ item.stock }}</td>
+            <td>{{ item.quantite }}</td>
+            <td>{{ item.date }}</td>
+          </tr>
+          <tr *ngIf="resultats.length === 0">
+            <td colspan="4" class="text-muted text-center">Aucune sortie trouvée.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button class="btn btn-outline-success" (click)="exportExcel()">📊 Exporter Excel</button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">📄 Exporter PDF</button>
+    </div>
+  </div>
+</div>

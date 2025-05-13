@@ -1,48 +1,141 @@
-<div class="card">
-  <div class="card-header">
-    <h5>Ajouter un article</h5>
-  </div>
-  <div class="card-body">
-    <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <label>Référence</label>
-        <input type="text" class="form-control" formControlName="ref" />
+<div class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-4 text-primary">
+      <i class="bi bi-search me-2"></i> Recherche des entrées article
+    </h5>
+
+    <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Tous les articles --</option>
+          <option *ngFor="let article of articles" [value]="article.id">{{ article.designation }}</option>
+
+        </select>
       </div>
-      <div class="mb-3">
-        <label>Désignation</label>
-        <input type="text" class="form-control" formControlName="designation" />
+      <div class="col-md-3">
+        <label class="form-label">Date min</label>
+        <input type="date" class="form-control" formControlName="dateMin" />
       </div>
-      <button class="btn btn-primary" type="submit" [disabled]="articleForm.invalid">Enregistrer</button>
+      <div class="col-md-3">
+        <label class="form-label">Date max</label>
+        <input type="date" class="form-control" formControlName="dateMax" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">N° BE</label>
+        <input type="text" class="form-control" formControlName="numeroBE" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Fournisseur</label>
+        <select class="form-select" formControlName="fournisseurId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Client</label>
+        <input type="text" class="form-control" formControlName="client" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Origine</label>
+        <input type="text" class="form-control" formControlName="origine" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Responsable</label>
+        <input type="text" class="form-control" formControlName="responsable" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Raison d’entrée</label>
+        <select class="form-select" formControlName="raisonEntree">
+          <option value="">-- Toutes --</option>
+          <option value="ACHAT DIVERS">ACHAT DIVERS</option>
+          <option value="DON">DON</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">SPL</label>
+        <input type="text" class="form-control" formControlName="spl" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Magasin</label>
+        <select class="form-select" formControlName="magasinId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let m of stocks" [value]="m.id">{{ m.nom }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Valeur BE</label>
+        <input type="number" class="form-control" formControlName="valeurBE" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">État</label>
+        <select class="form-select" formControlName="etat">
+          <option value="">-- Tous --</option>
+          <option value="BON">BON</option>
+          <option value="MAUVAIS">MAUVAIS</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">DAE / Facture</label>
+        <input type="text" class="form-control" formControlName="facture" />
+      </div>
+
+      <div class="col-md-6 d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search me-1"></i> Rechercher
+        </button>
+        <button type="button" class="btn btn-outline-danger" (click)="annuler()">
+          <i class="bi bi-x-circle me-1"></i> Annuler
+        </button>
+      </div>
     </form>
   </div>
-</div>
 
-<div class="card mt-4">
-  <div class="card-header">
-    <h5>Liste des articles</h5>
+  <div class="mt-4 d-flex justify-content-end">
+    <a [routerLink]="['/ajout-entree-article']" class="btn btn-success">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée article
+    </a>
   </div>
-  <div class="card-body">
-    <table class="table table-bordered table-hover table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Référence</th>
-          <th>Désignation</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let a of articles">
-          <td>{{ a.id }}</td>
-          <td>{{ a.ref }}</td>
-          <td>{{ a.designation }}</td>
-          <td>
-            <button *ngIf="a.id !== undefined" class="btn btn-danger btn-sm" (click)="deleteArticle(a.id)">
-              Supprimer
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+
+  <div class="card p-4 shadow-sm mt-4">
+    <h5 class="mb-3 text-info">
+      <i class="bi bi-card-checklist me-2"></i> Liste des entrées
+    </h5>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Article</th>
+            <th>Stock</th>
+            <th>Quantité</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of resultats">
+            <td>{{ e.articleDesignation }}</td>
+            <td>{{ e.entiteStockDesignation }}</td>
+            <td>{{ e.quantite }}</td>
+            <td>{{ e.date | date : 'yyyy-MM-dd' }}</td>
+          </tr>
+          <tr *ngIf="resultats.length === 0">
+            <td colspan="4" class="text-muted text-center">Aucune entrée trouvée.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button class="btn btn-outline-success" (click)="exportExcel()">
+        <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
+      </button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">
+        <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
+      </button>
+    </div>
   </div>
 </div>

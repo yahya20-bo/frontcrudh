@@ -22,11 +22,10 @@ export const navItems: NavItem[] = [
   { title: false, name: 'Etat Actuel', url: '/stock/etat-stock-divers', icon: 'feather icon-layers' },
 
   { title: true, name: 'Article' },
-  { title: false, name: 'Gestion Article', url: '/stock/article', icon: 'feather icon-file-text' },
+  { title: false, name: 'Entrée', url: '/stock/entree-article', icon: 'feather icon-log-in' },
+  { title: false, name: 'Sortie', url: '/stock/sortie-article', icon: 'feather icon-log-out' },
+  { title: false, name: 'Etat Actuel', url: '/stock/etat-stock-article', icon: 'feather icon-layers' },
 
-  // ✅ Nouveau bloc pour le chatbot
-  
   { title: true, name: 'Assistant' },
-{ title: false, name: 'Chatbot', url: '/chatbot', icon: 'feather icon-message-circle' }
-
+  { title: false, name: 'Chatbot', url: '/chatbot', icon: 'feather icon-message-circle' }
 ];

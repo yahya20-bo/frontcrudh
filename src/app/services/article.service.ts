@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Article } from '../models/article.model';
 import { ArticleResult } from '../models/ArticleResult';
 import { environment } from '../../environments/environment';
-
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +14,10 @@ export class ArticleService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Récupère tous les articles (avec structure ArticleResult { articles: Article[] })
+   * Récupère tous les articles (liste plate)
    */
-  getAll(): Observable<ArticleResult> {
-    return this.http.get<ArticleResult>(this.apiUrl);
+  getAll(): Observable<Article[]> {
+    return this.http.get<Article[]>(this.apiUrl);
   }
 
   /**
@@ -29,42 +28,52 @@ export class ArticleService {
   }
 
   /**
-   * Recherche d'articles selon des critères
+   * Recherche d'articles avec des critères dynamiques
    */
-  search(criteria: any): Observable<Article[]> {
-    return this.http.get<Article[]>(`${this.apiUrl}/search`, { params: criteria });
+  search(criteria: any): Observable<ArticleResult> {
+    const params = new HttpParams({ fromObject: criteria });
+    return this.http.get<ArticleResult>(`${this.apiUrl}/search`, { params });
   }
 
   /**
-   * Crée un nouvel article
+   * Création d’un nouvel article
    */
   create(article: Article): Observable<Article> {
     return this.http.post<Article>(this.apiUrl, article);
   }
 
   /**
-   * Met à jour un article existant
+   * Mise à jour d’un article
    */
   update(id: number, article: Article): Observable<Article> {
     return this.http.put<Article>(`${this.apiUrl}/${id}`, article);
   }
 
   /**
-   * Supprime un article
+   * Suppression d’un article
    */
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   /**
-   * Récupère la liste des fournisseurs (externe à l'article)
+   * Fournisseurs disponibles
    */
   getFournisseurs(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/fournisseurs`);
   }
 
+  /**
+   * Clients disponibles
+   */
+  getClients(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/clients`);
+  }
 
-  getArticleById(id: number): Observable<Article> {
-    return this.http.get<Article>(`${this.apiUrl}/${id}`);
+  /**
+   * Raisons d’entrée disponibles
+   */
+  getRaisonsEntree(): Observable<string[]> {
+    return this.http.get<string[]>(`${environment.apiUrl}/raisons-entree`);
   }
 }

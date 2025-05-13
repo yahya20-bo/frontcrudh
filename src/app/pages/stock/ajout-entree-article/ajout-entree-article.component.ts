@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
@@ -11,18 +12,18 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 @Component({
-  selector: 'app-ajout-entree-fourniture',
+  selector: 'app-ajout-entree-article',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './ajout-entree-fourniture.component.html',
-  styleUrls: ['./ajout-entree-fourniture.component.scss']
+  templateUrl: './ajout-entree-article.component.html',
+  styleUrls: ['./ajout-entree-article.component.scss']
 })
-export class AjoutEntreeFournitureComponent implements OnInit {
+export class AjoutEntreeArticleComponent implements OnInit {
   form!: FormGroup;
   articles: any[] = [];
-  stocks: any[] = [];
   fournisseurs: any[] = [];
   clients: any[] = [];
+  stocks: any[] = [];
   magasins: any[] = [];
 
   resultats: any[] = [];
@@ -52,12 +53,7 @@ export class AjoutEntreeFournitureComponent implements OnInit {
       description: [''],
       articleId: ['', Validators.required],
       stockId: ['', Validators.required],
-      quantite: ['', [Validators.required, Validators.min(1)]],
-      couleur: [''],
-      lot: [''],
-      oa: [''],
-      laize: [''],
-      qteYard: ['']
+      quantite: ['', [Validators.required, Validators.min(1)]]
     });
 
     this.articleService.getAll().subscribe(res => this.articles = res);
@@ -77,10 +73,9 @@ export class AjoutEntreeFournitureComponent implements OnInit {
       dateMouvement: this.form.value.date
     };
 
-    this.mouvementService.create('entrees/fourniture', payload).subscribe(() => {
-      alert('✅ Entrée Fourniture ajoutée avec succès');
+    this.mouvementService.create('entrees/article', payload).subscribe(() => {
+      alert('✅ Entrée Article ajoutée avec succès');
 
-      // Ajouter à la liste affichée
       this.resultats.push({
         reference: this.getArticleRef(payload.articleId),
         designation: this.getArticleDesignation(payload.articleId),
@@ -105,14 +100,14 @@ export class AjoutEntreeFournitureComponent implements OnInit {
 
   getStockNom(id: number): string {
     const s = this.stocks.find(s => s.id === id);
-    return s?.nom || s?.designation || '-';
+    return s?.nom || '-';
   }
 
   exportToExcel(): void {
     const worksheet = XLSX.utils.json_to_sheet(this.resultats);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Fourniture');
-    XLSX.writeFile(workbook, 'entrees-fourniture.xlsx');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Article');
+    XLSX.writeFile(workbook, 'entrees-article.xlsx');
   }
 
   exportToPDF(): void {
@@ -126,6 +121,6 @@ export class AjoutEntreeFournitureComponent implements OnInit {
       r.date
     ]);
     autoTable(doc, { head, body });
-    doc.save('entrees-fourniture.pdf');
+    doc.save('entrees-article.pdf');
   }
 }

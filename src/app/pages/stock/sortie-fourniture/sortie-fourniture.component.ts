@@ -58,28 +58,28 @@ export class SortieFournitureComponent implements OnInit {
   }
 
   loadData(): void {
-    this.articleService.getAll().subscribe(data => {
-      this.articles = data.articles || [];
+    this.articleService.getAll().subscribe((data: any) => {
+      this.articles = Array.isArray(data) ? data : data.articles || [];
     });
 
-    this.stockService.getAll().subscribe(data => {
-      this.stocks = data || [];
-      this.magasins = data.magasins || [];
+    this.stockService.getAll().subscribe((data: any) => {
+      this.stocks = Array.isArray(data) ? data : data.stocks || data;
+      this.magasins = data.magasins || []; // ⚠️ à adapter selon structure exacte
     });
 
     this.getAllMouvements();
   }
 
   getAllMouvements(): void {
-    this.mouvementService.getAll('sorties/fourniture').subscribe(data => {
-      this.mouvements = data || [];
+    this.mouvementService.getAll('sorties/fourniture').subscribe((data: any) => {
+      this.mouvements = Array.isArray(data) ? data : [];
     });
   }
 
   onSearch(): void {
     const params = this.searchForm.value;
-    this.mouvementService.search('sorties/fourniture', params).subscribe(data => {
-      this.mouvements = data || [];
+    this.mouvementService.search('sorties/fourniture', params).subscribe((data: any) => {
+      this.mouvements = Array.isArray(data) ? data : [];
     });
   }
 

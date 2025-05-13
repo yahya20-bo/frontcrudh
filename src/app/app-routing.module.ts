@@ -66,7 +66,17 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/stock/article/article.component').then(m => m.ArticleComponent)
   },
-
+  {
+  path: 'stock/sortie-article',
+  loadComponent: () =>
+    import('./pages/stock/sortie-article/sortie-article.component').then(m => m.SortieArticleComponent)
+},
+  
+{
+  path: 'stock/etat-stock-article',  // ✅ nouvel ajout ici
+  loadComponent: () =>
+    import('./pages/stock/etat-stock-article/etat-stock-article.component').then(m => m.EtatStockArticleComponent)
+},
   // AJOUT
   {
     path: 'ajout-entree-tissu',
@@ -98,6 +108,17 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/stock/ajout-sortie-divers.component').then(m => m.AjoutSortieDiversComponent)
   },
+// AJOUT
+{
+  path: 'ajout-entree-article',
+  loadComponent: () =>
+    import('./pages/stock/ajout-entree-article/ajout-entree-article.component').then(m => m.AjoutEntreeArticleComponent)
+},
+{
+  path: 'ajout-sortie-article',
+  loadComponent: () =>
+    import('./pages/stock/ajout-sortie-article/ajout-sortie-article.component').then(m => m.AjoutSortieArticleComponent)
+},
 
   // CHATBOT
   {

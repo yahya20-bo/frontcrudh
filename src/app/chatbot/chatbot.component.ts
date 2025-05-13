@@ -52,8 +52,7 @@ export class ChatbotComponent {
 
     this.messages.push({ from: 'user', text: message });
 
-    const normalized = this.normalizeToKey(message); // <- important
-
+    const normalized = this.normalize(message);
     const matchedPath = this.routeMap.get(normalized);
 
     if (matchedPath) {
@@ -76,14 +75,13 @@ export class ChatbotComponent {
     if (message.action) message.action();
   }
 
-  private normalizeToKey(str: string): string {
+  private normalize(str: string): string {
     return str
       .toLowerCase()
-      .normalize('NFD') // enlève les accents
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/é/g, 'e') // conversion manuelle des accents fréquents
-      .replace(/[^a-z0-9 ]/g, '') // retire ponctuation
-      .replace(/\s+/g, ' ') // retire espaces multiples
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // accents
+      .replace(/[^a-z0-9 ]/g, '')      // tout sauf lettres/chiffres/espaces
+      .replace(/\s+/g, ' ')            // espaces multiples
       .trim();
   }
 }

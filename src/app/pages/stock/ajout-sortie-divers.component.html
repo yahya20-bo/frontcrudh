@@ -1,37 +1,69 @@
 <div class="container mt-4">
-    <div class="card p-4 shadow-sm">
-      <h5 class="mb-3 text-success">
-        <i class="bi bi-box-arrow-up-right me-2"></i> Ajouter une sortie (Divers)
-      </h5>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Article</label>
-          <select formControlName="articleId" class="form-select">
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-4 text-success">
+      <i class="bi bi-dash-circle me-2"></i> Ajouter une Sortie Divers
+    </h5>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+        <!-- Ligne 1 -->
+        <div class="col-md-2"><label class="form-label">N° BS</label><input class="form-control" formControlName="numeroBS" /></div>
+        <div class="col-md-2"><label class="form-label">Fournisseur</label><input class="form-control" formControlName="fournisseur" /></div>
+        <div class="col-md-2"><label class="form-label">Client</label><input class="form-control" formControlName="client" /></div>
+        <div class="col-md-2"><label class="form-label">Origine</label><input class="form-control" formControlName="origine" /></div>
+        <div class="col-md-2"><label class="form-label">Date Sortie</label><input type="date" class="form-control" formControlName="dateMouvement" /></div>
+        <div class="col-md-2"><label class="form-label">Responsable</label><input class="form-control" formControlName="responsable" /></div>
+
+        <!-- Ligne 2 -->
+        <div class="col-md-2"><label class="form-label">SPL</label><input class="form-control" formControlName="spl" /></div>
+        <div class="col-md-2"><label class="form-label">Valeur BS</label><input class="form-control" formControlName="valeurBS" /></div>
+        <div class="col-md-2"><label class="form-label">État</label><input class="form-control" formControlName="etat" /></div>
+        <div class="col-md-2"><label class="form-label">DAE / Facture</label><input class="form-control" formControlName="facture" /></div>
+        <div class="col-md-2"><label class="form-label">Magasin</label><input class="form-control" formControlName="magasin" /></div>
+
+        <!-- Description -->
+        <div class="col-md-12"><label class="form-label">Description</label><textarea class="form-control" rows="2" formControlName="description"></textarea></div>
+
+        <!-- Ligne 3 -->
+        <div class="col-md-3"><label class="form-label">Article</label>
+          <select class="form-select" formControlName="articleId">
             <option value="">-- Choisir --</option>
-            <option *ngFor="let a of articles" [value]="a.id">{{ a.designation }}</option>
+            <option *ngFor="let article of articles" [value]="article.id">{{ article.ref }} - {{ article.designation }}</option>
           </select>
         </div>
-        <div class="col-md-4">
-          <label class="form-label">Stock</label>
-          <select formControlName="stockId" class="form-select">
+        <div class="col-md-3"><label class="form-label">Entité de stock</label>
+          <select class="form-select" formControlName="stockId">
             <option value="">-- Choisir --</option>
-            <option *ngFor="let s of stocks" [value]="s.id">{{ s.nom }}</option>
+            <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.nom }}</option>
           </select>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Quantité</label>
-          <input type="number" class="form-control" formControlName="quantite" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Date</label>
-          <input type="date" class="form-control" formControlName="dateMouvement" />
-        </div>
-        <div class="col-12 text-end">
-          <button class="btn btn-success" [disabled]="form.invalid">
-            <i class="bi bi-check-circle me-2"></i> Valider
+        <div class="col-md-2"><label class="form-label">Quantité</label><input type="number" class="form-control" formControlName="quantite" /></div>
+        <div class="col-md-2"><label class="form-label">Couleur</label><input type="text" class="form-control" formControlName="couleur" /></div>
+        <div class="col-md-2"><label class="form-label">Lot</label><input type="text" class="form-control" formControlName="lot" /></div>
+
+        <div class="col-md-2"><label class="form-label">OA</label><input type="text" class="form-control" formControlName="oa" /></div>
+        <div class="col-md-2"><label class="form-label">Laize</label><input type="text" class="form-control" formControlName="laize" /></div>
+        <div class="col-md-2"><label class="form-label">Qte Yard</label><input type="text" class="form-control" formControlName="qteYard" /></div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-success w-100" [disabled]="form.invalid">
+            <i class="bi bi-check-circle me-1"></i> Enregistrer
           </button>
         </div>
-      </form>
-    </div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-outline-success w-100" (click)="exportToExcel()">
+            <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
+          </button>
+        </div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-outline-danger w-100" (click)="exportToPDF()">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
-  
+</div>

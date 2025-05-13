@@ -18,6 +18,7 @@ import { EntreeDiversComponent } from './entree-divers/entree-divers.component';
 import { SortieDiversComponent } from './sortie-divers/sortie-divers.component';
 import { EtatStockDiversComponent } from './etat-stock-divers/etat-stock-divers.component';
 
+// Article (chargement paresseux)
 export const stockRoutes: Routes = [
   {
     path: '',
@@ -38,11 +39,21 @@ export const stockRoutes: Routes = [
       { path: 'sortie-divers', component: SortieDiversComponent },
       { path: 'etat-stock-divers', component: EtatStockDiversComponent },
 
-      // ✅ Article (Standalone Component avec Lazy Loading)
+       // ✅ Article (Entrée / Sortie / État Actuel)
       {
-        path: 'article',
+        path: 'entree-article',
         loadComponent: () =>
-          import('src/app/pages/stock/article/article.component').then(m => m.ArticleComponent)
+          import('./entree-article/entree-article.component').then(m => m.EntreeArticleComponent)
+      },
+      {
+        path: 'sortie-article',
+        loadComponent: () =>
+          import('./sortie-article/sortie-article.component').then(m => m.SortieArticleComponent)
+      },
+      {
+        path: 'etat-stock-article',
+        loadComponent: () =>
+          import('./etat-stock-article/etat-stock-article.component').then(m => m.EtatStockArticleComponent)
       }
     ]
   }

@@ -2,25 +2,29 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
+
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 @Component({
-  selector: 'app-ajout-sortie-divers',
+  selector: 'app-ajout-sortie-article',
   standalone: true,
-  templateUrl: './ajout-sortie-divers.component.html',
-  styleUrls: ['./ajout-sortie-divers.component.scss'],
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  templateUrl: './ajout-sortie-article.component.html',
+  styleUrls: ['./ajout-sortie-article.component.scss']
 })
-export class AjoutSortieDiversComponent implements OnInit {
+export class AjoutSortieArticleComponent implements OnInit {
   form!: FormGroup;
   articles: any[] = [];
+  fournisseurs: any[] = [];
+  clients: any[] = [];
   stocks: any[] = [];
-  resultats: any[] = [];
+  magasins: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -32,21 +36,22 @@ export class AjoutSortieDiversComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      numeroBS: [''],
+      numeroBE: [''],
       fournisseur: [''],
       client: [''],
       origine: [''],
-      dateMouvement: ['', Validators.required],
+      date: ['', Validators.required],
       responsable: [''],
+      motif: [''],
       spl: [''],
-      valeurBS: [''],
+      valeurBE: [''],
       etat: [''],
       facture: [''],
       magasin: [''],
       description: [''],
       articleId: ['', Validators.required],
       stockId: ['', Validators.required],
-      quantite: ['', Validators.required],
+      quantite: ['', [Validators.required, Validators.min(1)]],
       couleur: [''],
       lot: [''],
       oa: [''],
@@ -55,37 +60,41 @@ export class AjoutSortieDiversComponent implements OnInit {
     });
 
     this.articleService.getAll().subscribe(res => this.articles = res);
-    this.stockService.getAll().subscribe(data => this.stocks = data);
+    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res);
+    this.articleService.getClients().subscribe(res => this.clients = res);
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = res;
+      this.magasins = res;
+    });
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
 
-    this.mouvementService.create('sorties/divers', this.form.value).subscribe(() => {
-      alert('✅ Sortie Divers enregistrée avec succès');
+    const payload = {
+      ...this.form.value,
+      dateMouvement: this.form.value.date
+    };
+
+    this.mouvementService.create('sorties/article', payload).subscribe(() => {
+      alert('✅ Sortie article enregistrée avec succès');
       this.form.reset();
     });
   }
 
   exportToExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(this.resultats);
+    const worksheet = XLSX.utils.json_to_sheet([this.form.value]);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sorties Divers');
-    XLSX.writeFile(workbook, 'sortie_divers.xlsx');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'SortieArticle');
+    XLSX.writeFile(workbook, 'sortie-article.xlsx');
   }
 
   exportToPDF(): void {
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [['Réf', 'Désignation', 'Quantité', 'Stock', 'Date']],
-      body: this.resultats.map(item => [
-        item.reference || '',
-        item.designation || '',
-        item.quantite || '',
-        item.entiteStock || '',
-        item.dateMouvement || ''
-      ])
+      head: [['Champ', 'Valeur']],
+      body: Object.entries(this.form.value)
     });
-    doc.save('sortie_divers.pdf');
+    doc.save('sortie-article.pdf');
   }
 }
