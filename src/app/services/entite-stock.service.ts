@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class EntiteStockService {
-  private apiUrl = '/api/entite-stocks';
+   private apiUrl = 'http://localhost:8080/api/bonmouvement';
 
   constructor(private http: HttpClient) {}
 

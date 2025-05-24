@@ -37,6 +37,28 @@ export class AjoutEntreeTissuComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initForms();
+
+    // ✅ Chargement des données avec sécurité
+    this.articleService.getAll().subscribe(data => {
+      this.articles = Array.isArray(data) ? data : [];
+    });
+
+    this.articleService.getFournisseurs().subscribe((data: any) => {
+  this.fournisseurs = Array.isArray(data) ? data : data.fournisseurs ?? [];
+});
+
+this.articleService.getClients().subscribe((data: any) => {
+  this.clients = Array.isArray(data) ? data : data.clients ?? [];
+});
+
+
+    this.stockService.getAll().subscribe(data => {
+      this.magasins = Array.isArray(data) ? data : data.magasins ?? [];
+    });
+  }
+
+  initForms(): void {
     this.addForm = this.fb.group({
       numeroBE: ['', Validators.required],
       fournisseur: ['', Validators.required],
@@ -71,23 +93,20 @@ export class AjoutEntreeTissuComponent implements OnInit {
       referenceFournisseur: [''],
       designation: ['']
     });
-
-    this.articleService.getAll().subscribe(data => this.articles = data);
-    this.articleService.getFournisseurs().subscribe(data => this.fournisseurs = data);
-    this.articleService.getClients().subscribe(data => this.clients = data);
-    this.stockService.getAll().subscribe(data => this.magasins = data);
   }
 
   rechercherArticles(): void {
     const criteria: any = {};
-    if (this.searchForm.value.famille !== 'Tous') criteria.famille = this.searchForm.value.famille;
-    if (this.searchForm.value.sousFamille !== 'Tous') criteria.sousFamille = this.searchForm.value.sousFamille;
-    if (this.searchForm.value.reference) criteria.reference = this.searchForm.value.reference;
-    if (this.searchForm.value.referenceFournisseur) criteria.referenceFournisseur = this.searchForm.value.referenceFournisseur;
-    if (this.searchForm.value.designation) criteria.designation = this.searchForm.value.designation;
+    const formValue = this.searchForm.value;
+
+    if (formValue.famille !== 'Tous') criteria.famille = formValue.famille;
+    if (formValue.sousFamille !== 'Tous') criteria.sousFamille = formValue.sousFamille;
+    if (formValue.reference) criteria.reference = formValue.reference;
+    if (formValue.referenceFournisseur) criteria.referenceFournisseur = formValue.referenceFournisseur;
+    if (formValue.designation) criteria.designation = formValue.designation;
 
     this.articleService.search(criteria).subscribe(result => {
-      this.resultats = result.articles;
+      this.resultats = Array.isArray(result?.articles) ? result.articles : [];
     });
   }
 
@@ -116,7 +135,6 @@ export class AjoutEntreeTissuComponent implements OnInit {
     });
   }
 
-  // ✅ Export Excel
   exportToExcel(): void {
     const worksheet = XLSX.utils.json_to_sheet(this.resultats);
     const workbook = XLSX.utils.book_new();
@@ -124,7 +142,6 @@ export class AjoutEntreeTissuComponent implements OnInit {
     XLSX.writeFile(workbook, 'entrees-tissu.xlsx');
   }
 
-  // ✅ Export PDF
   exportToPDF(): void {
     const doc = new jsPDF();
     const cols = ["Ref Fournisseur", "Réf.", "Désignation", "Couleur", "Lot", "OA", "Laize", "Qte Yard"];

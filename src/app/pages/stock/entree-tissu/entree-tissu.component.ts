@@ -59,41 +59,41 @@ export class EntreeTissuComponent implements OnInit {
   }
 
   loadArticles(): void {
-    this.articleService.getAll().subscribe((res: any) => {
-      this.articles = res.articles || res;
+    this.articleService.getAll().subscribe((data: any) => {
+      this.articles = Array.isArray(data) ? data : [];
     });
   }
 
   loadFournisseurs(): void {
-    this.articleService.getAll().subscribe((res: any) => {
-      this.fournisseurs = res.fournisseurs || res;
+    this.articleService.getFournisseurs().subscribe((data: any) => {
+      this.fournisseurs = Array.isArray(data) ? data : [];
     });
   }
 
   loadStocks(): void {
     this.stockService.getAll().subscribe((res: any) => {
-      this.stocks = res;
+      this.stocks = Array.isArray(res) ? res : [];
     });
   }
 
   loadMagasins(): void {
     this.stockService.getAll().subscribe((res: any) => {
-      this.magasins = res.magasins || res;
+      this.magasins = Array.isArray(res.magasins) ? res.magasins : [];
     });
   }
 
   getAllEntrees(): void {
     this.mouvementService.getEntreesTissu().subscribe((res: any) => {
-      this.resultats = res.bonMouvements || res;
+      this.resultats = Array.isArray(res.bonMouvements) ? res.bonMouvements : [];
     });
   }
 
   rechercher(): void {
-    const params = this.searchForm.value;
-    this.mouvementService.rechercherEntreesTissu(params).subscribe((res: any) => {
-      this.resultats = res.bonMouvements || res;
-    });
-  }
+  const params = this.searchForm.value;
+  this.mouvementService.rechercherEntreesTissu(params).subscribe((res: any) => {
+    this.resultats = res?.bonMouvements ?? [];
+  });
+}
 
   annulerRecherche(): void {
     this.searchForm.reset();

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SiteService {
-  private apiUrl = '/api/sites';
+   private apiUrl = 'http://localhost:8080/api/bonmouvement';
 
   constructor(private http: HttpClient) {}
 

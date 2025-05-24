@@ -9,9 +9,12 @@
         <label class="form-label">Article</label>
         <select class="form-select" formControlName="articleId">
           <option value="">-- Tous les articles --</option>
-          <option *ngFor="let article of articles" [value]="article.id">{{ article.libelle }}</option>
+          <option *ngFor="let article of articles" [value]="article.id">
+            {{ article.libelle || article.designation }}
+          </option>
         </select>
       </div>
+
       <div class="col-md-3">
         <label class="form-label">Date min</label>
         <input type="date" class="form-control" formControlName="dateMin" />
@@ -29,17 +32,20 @@
         <label class="form-label">Fournisseur</label>
         <select class="form-select" formControlName="fournisseurId">
           <option value="">-- Tous --</option>
-          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom || f.libelle }}</option>
         </select>
       </div>
+
       <div class="col-md-3">
         <label class="form-label">Client</label>
         <input type="text" class="form-control" formControlName="client" />
       </div>
+
       <div class="col-md-3">
         <label class="form-label">Origine</label>
         <input type="text" class="form-control" formControlName="origine" />
       </div>
+
       <div class="col-md-3">
         <label class="form-label">Responsable</label>
         <input type="text" class="form-control" formControlName="responsable" />
@@ -53,10 +59,12 @@
           <option value="DON">DON</option>
         </select>
       </div>
+
       <div class="col-md-3">
         <label class="form-label">SPL</label>
         <input type="text" class="form-control" formControlName="spl" />
       </div>
+
       <div class="col-md-3">
         <label class="form-label">Magasin</label>
         <select class="form-select" formControlName="magasinId">
@@ -64,6 +72,7 @@
           <option *ngFor="let m of magasins" [value]="m.id">{{ m.nom }}</option>
         </select>
       </div>
+
       <div class="col-md-3">
         <label class="form-label">Valeur BE</label>
         <input type="number" class="form-control" formControlName="valeurBE" />
@@ -77,10 +86,12 @@
           <option value="MAUVAIS">MAUVAIS</option>
         </select>
       </div>
+
       <div class="col-md-3">
         <label class="form-label">DAE / Facture</label>
         <input type="text" class="form-control" formControlName="facture" />
       </div>
+
       <div class="col-md-6 d-flex justify-content-end gap-2">
         <button type="submit" class="btn btn-primary">🔍 Rechercher</button>
         <button type="button" class="btn btn-outline-danger" (click)="annulerRecherche()">❌ Annuler</button>
@@ -99,7 +110,7 @@
       <i class="bi bi-card-checklist me-2"></i> Liste des entrées
     </h5>
 
-    <div class="table-responsive">
+    <div class="table-responsive" *ngIf="resultats && resultats.length >= 0">
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr>
