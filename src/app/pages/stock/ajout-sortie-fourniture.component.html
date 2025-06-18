@@ -11,7 +11,8 @@
         <div class="col-md-2"><label class="form-label">N° BE</label><input class="form-control" formControlName="numeroBE" /></div>
         <div class="col-md-2"><label class="form-label">Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+            <option *ngFor="let x of fournisseurs" [value]="x">{{ x.nom }}</option>
+
           </select>
         </div>
         <div class="col-md-2"><label class="form-label">Client</label>

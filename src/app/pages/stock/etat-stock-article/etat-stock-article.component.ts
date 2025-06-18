@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ArticleService } from 'src/app/services/article.service';
-import { StockService } from 'src/app/services/stock.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -21,10 +21,10 @@ export class EtatStockArticleComponent implements OnInit {
   resultats: any[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private articleService: ArticleService,
-    private stockService: StockService
-  ) {}
+  private fb: FormBuilder,
+  private articleService: ArticleService,
+  private stockService: EntiteStockService // ✅ remplace StockService
+) {}
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({

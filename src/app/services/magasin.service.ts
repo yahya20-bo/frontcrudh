@@ -4,20 +4,17 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class MagasinService {
-  private apiUrl = 'http://localhost:8080/api/bonmouvement';
+  private apiUrl = 'http://localhost:8080/api/magasins';
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  getAll(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 
+  // (facultatif) autres méthodes si tu veux :
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);
-  }
-
-  search(criteria: any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/search`, { params: criteria });
   }
 
   create(data: any): Observable<any> {

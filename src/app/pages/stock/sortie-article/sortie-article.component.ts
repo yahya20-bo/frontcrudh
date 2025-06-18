@@ -4,7 +4,8 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { ArticleService } from 'src/app/services/article.service';
-import { StockService } from 'src/app/services/stock.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+
 
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -25,11 +26,12 @@ export class SortieArticleComponent implements OnInit {
   resultats: any[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private articleService: ArticleService,
-    private stockService: StockService,
-    private router: Router
-  ) {}
+  private fb: FormBuilder,
+  private articleService: ArticleService,
+  private stockService: EntiteStockService,
+  private router: Router
+) {}
+
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({

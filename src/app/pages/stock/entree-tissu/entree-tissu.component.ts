@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
@@ -27,7 +27,8 @@ export class EntreeTissuComponent implements OnInit {
     private mouvementService: BonMouvementService,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
-    private exportService: ExportService
+    private exportService: ExportService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -58,6 +59,30 @@ export class EntreeTissuComponent implements OnInit {
     });
   }
 
+  private formaterDate(date: any): string | null {
+    return date ? formatDate(date, 'yyyy-MM-dd', 'en-US') : null;
+  }
+
+  rechercher(): void {
+    const formValue = this.searchForm.value;
+    const params = {
+      ...formValue,
+      dateMin: this.formaterDate(formValue.dateMin),
+      dateMax: this.formaterDate(formValue.dateMax),
+    };
+
+    this.mouvementService.rechercherEntreesTissu(params).subscribe((res: any) => {
+      this.resultats = res?.bonMouvements ?? [];
+      console.log(this.resultats);
+      this.cdr.detectChanges();
+    });
+  }
+
+  annulerRecherche(): void {
+    this.searchForm.reset();
+    this.getAllEntrees();
+  }
+
   loadArticles(): void {
     this.articleService.getAll().subscribe((data: any) => {
       this.articles = Array.isArray(data) ? data : [];
@@ -86,18 +111,6 @@ export class EntreeTissuComponent implements OnInit {
     this.mouvementService.getEntreesTissu().subscribe((res: any) => {
       this.resultats = Array.isArray(res.bonMouvements) ? res.bonMouvements : [];
     });
-  }
-
-  rechercher(): void {
-  const params = this.searchForm.value;
-  this.mouvementService.rechercherEntreesTissu(params).subscribe((res: any) => {
-    this.resultats = res?.bonMouvements ?? [];
-  });
-}
-
-  annulerRecherche(): void {
-    this.searchForm.reset();
-    this.getAllEntrees();
   }
 
   exportExcel(): void {

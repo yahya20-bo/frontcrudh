@@ -38,14 +38,14 @@ export class EtatStockFournitureComponent implements OnInit {
     this.getEtatStock();
   }
 
-  getEtatStock() {
-    this.stockService.getAll().subscribe((data: any[]) => {
-      this.allStocks = data;
-      this.stocks = data;
+  getEtatStock(): void {
+    this.stockService.getAll().subscribe((data: any) => {
+      this.allStocks = Array.isArray(data) ? data : data.stocks || [];
+      this.stocks = [...this.allStocks];
     });
   }
 
-  onSearch() {
+  onSearch(): void {
     const { articleId, stockName } = this.searchForm.value;
     this.stocks = this.allStocks.filter((s: any) =>
       (!articleId || s.article?.id == articleId) &&

@@ -7,6 +7,9 @@ import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 
+import { Article } from 'src/app/models/article.model';
+import { EntiteStock } from 'src/app/models/entite-stock.model';
+
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -20,27 +23,26 @@ import autoTable from 'jspdf-autotable';
 })
 export class AjoutEntreeArticleComponent implements OnInit {
   form!: FormGroup;
-  articles: any[] = [];
+  articles: Article[] = [];
   fournisseurs: any[] = [];
   clients: any[] = [];
-  stocks: any[] = [];
+  stocks: EntiteStock[] = [];
   magasins: any[] = [];
-
   resultats: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
-    private mouvementService: BonMouvementService,
+    private bonMouvementService: BonMouvementService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      numeroBE: [''],
-      fournisseur: [''],
-      client: [''],
+      numeroBE: ['', Validators.required],
+      fournisseur: [null],
+      client: [null],
       origine: [''],
       date: ['', Validators.required],
       responsable: [''],
@@ -51,76 +53,80 @@ export class AjoutEntreeArticleComponent implements OnInit {
       facture: [''],
       magasin: [''],
       description: [''],
-      articleId: ['', Validators.required],
-      stockId: ['', Validators.required],
-      quantite: ['', [Validators.required, Validators.min(1)]]
+      articleId: [null, Validators.required],
+      stockId: [null, Validators.required],
+      quantite: [0, Validators.required],
+      couleur: [''],
+      lot: [''],
+      oa: [''],
+      laize: [''],
+      qteYard: ['']
     });
 
-    this.articleService.getAll().subscribe(res => this.articles = res);
-    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res);
-    this.articleService.getClients().subscribe(res => this.clients = res);
-    this.stockService.getAll().subscribe(res => {
-      this.stocks = res;
-      this.magasins = res;
+    this.chargerDonnees();
+  }
+
+  chargerDonnees(): void {
+    this.articleService.getAll().subscribe((data: Article[]) => {
+      this.articles = data || [];
     });
+    this.articleService.getFournisseurs().subscribe((res) => {
+      this.fournisseurs = res || [];
+    });
+    this.articleService.getClients().subscribe((res) => {
+      this.clients = res || [];
+    });
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = res || [];
+    });
+
+    // Optionnel : activer si getMagasins() existe
+    // this.articleService.getMagasins().subscribe((data: any[]) => {
+    //   this.magasins = data || [];
+    // });
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
 
-    const payload = {
-      ...this.form.value,
-      dateMouvement: this.form.value.date
-    };
+    const payload = this.form.value;
 
-    this.mouvementService.create('entrees/article', payload).subscribe(() => {
-      alert('✅ Entrée Article ajoutée avec succès');
-
-      this.resultats.push({
-        reference: this.getArticleRef(payload.articleId),
-        designation: this.getArticleDesignation(payload.articleId),
-        quantite: payload.quantite,
-        entiteStock: this.getStockNom(payload.stockId),
-        date: payload.dateMouvement
-      });
-
-      this.form.reset();
+    this.bonMouvementService.create('entrees/article', payload).subscribe({
+      next: (res) => {
+        alert('Entrée article ajoutée avec succès');
+        this.resultats = [res]; // corrige NG0900
+        this.form.reset();
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+      },
+      error: (err) => {
+        console.error('Erreur lors de l’ajout :', err);
+        alert('Erreur lors de l’enregistrement');
+      }
     });
   }
 
-  getArticleRef(id: number): string {
-    const a = this.articles.find(a => a.id === id);
-    return a?.ref || '-';
-  }
-
-  getArticleDesignation(id: number): string {
-    const a = this.articles.find(a => a.id === id);
-    return a?.designation || a?.libelle || '-';
-  }
-
-  getStockNom(id: number): string {
-    const s = this.stocks.find(s => s.id === id);
-    return s?.nom || '-';
-  }
-
   exportToExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(this.resultats);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Article');
-    XLSX.writeFile(workbook, 'entrees-article.xlsx');
+    const ws = XLSX.utils.json_to_sheet(this.resultats);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Entrée Article');
+    XLSX.writeFile(wb, 'rapport_entree_article.xlsx');
   }
 
   exportToPDF(): void {
     const doc = new jsPDF();
-    const head = [["Réf", "Désignation", "Quantité", "Stock", "Date"]];
-    const body = this.resultats.map(r => [
-      r.reference,
-      r.designation,
-      r.quantite,
-      r.entiteStock,
-      r.date
-    ]);
-    autoTable(doc, { head, body });
-    doc.save('entrees-article.pdf');
+    autoTable(doc, {
+      head: [['Article', 'Quantité', 'Date']],
+      body: this.resultats.map(item => [
+        item.article?.designation || '',
+        item.quantite || '',
+        item.date || ''
+      ])
+    });
+    doc.save('rapport_entree_article.pdf');
+  }
+
+  retour(): void {
+    this.router.navigate(['/stock/entree-article']);
   }
 }

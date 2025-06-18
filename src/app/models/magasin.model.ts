@@ -15,4 +15,5 @@ export interface Magasin {
   divers?: boolean;
   inputEmplacementTissu?: boolean;
   inputEmplacement?: boolean;
+  magasins: Magasin[];
 }

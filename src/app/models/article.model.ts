@@ -1,9 +1,16 @@
 export interface Article {
   id: number;
-  article: Article;
-  stock: { id: number; nom: string };
-  quantite: number;
-  date: string;
+  ref?: string;
+  reference?: string;
+  designation: string;
+  prixUnitaire?: number;
+  pmp?: number;
+  tva?: number;
+  besoin?: number;
+  poidsBrut?: number;
+  dateCreation?: string;
+  blSuppression?: boolean;
+
   client?: string;
   numeroBe?: string;
   responsable?: string;
@@ -15,6 +22,4 @@ export interface Article {
   daeFacture?: string;
   etat?: string;
   fournisseur?: { id: number; nom: string };
-   designation: string; // ✅ c’est ce champ qu'on utilise dans le HTML
-  reference?: string;
 }

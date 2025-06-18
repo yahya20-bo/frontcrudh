@@ -5,12 +5,12 @@
     </h5>
 
     <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="row g-3 align-items-end">
+      <!-- Formulaire avec tous les champs -->
       <div class="col-md-3">
         <label class="form-label">Article</label>
         <select class="form-select" formControlName="articleId">
           <option value="">-- Tous les articles --</option>
           <option *ngFor="let article of articles" [value]="article.id">{{ article.designation }}</option>
-
         </select>
       </div>
       <div class="col-md-3">
@@ -94,12 +94,14 @@
     </form>
   </div>
 
+  <!-- Bouton ajout -->
   <div class="mt-4 d-flex justify-content-end">
     <a [routerLink]="['/ajout-entree-article']" class="btn btn-success">
       <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée article
     </a>
   </div>
 
+  <!-- Résultats -->
   <div class="card p-4 shadow-sm mt-4">
     <h5 class="mb-3 text-info">
       <i class="bi bi-card-checklist me-2"></i> Liste des entrées

@@ -8,6 +8,13 @@ import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { BonMouvement } from 'src/app/models/bon-mouvement.model';
+import { FournisseurValue } from 'src/app/models/fournisseur.model';
+import { ClientValue } from 'src/app/models/client.model';
+
+
+
+// imports identiques...
 
 @Component({
   selector: 'app-ajout-sortie-fourniture',
@@ -20,10 +27,10 @@ export class AjoutSortieFournitureComponent implements OnInit {
   addForm!: FormGroup;
   articles: any[] = [];
   stocks: any[] = [];
-  fournisseurs: any[] = [];
-  clients: any[] = [];
+  fournisseurs: FournisseurValue[] = [];
+  clients: ClientValue[] = [];
   magasins: any[] = [];
-  resultats: any[] = [];
+  resultats: BonMouvement[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +41,12 @@ export class AjoutSortieFournitureComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.loadData();
+    this.fetchResultats();
+  }
+
+  initForm(): void {
     this.addForm = this.fb.group({
       numeroBE: [''],
       fournisseur: [''],
@@ -56,24 +69,34 @@ export class AjoutSortieFournitureComponent implements OnInit {
       laize: [''],
       qteYard: ['']
     });
+  }
 
-    this.articleService.getAll().subscribe(res => this.articles = res);
-    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res);
-    this.articleService.getClients().subscribe(res => this.clients = res);
-    this.stockService.getAll().subscribe(res => {
-      this.stocks = res;
-      this.magasins = res;
+  loadData(): void {
+    this.articleService.getAll().subscribe(res => {
+      this.articles = Array.isArray(res) ? res : [];
     });
 
-    this.fetchResultats();
+    this.articleService.getFournisseurs().subscribe(res => {
+      this.fournisseurs = res;
+    });
+
+    this.articleService.getClients().subscribe(res => {
+      this.clients = res;
+    });
+
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = res;
+      this.magasins = res; // modifiable selon ton modèle réel
+    });
   }
 
   onSubmit(): void {
     if (this.addForm.invalid) return;
 
-    const payload = {
-      ...this.addForm.value,
-      dateMouvement: this.addForm.value.dateSortie
+    const formValue = this.addForm.value;
+    const payload: BonMouvement = {
+      ...formValue,
+      date: new Date(formValue.dateSortie)
     };
 
     this.mouvementService.create('sorties/fourniture', payload).subscribe(() => {
@@ -85,7 +108,7 @@ export class AjoutSortieFournitureComponent implements OnInit {
 
   fetchResultats(): void {
     this.mouvementService.getAll('sorties/fourniture').subscribe(data => {
-      this.resultats = data;
+      this.resultats = Array.isArray(data) ? data : [];
     });
   }
 
@@ -98,16 +121,23 @@ export class AjoutSortieFournitureComponent implements OnInit {
 
   exportToPDF(): void {
     const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text('Rapport des Sorties Fourniture', 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Date de génération : ${new Date().toLocaleDateString()}`, 14, 22);
+
     autoTable(doc, {
-      head: [['Réf', 'Désignation', 'Quantité', 'Stock', 'Date']],
+      startY: 30,
+      head: [['Référence', 'Désignation', 'Quantité', 'Stock', 'Date']],
       body: this.resultats.map(item => [
         item.reference || '',
-        item.designation || '',
+        item.produitDesignation || '',
         item.quantite || '',
         item.entiteStock || '',
-        item.date || ''
+        item.date ? new Date(item.date).toLocaleDateString() : ''
       ])
     });
+
     doc.save('sortie_fourniture.pdf');
   }
 }

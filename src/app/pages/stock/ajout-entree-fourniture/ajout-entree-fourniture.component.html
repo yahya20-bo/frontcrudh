@@ -1,75 +1,128 @@
-<div class="container mt-5">
+<div class="container mt-4">
   <div class="card p-4 shadow-sm">
     <h5 class="mb-4 text-success">
-      <i class="bi bi-plus-circle me-2"></i> Ajouter Entrée Fourniture
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée de fourniture
     </h5>
 
+    <!-- Formulaire d'ajout -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="row g-3">
-
-        <!-- Ligne 1 -->
-        <div class="col-md-2"><label class="form-label">N° BE</label><input type="text" class="form-control" formControlName="numeroBE" /></div>
-        <div class="col-md-2"><label class="form-label">Fournisseur</label>
+        <!-- Première ligne -->
+        <div class="col-md-2">
+          <label class="form-label">N° BE</label>
+          <input type="text" class="form-control" formControlName="numeroBE" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
             <option value="">-- Sélectionner --</option>
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+            <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+
           </select>
         </div>
-        <div class="col-md-2"><label class="form-label">Client</label>
+        <div class="col-md-2">
+          <label class="form-label">Client</label>
           <select class="form-select" formControlName="client">
             <option value="">-- Sélectionner --</option>
-            <option *ngFor="let c of clients" [value]="c">{{ c }}</option>
+            <option *ngFor="let c of clients || []" [value]="c.id">{{ c.nom }}</option>
           </select>
         </div>
-        <div class="col-md-2"><label class="form-label">Origine</label><input type="text" class="form-control" formControlName="origine" /></div>
-        <div class="col-md-2"><label class="form-label">Date Entrée</label><input type="date" class="form-control" formControlName="date" /></div>
-        <div class="col-md-2"><label class="form-label">Responsable</label><input type="text" class="form-control" formControlName="responsable" /></div>
+        <div class="col-md-2">
+          <label class="form-label">Origine</label>
+          <input type="text" class="form-control" formControlName="origine" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Date Entrée</label>
+          <input type="date" class="form-control" formControlName="date" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Responsable</label>
+          <input type="text" class="form-control" formControlName="responsable" />
+        </div>
 
         <!-- Ligne 2 -->
-        <div class="col-md-2"><label class="form-label">SPL</label><input type="text" class="form-control" formControlName="spl" /></div>
-        <div class="col-md-2"><label class="form-label">Valeur BE</label><input type="text" class="form-control" formControlName="valeurBE" /></div>
-        <div class="col-md-2"><label class="form-label">État</label><input type="text" class="form-control" formControlName="etat" /></div>
-        <div class="col-md-2"><label class="form-label">DAE / Facture</label><input type="text" class="form-control" formControlName="facture" /></div>
-        <div class="col-md-2"><label class="form-label">Magasin</label>
+        <div class="col-md-2">
+          <label class="form-label">Motif</label>
+          <input type="text" class="form-control" formControlName="motif" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">SPL</label>
+          <input type="text" class="form-control" formControlName="spl" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Valeur BE</label>
+          <input type="text" class="form-control" formControlName="valeurBE" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">État</label>
+          <input type="text" class="form-control" formControlName="etat" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">DAE / Facture</label>
+          <input type="text" class="form-control" formControlName="facture" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Magasin</label>
           <select class="form-select" formControlName="magasin">
             <option value="">-- Sélectionner --</option>
-            <option *ngFor="let m of magasins" [value]="m.nom">{{ m.nom }}</option>
+            <option *ngFor="let m of magasins || []" [value]="m.nom">{{ m.nom }}</option>
           </select>
         </div>
 
-        <!-- Description -->
-        <div class="col-md-12"><label class="form-label">Description</label>
-          <textarea class="form-control" rows="2" formControlName="description"></textarea>
+        <!-- Ligne 3 -->
+        <div class="col-md-12">
+          <label class="form-label">Description</label>
+          <textarea rows="2" class="form-control" formControlName="description"></textarea>
         </div>
 
-        <hr class="my-2" />
+        <hr class="mt-4 mb-2" />
 
-        <!-- Ligne Article + Stock -->
-        <div class="col-md-3"><label class="form-label">Article</label>
+        <!-- Ligne 4 : Article / Stock -->
+        <div class="col-md-3">
+          <label class="form-label">Article</label>
           <select class="form-select" formControlName="articleId">
             <option value="">-- Sélectionner --</option>
-            <option *ngFor="let article of articles" [value]="article.id">{{ article.ref }} - {{ article.designation }}</option>
+            <option *ngFor="let a of articles || []" [value]="a.id">{{ a.ref }} - {{ a.designation }}</option>
           </select>
         </div>
-        <div class="col-md-3"><label class="form-label">Entité de stock</label>
+        <div class="col-md-3">
+          <label class="form-label">Entité de stock</label>
           <select class="form-select" formControlName="stockId">
             <option value="">-- Sélectionner --</option>
-            <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.nom }}</option>
+            <option *ngFor="let s of stocks || []" [value]="s.id">{{ s.nom }}</option>
           </select>
         </div>
-        <div class="col-md-2"><label class="form-label">Quantité</label><input type="number" class="form-control" formControlName="quantite" /></div>
+        <div class="col-md-2">
+          <label class="form-label">Quantité</label>
+          <input type="number" class="form-control" formControlName="quantite" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Couleur</label>
+          <input type="text" class="form-control" formControlName="couleur" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Lot</label>
+          <input type="text" class="form-control" formControlName="lot" />
+        </div>
 
-        <!-- Détails -->
-        <div class="col-md-2"><label class="form-label">Couleur</label><input type="text" class="form-control" formControlName="couleur" /></div>
-        <div class="col-md-2"><label class="form-label">Lot</label><input type="text" class="form-control" formControlName="lot" /></div>
-        <div class="col-md-2"><label class="form-label">OA</label><input type="text" class="form-control" formControlName="oa" /></div>
-        <div class="col-md-2"><label class="form-label">Laize</label><input type="text" class="form-control" formControlName="laize" /></div>
-        <div class="col-md-2"><label class="form-label">Qte Yard</label><input type="text" class="form-control" formControlName="qteYard" /></div>
+        <!-- Ligne 5 : Autres détails -->
+        <div class="col-md-2">
+          <label class="form-label">OA</label>
+          <input type="text" class="form-control" formControlName="oa" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Laize</label>
+          <input type="text" class="form-control" formControlName="laize" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Qte Yard</label>
+          <input type="text" class="form-control" formControlName="qteYard" />
+        </div>
 
-        <!-- Bouton -->
-        <div class="col-12 text-end mt-3">
+        <!-- Boutons -->
+        <div class="col-12 text-end mt-4">
           <button type="submit" class="btn btn-success me-2">
-            <i class="bi bi-check2-circle me-1"></i> Enregistrer
+            <i class="bi bi-check-circle me-1"></i> Enregistrer
           </button>
           <button type="button" class="btn btn-outline-success me-2" (click)="exportToExcel()">
             <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
@@ -78,15 +131,14 @@
             <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
           </button>
         </div>
-
       </div>
     </form>
 
-    <!-- Tableau Résultats -->
-    <div *ngIf="resultats.length > 0" class="card shadow-sm p-4 mt-5">
-      <h5 class="mb-3">📋 Entrées Fourniture enregistrées : {{ resultats.length }}</h5>
+    <!-- Tableau des résultats -->
+    <div *ngIf="resultats && resultats.length" class="card mt-5 p-3 shadow-sm">
+      <h6 class="text-secondary mb-3">📋 Entrées enregistrées : {{ resultats.length }}</h6>
       <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle text-center">
+        <table class="table table-bordered table-hover text-center align-middle">
           <thead class="table-light">
             <tr>
               <th>Réf</th>
@@ -97,12 +149,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of resultats">
-              <td>{{ item.reference }}</td>
-              <td>{{ item.designation }}</td>
-              <td>{{ item.quantite }}</td>
-              <td>{{ item.entiteStock }}</td>
-              <td>{{ item.date }}</td>
+            <tr *ngFor="let r of resultats || []">
+              <td>{{ r.reference }}</td>
+              <td>{{ r.designation }}</td>
+              <td>{{ r.quantite }}</td>
+              <td>{{ r.entiteStock }}</td>
+              <td>{{ r.date }}</td>
             </tr>
           </tbody>
         </table>

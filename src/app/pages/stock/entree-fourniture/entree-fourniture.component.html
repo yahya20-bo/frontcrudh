@@ -21,7 +21,7 @@
         <label class="form-label">Fournisseur</label>
         <select class="form-select" formControlName="fournisseur">
           <option value="">-- Tous --</option>
-          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+          <option *ngFor="let f of fournisseurs || []" [value]="f.id">{{ f.nom }}</option>
         </select>
       </div>
 
@@ -29,7 +29,7 @@
         <label class="form-label">Magasin</label>
         <select class="form-select" formControlName="magasin">
           <option value="">-- Tous --</option>
-          <option *ngFor="let m of magasins" [value]="m.id">{{ m.nom }}</option>
+          <option *ngFor="let m of magasins || []" [value]="m.id">{{ m.nom }}</option>
         </select>
       </div>
 
@@ -121,7 +121,7 @@
       <i class="bi bi-card-list me-2"></i> Résultats des entrées fourniture
     </h5>
     <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
+      <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr>
             <th>Référence</th>
@@ -145,15 +145,15 @@
         </tbody>
       </table>
     </div>
-    <!-- 📤 Boutons export -->
-<div class="d-flex justify-content-end gap-2 mt-3">
-  <button class="btn btn-outline-success" (click)="exportExcel()">
-    📊 Exporter Excel
-  </button>
-  <button class="btn btn-outline-danger" (click)="exportPDF()">
-    🧾 Exporter PDF
-  </button>
-</div>
 
+    <!-- 📤 Boutons export -->
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button class="btn btn-outline-success" (click)="exportExcel()">
+        📊 Exporter Excel
+      </button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">
+        🧾 Exporter PDF
+      </button>
+    </div>
   </div>
 </div>

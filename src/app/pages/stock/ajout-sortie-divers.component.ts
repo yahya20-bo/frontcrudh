@@ -54,8 +54,17 @@ export class AjoutSortieDiversComponent implements OnInit {
       qteYard: ['']
     });
 
-    this.articleService.getAll().subscribe(res => this.articles = res);
-    this.stockService.getAll().subscribe(data => this.stocks = data);
+    this.articleService.getAll().subscribe((res: any) => {
+      this.articles = Array.isArray(res) ? res : (res.articles ?? []);
+    });
+
+    this.stockService.getAll().subscribe((data: any) => {
+      this.stocks = Array.isArray(data) ? data : (data.stocks ?? []);
+    });
+
+    this.mouvementService.getAll('sorties/divers').subscribe((data: any) => {
+      this.resultats = Array.isArray(data) ? data : (data.bonMouvements ?? []);
+    });
   }
 
   onSubmit(): void {
@@ -78,11 +87,11 @@ export class AjoutSortieDiversComponent implements OnInit {
     const doc = new jsPDF();
     autoTable(doc, {
       head: [['Réf', 'Désignation', 'Quantité', 'Stock', 'Date']],
-      body: this.resultats.map(item => [
+      body: this.resultats.map((item: any) => [
         item.reference || '',
         item.designation || '',
         item.quantite || '',
-        item.entiteStock || '',
+        item.entiteStock?.nom || '',
         item.dateMouvement || ''
       ])
     });

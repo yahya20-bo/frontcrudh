@@ -5,12 +5,14 @@
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
       <h5 class="mb-0">📋 Résultats trouvés : {{ resultats.length }}</h5>
       <div>
-        <button type="button" class="btn btn-outline-success me-2" (click)="exportToExcel()">
-          <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
-        </button>
-        <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()">
-          <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
-        </button>
+        <button type="button" class="btn btn-outline-success me-2" (click)="exporterExcel()">
+  📊 Exporter Excel
+</button>
+
+<button type="button" class="btn btn-outline-danger" (click)="exporterPDF()">
+  🧾 Exporter PDF
+</button>
+
       </div>
     </div>
 
@@ -50,15 +52,15 @@
     <form [formGroup]="addForm" (ngSubmit)="onSubmit()">
       <div class="row g-3">
 
-        <div class="col-md-2"><label>N° BE</label><input class="form-control" formControlName="numeroBE" /></div>
+        <div class="col-md-2"><label>N° BE</label><input class="form-control" formControlName="numero" /></div>
         <div class="col-md-2"><label>Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+            <option *ngFor="let f of fournisseurs" [value]="f">{{ f.nom }}</option>
           </select>
         </div>
         <div class="col-md-2"><label>Client</label>
           <select class="form-select" formControlName="client">
-            <option *ngFor="let c of clients" [value]="c">{{ c }}</option>
+            <option *ngFor="let c of clients" [value]="c">{{ c.nom }}</option>
           </select>
         </div>
         <div class="col-md-2"><label>Origine</label><input class="form-control" formControlName="origine" /></div>
@@ -117,10 +119,12 @@
     </form>
     <!-- 🔽 Boutons Export Excel/PDF sous le formulaire -->
 <div class="col-12 text-end mt-4">
-  <button type="button" class="btn btn-outline-success me-2" (click)="exportToExcel()">
+  <button type="button" class="btn btn-outline-success me-2" (click)="exporterExcel()"
+>
     <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
   </button>
-  <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()">
+  <button type="button" class="btn btn-outline-danger" (click)="exporterPDF()"
+>
     <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
   </button>
 </div>

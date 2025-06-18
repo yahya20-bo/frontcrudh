@@ -58,5 +58,10 @@ export interface BonMouvement {
     dateCreation?: Date;
     dateModification?: Date;
     dateSuppression?: Date;
+
+     // ✅ Ajoute ces champs manquants pour corriger les erreurs :
+  reference?: string;               // ← Ajouté pour éviter l'erreur ligne 116
+  quantite?: number;               // ← Ajouté pour éviter l'erreur ligne 118
+  entiteStock?: string; 
   }
   

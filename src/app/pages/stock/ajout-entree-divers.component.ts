@@ -97,10 +97,11 @@ export class AjoutEntreeDiversComponent implements OnInit {
 
   // ✅ Récupération des résultats
   fetchResultats(): void {
-    this.mouvementService.getAll('entrees/divers').subscribe((data: any) => {
-      this.resultats = data;
-    });
-  }
+  this.mouvementService.getAll('entrees/divers').subscribe((data: any) => {
+    this.resultats = data?.bonMouvements ?? [];
+  });
+}
+
 
   // ✅ Export Excel
   exportToExcel(): void {

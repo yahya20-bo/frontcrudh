@@ -5,10 +5,35 @@ import { Router } from '@angular/router';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
-
+import { ResultatEntreeFourniture } from 'src/app/models/resultat-entree-fourniture.model';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+interface AjoutEntreeFourniturePayload {
+  numeroBE: string;
+  fournisseur: number;
+  client: number;
+  origine: string;
+  date: string;
+  responsable: string;
+  motif: string;
+  spl: string;
+  valeurBE: string;
+  etat: string;
+  facture: string;
+  magasin: string;
+  description: string;
+  articleId: number;
+  stockId: number;
+  quantite: number;
+  couleur: string;
+  lot: string;
+  oa: string;
+  laize: string;
+  qteYard: string;
+  dateMouvement?: string;
+}
 
 @Component({
   selector: 'app-ajout-entree-fourniture',
@@ -24,8 +49,7 @@ export class AjoutEntreeFournitureComponent implements OnInit {
   fournisseurs: any[] = [];
   clients: any[] = [];
   magasins: any[] = [];
-
-  resultats: any[] = [];
+  resultats: ResultatEntreeFourniture[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -36,6 +60,11 @@ export class AjoutEntreeFournitureComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.chargerDonnees();
+  }
+
+  initForm(): void {
     this.form = this.fb.group({
       numeroBE: [''],
       fournisseur: [''],
@@ -59,39 +88,96 @@ export class AjoutEntreeFournitureComponent implements OnInit {
       laize: [''],
       qteYard: ['']
     });
+  }
 
-    this.articleService.getAll().subscribe(res => this.articles = res);
-    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res);
-    this.articleService.getClients().subscribe(res => this.clients = res);
-    this.stockService.getAll().subscribe(res => {
-      this.stocks = res;
-      this.magasins = res;
+  chargerDonnees(): void {
+    this.articleService.getAll().subscribe({
+      next: res => this.articles = Array.isArray(res) ? res : [],
+      error: err => {
+        this.articles = [];
+        console.error('❌ Erreur articles', err);
+      }
+    });
+
+    this.articleService.getFournisseurs().subscribe({
+      next: res => this.fournisseurs = Array.isArray(res) ? res : [],
+      error: err => {
+        this.fournisseurs = [];
+        console.error('❌ Erreur fournisseurs', err);
+      }
+    });
+
+    this.articleService.getClients().subscribe({
+      next: res => this.clients = Array.isArray(res) ? res : [],
+      error: err => {
+        this.clients = [];
+        console.error('❌ Erreur clients', err);
+      }
+    });
+
+    this.stockService.getAll().subscribe({
+      next: res => {
+        const data = Array.isArray(res) ? res : [];
+        this.stocks = data;
+        this.magasins = data;
+      },
+      error: err => {
+        this.stocks = [];
+        this.magasins = [];
+        console.error('❌ Erreur stocks', err);
+      }
     });
   }
 
-  onSubmit(): void {
-    if (this.form.invalid) return;
+ onSubmit(): void {
+  if (this.form.invalid) return;
 
-    const payload = {
-      ...this.form.value,
-      dateMouvement: this.form.value.date
+  const formValue = this.form.value;
+
+  // 🔄 Construction d'un objet compatible avec BonMouvement (et pas AjoutEntreeFourniturePayload)
+  const payload = {
+    numero: formValue.numeroBE,
+    fournisseurId: formValue.fournisseur,
+    client: formValue.client,
+    origine: formValue.origine,
+    date: new Date(formValue.date), // ✅ requis par le modèle
+    dateMouvement: formValue.date,  // string ou Date selon ton backend
+    responsable: formValue.responsable,
+    raisonMouvementDesignation: formValue.motif,
+    spl: formValue.spl,
+    valeur: +formValue.valeurBE,
+    etat: formValue.etat,
+    daeFacture: formValue.facture,
+    magasinId: formValue.magasin ? +formValue.magasin : undefined,
+
+    description: formValue.description,
+    produitId: formValue.articleId,
+    entiteStockId: formValue.stockId,
+    resultatQte: formValue.quantite,
+    couleur: formValue.couleur,
+    lot: formValue.lot,
+    oa: formValue.oa,
+    laize: formValue.laize,
+    qteYard: formValue.qteYard,
+    sortie: false
+  };
+
+  this.mouvementService.create('entrees/fourniture', payload).subscribe(() => {
+    alert('✅ Entrée Fourniture ajoutée avec succès');
+
+    const resultat: ResultatEntreeFourniture = {
+      reference: this.getArticleRef(payload.produitId),
+      designation: this.getArticleDesignation(payload.produitId),
+      quantite: payload.resultatQte,
+      entiteStock: this.getStockNom(payload.entiteStockId),
+      date: payload.dateMouvement
     };
 
-    this.mouvementService.create('entrees/fourniture', payload).subscribe(() => {
-      alert('✅ Entrée Fourniture ajoutée avec succès');
+    this.resultats.push(resultat);
+    this.form.reset();
+  });
+}
 
-      // Ajouter à la liste affichée
-      this.resultats.push({
-        reference: this.getArticleRef(payload.articleId),
-        designation: this.getArticleDesignation(payload.articleId),
-        quantite: payload.quantite,
-        entiteStock: this.getStockNom(payload.stockId),
-        date: payload.dateMouvement
-      });
-
-      this.form.reset();
-    });
-  }
 
   getArticleRef(id: number): string {
     const a = this.articles.find(a => a.id === id);

@@ -1,4 +1,4 @@
-<nav>
+<nav *ngIf="!isLoginPage()">
   <ul class="pcoded-item pcoded-left-item">
     <li *ngFor="let item of navItems">
       <ng-container *ngIf="!item.title">

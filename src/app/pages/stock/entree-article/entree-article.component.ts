@@ -4,8 +4,10 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 
 import { ArticleService } from 'src/app/services/article.service';
-import { StockService } from 'src/app/services/stock.service';
+import { EntiteStockService } from 'src/app/services/entite-stock.service';
+
 import { Article } from 'src/app/models/article.model';
+import { EntreeArticleResult } from 'src/app/models/entree-article-result.model';
 
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -22,14 +24,14 @@ import autoTable from 'jspdf-autotable';
 export class EntreeArticleComponent implements OnInit {
   searchForm!: FormGroup;
   articles: Article[] = [];
-  resultats: any[] = [];
+  resultats: EntreeArticleResult[] = [];
   stocks: any[] = [];
   fournisseurs: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private articleService: ArticleService,
-    private stockService: StockService,
+    private stockService: EntiteStockService,
     private router: Router
   ) {}
 
@@ -38,7 +40,7 @@ export class EntreeArticleComponent implements OnInit {
       articleId: [''],
       dateMin: [''],
       dateMax: [''],
-      numeroBe: [''],
+      numeroBE: [''],
       fournisseurId: [''],
       client: [''],
       origine: [''],
@@ -46,9 +48,9 @@ export class EntreeArticleComponent implements OnInit {
       raisonEntree: [''],
       spl: [''],
       magasinId: [''],
-      valeurBe: [''],
+      valeurBE: [''],
       etat: [''],
-      daeFacture: ['']
+      facture: ['']
     });
 
     this.loadArticles();
@@ -58,45 +60,42 @@ export class EntreeArticleComponent implements OnInit {
 
   loadArticles(): void {
     this.articleService.getAll().subscribe((res: Article[]) => {
-      this.articles = res;
+      this.articles = res || [];
+
+      // Simulation des résultats (à remplacer par un appel réel à BonMouvement)
+      this.resultats = this.articles.map((a) => ({
+        articleDesignation: a.designation,
+        entiteStockDesignation: a.magasin?.nom || 'Inconnu',
+        quantite: Math.floor(Math.random() * 50) + 1,
+        date: a.dateCreation || '2025-01-01'
+      }));
     });
   }
 
   loadStocks(): void {
-    this.stockService.getAll().subscribe((res: any[]) => {
-      this.stocks = res;
+    this.stockService.getAll().subscribe((res) => {
+      this.stocks = res || [];
     });
   }
 
   loadFournisseurs(): void {
-    this.articleService.getFournisseurs().subscribe((res: any[]) => {
-      this.fournisseurs = res;
+    this.articleService.getFournisseurs().subscribe((res) => {
+      this.fournisseurs = Array.isArray(res) ? res : [];
     });
-  }
-
-  search(): void {
-    const criteria = this.searchForm.value;
-    this.resultats = this.articles.filter(a => {
-      return (
-        (!criteria.articleId || a.id === +criteria.articleId) &&
-        (!criteria.client || a.client?.toLowerCase().includes(criteria.client.toLowerCase())) &&
-        (!criteria.numeroBe || a.numeroBe?.toLowerCase().includes(criteria.numeroBe.toLowerCase()))
-        // Ajouter d'autres filtres selon les besoins
-      );
-    });
-  }
-
-  reset(): void {
-    this.searchForm.reset();
-    this.resultats = [];
   }
 
   rechercher(): void {
-    this.search();
+    const criteria = this.searchForm.value;
+    this.resultats = this.resultats.filter((r) =>
+      (!criteria.articleId || r.articleDesignation?.toLowerCase().includes(criteria.articleId.toString().toLowerCase())) &&
+      (!criteria.dateMin || new Date(r.date) >= new Date(criteria.dateMin)) &&
+      (!criteria.dateMax || new Date(r.date) <= new Date(criteria.dateMax))
+    );
   }
 
   annuler(): void {
-    this.reset();
+    this.searchForm.reset();
+    this.loadArticles(); // recharge les résultats simulés
   }
 
   goToAjout(): void {
@@ -114,11 +113,11 @@ export class EntreeArticleComponent implements OnInit {
     const doc = new jsPDF();
     autoTable(doc, {
       head: [['Article', 'Stock', 'Quantité', 'Date']],
-      body: this.resultats.map((item: any) => [
-        item.designation || '',
-        item.stock?.nom || '',
-        item.quantite || '',
-        item.date || ''
+      body: this.resultats.map((item) => [
+        item.articleDesignation,
+        item.entiteStockDesignation,
+        item.quantite,
+        item.date
       ])
     });
     doc.save('entrees_article.pdf');

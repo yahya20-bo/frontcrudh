@@ -1,0 +1,86 @@
+.login-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #1cb5e0, #000046);
+  background-size: cover;
+  padding: 1rem;
+}
+
+.login-glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  color: #fff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideFade 0.8s ease-out;
+}
+
+.login-header h3 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.lock-icon {
+  font-size: 2.5rem;
+  animation: pulse 1.5s infinite;
+}
+
+input.form-control {
+  border-radius: 8px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.btn-primary {
+  background-color: #1cb5e0;
+  border: none;
+  font-weight: 600;
+  height: 45px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0d8ecf;
+  }
+}
+
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}

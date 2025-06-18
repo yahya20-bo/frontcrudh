@@ -1,7 +1,6 @@
-import { Article } from "./article.model";
+import { Article } from './article.model';
 
 export interface ArticleResult {
-    articles: Article[]; // Liste des articles
-    totalResults: number; // Nombre total d'articles
-  }
-  
+  articles: Article[];
+  totalResults: number;
+}

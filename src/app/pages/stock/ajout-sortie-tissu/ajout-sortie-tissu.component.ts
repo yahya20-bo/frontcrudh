@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
-
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -56,15 +55,15 @@ export class AjoutSortieTissuComponent implements OnInit {
     });
 
     this.articleService.getAll().subscribe((res: any) => {
-      this.articles = res.articles || res;
+      this.articles = res.articles || res || [];
     });
 
     this.articleService.getClients().subscribe((res: any) => {
-      this.clients = res;
+      this.clients = Array.isArray(res) ? res : [];
     });
 
     this.stockService.getAll().subscribe((res: any) => {
-      this.magasins = res;
+      this.magasins = Array.isArray(res) ? res : [];
     });
   }
 
@@ -78,6 +77,10 @@ export class AjoutSortieTissuComponent implements OnInit {
 
     this.bonMouvementService.ajouterSortieTissu(payload).subscribe(() => {
       alert('✅ Sortie tissu ajoutée avec succès');
+
+      if (!Array.isArray(this.resultats)) {
+        this.resultats = [];
+      }
 
       this.resultats.push({
         reference: this.getArticleReference(payload.articleId),
@@ -107,6 +110,11 @@ export class AjoutSortieTissuComponent implements OnInit {
   }
 
   exportToExcel(): void {
+    if (!Array.isArray(this.resultats)) {
+      console.error('❌ resultats is not an array', this.resultats);
+      return;
+    }
+
     const worksheet = XLSX.utils.json_to_sheet(this.resultats);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sorties Tissu');
@@ -114,6 +122,11 @@ export class AjoutSortieTissuComponent implements OnInit {
   }
 
   exportToPDF(): void {
+    if (!Array.isArray(this.resultats)) {
+      console.error('❌ resultats is not an array', this.resultats);
+      return;
+    }
+
     const doc = new jsPDF();
     const head = [["Réf", "Désignation", "Quantité", "Stock", "Date"]];
     const body = this.resultats.map(r => [r.reference, r.designation, r.quantite, r.entiteStock, r.date]);

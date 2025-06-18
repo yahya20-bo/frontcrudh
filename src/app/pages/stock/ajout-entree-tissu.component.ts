@@ -8,6 +8,7 @@ import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { EntiteStock } from 'src/app/models/entite-stock.model';
 
 @Component({
   selector: 'app-ajout-entree-tissu',
@@ -22,12 +23,11 @@ export class AjoutEntreeTissuComponent implements OnInit {
 
   articles: any[] = [];
   resultats: any[] = [];
-
   familles: string[] = ['Tous'];
   sousFamilles: string[] = ['Tous'];
   fournisseurs: any[] = [];
   clients: any[] = [];
-  magasins: any[] = [];
+  magasins: EntiteStock[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -39,28 +39,27 @@ export class AjoutEntreeTissuComponent implements OnInit {
   ngOnInit(): void {
     this.initForms();
 
-    // ✅ Chargement des données avec sécurité
-    this.articleService.getAll().subscribe(data => {
-      this.articles = Array.isArray(data) ? data : [];
+    this.articleService.getAll().subscribe((data: any) => {
+  this.articles = Array.isArray(data) ? data : data.articles || [];
+});
+
+
+    this.articleService.getFournisseurs().subscribe((res: any[]) => {
+      this.fournisseurs = res || [];
     });
 
-    this.articleService.getFournisseurs().subscribe((data: any) => {
-  this.fournisseurs = Array.isArray(data) ? data : data.fournisseurs ?? [];
-});
+    this.articleService.getClients().subscribe((res: any[]) => {
+      this.clients = res || [];
+    });
 
-this.articleService.getClients().subscribe((data: any) => {
-  this.clients = Array.isArray(data) ? data : data.clients ?? [];
-});
-
-
-    this.stockService.getAll().subscribe(data => {
-      this.magasins = Array.isArray(data) ? data : data.magasins ?? [];
+    this.stockService.getAll().subscribe((stocks: EntiteStock[]) => {
+      this.magasins = stocks || [];
     });
   }
 
   initForms(): void {
     this.addForm = this.fb.group({
-      numeroBE: ['', Validators.required],
+      numero: ['', Validators.required],
       fournisseur: ['', Validators.required],
       client: ['', Validators.required],
       origine: ['', Validators.required],
@@ -73,12 +72,10 @@ this.articleService.getClients().subscribe((data: any) => {
       facture: [''],
       description: [''],
       magasin: ['', Validators.required],
-
       articleId: ['', Validators.required],
       entiteStockId: ['', Validators.required],
       quantite: ['', Validators.required],
       date: ['', Validators.required],
-
       couleur: [''],
       lot: [''],
       oa: [''],
@@ -95,9 +92,57 @@ this.articleService.getClients().subscribe((data: any) => {
     });
   }
 
+  getMagasinId(nom: string): number | null {
+    const magasin = this.magasins.find(m => m.nom === nom);
+    return magasin?.id || null;
+  }
+
+  getMagasinNom(id: number): string {
+    const stock = this.magasins.find(m => m.id === id);
+    return stock?.nom || '-';
+  }
+
+  onSubmit(): void {
+    if (this.addForm.invalid) return;
+
+    const formValue = this.addForm.value;
+
+    const payload = {
+      numero: formValue.numero,
+      fournisseurId: formValue.fournisseur?.id || formValue.fournisseur,
+      client: formValue.client,
+      origine: formValue.origine,
+      responsable: formValue.responsable,
+      date: formValue.dateEntree,
+      dateMouvement: formValue.date,
+      raisonMouvementDesignation: formValue.raisonEntree,
+      spl: formValue.spl,
+      valeur: formValue.valeurBE,
+      etat: formValue.etat,
+      daeFacture: formValue.facture,
+      description: formValue.description,
+      magasinId: this.getMagasinId(formValue.magasin) ?? formValue.magasin,
+      entiteStockDesignation: this.getMagasinNom(formValue.entiteStockId),
+      produitId: formValue.articleId,
+      quantite: formValue.quantite,
+      couleurDesignation: formValue.couleur,
+      lot: formValue.lot,
+      codeConception: formValue.oa,
+      refProduit: formValue.laize,
+      produitDesignation: formValue.qteYard,
+      typeArticle: 1,
+      sortie: false
+    };
+
+    this.bonMouvementService.create('entrees/tissu', payload).subscribe(() => {
+      this.addForm.reset();
+      alert('✅ Entrée tissu ajoutée avec succès');
+    });
+  }
+
   rechercherArticles(): void {
-    const criteria: any = {};
     const formValue = this.searchForm.value;
+    const criteria: any = {};
 
     if (formValue.famille !== 'Tous') criteria.famille = formValue.famille;
     if (formValue.sousFamille !== 'Tous') criteria.sousFamille = formValue.sousFamille;
@@ -121,28 +166,14 @@ this.articleService.getClients().subscribe((data: any) => {
     this.resultats = [];
   }
 
-  onSubmit(): void {
-    if (this.addForm.invalid) return;
-
-    const payload = {
-      ...this.addForm.value,
-      dateMouvement: this.addForm.value.date
-    };
-
-    this.bonMouvementService.create('entrees/tissu', payload).subscribe(() => {
-      this.addForm.reset();
-      alert('✅ Entrée tissu ajoutée avec succès');
-    });
-  }
-
-  exportToExcel(): void {
+  exporterExcel(): void {
     const worksheet = XLSX.utils.json_to_sheet(this.resultats);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Tissu');
     XLSX.writeFile(workbook, 'entrees-tissu.xlsx');
   }
 
-  exportToPDF(): void {
+  exporterPDF(): void {
     const doc = new jsPDF();
     const cols = ["Ref Fournisseur", "Réf.", "Désignation", "Couleur", "Lot", "OA", "Laize", "Qte Yard"];
     const rows = this.resultats.map(item => [
