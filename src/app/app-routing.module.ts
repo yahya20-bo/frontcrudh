@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthLayoutComponent } from './layout/auth-layout.component'; // 📌 nouveau
-import { MainLayoutComponent } from './layout/main-layout.component'; // 📌 nouveau
+import { AuthLayoutComponent } from './layout/auth-layout.component';
+import { MainLayoutComponent } from './layout/main-layout.component';
+import { AuthGuard } from './guards/auth.guard'; // ✅ IMPORT
 
 export const routes: Routes = [
 
-  // 🔐 Auth layout (pour /login uniquement, sans sidebar)
+  // 🔐 Auth layout (public login page)
   {
     path: '',
     component: AuthLayoutComponent,
@@ -17,19 +18,29 @@ export const routes: Routes = [
       }
     ]
   },
+  {
+    path: 'login',
+    component: AuthLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/auth/login/login.component').then(m => m.LoginComponent)
+      }
+    ]
+  },
 
-  // 🧭 Main layout (toutes les autres pages avec sidebar)
+  // 🧭 Main layout (protected by AuthGuard)
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [AuthGuard], // ✅ PROTECT all children
     children: [
       {
         path: '',
         redirectTo: 'stock/entree-tissu',
         pathMatch: 'full'
       },
-
-      // Toutes tes routes existantes (TISSU, FOURNITURE, DIVERS, ARTICLE, etc.)
       {
         path: 'stock/entree-tissu',
         loadComponent: () =>

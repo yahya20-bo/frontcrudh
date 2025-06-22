@@ -21,6 +21,14 @@ export class LoginComponent {
   password: ['leMotDePasseOriginal', Validators.required] // exemple : admin123
 });
 
+
+  }
+  ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // ✅ Token exists — redirect to default page
+      this.router.navigate(['/stock/entree-tissu']);
+    }
   }
 
   login() {
