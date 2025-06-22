@@ -1,17 +1,51 @@
 <nav *ngIf="!isLoginPage()">
   <ul class="pcoded-item pcoded-left-item">
-    <li *ngFor="let item of navItems">
-      <ng-container *ngIf="!item.title">
-        <a [routerLink]="item.url">
-          <i class="{{ item.icon }}"></i>
-          <span>{{ item.name }}</span>
-        </a>
-      </ng-container>
-      <ng-container *ngIf="item.title">
-        <div class="nav-title">
-          {{ item.name }}
-        </div>
-      </ng-container>
+
+    <!-- TISSU -->
+    <li *ngIf="authService.isTissuUser() || authService.isAdmin()">
+      <a routerLink="/stock/entree-tissu"><i class="bi bi-box-arrow-in-down"></i> <span>Entrée Tissu</span></a>
     </li>
+    <li *ngIf="authService.isTissuUser() || authService.isAdmin()">
+      <a routerLink="/stock/sortie-tissu"><i class="bi bi-box-arrow-up"></i> <span>Sortie Tissu</span></a>
+    </li>
+    <li *ngIf="authService.isTissuUser() || authService.isAdmin()">
+      <a routerLink="/stock/etat-stock-tissu"><i class="bi bi-clipboard-data"></i> <span>État Stock Tissu</span></a>
+    </li>
+
+    <!-- FOURNITURE -->
+    <li *ngIf="authService.isFournitureUser() || authService.isAdmin()">
+      <a routerLink="/stock/entree-fourniture"><i class="bi bi-box-arrow-in-down"></i> <span>Entrée Fourniture</span></a>
+    </li>
+    <li *ngIf="authService.isFournitureUser() || authService.isAdmin()">
+      <a routerLink="/stock/sortie-fourniture"><i class="bi bi-box-arrow-up"></i> <span>Sortie Fourniture</span></a>
+    </li>
+    <li *ngIf="authService.isFournitureUser() || authService.isAdmin()">
+      <a routerLink="/stock/etat-stock-fourniture"><i class="bi bi-clipboard-data"></i> <span>État Stock Fourniture</span></a>
+    </li>
+
+    <!-- DIVERS -->
+    <li *ngIf="authService.isDiversUser() || authService.isAdmin()">
+      <a routerLink="/stock/entree-divers"><i class="bi bi-box-arrow-in-down"></i> <span>Entrée Divers</span></a>
+    </li>
+    <li *ngIf="authService.isDiversUser() || authService.isAdmin()">
+      <a routerLink="/stock/sortie-divers"><i class="bi bi-box-arrow-up"></i> <span>Sortie Divers</span></a>
+    </li>
+    <li *ngIf="authService.isDiversUser() || authService.isAdmin()">
+      <a routerLink="/stock/etat-stock-divers"><i class="bi bi-clipboard-data"></i> <span>État Stock Divers</span></a>
+    </li>
+
+    <!-- ARTICLES & CHATBOT (✅ visible par tout le monde) -->
+    <li>
+      <a routerLink="/stock/article"><i class="bi bi-collection"></i> <span>Articles</span></a>
+    </li>
+    <li>
+      <a routerLink="/chatbot"><i class="bi bi-robot"></i> <span>Chatbot</span></a>
+    </li>
+
+    <!-- LOGOUT -->
+    <li>
+      <a (click)="logout()" style="cursor: pointer;"><i class="bi bi-box-arrow-right"></i> <span>Se déconnecter</span></a>
+    </li>
+
   </ul>
 </nav>

@@ -5,6 +5,7 @@ export interface NavItem {
   icon?: string;
 }
 
+
 export const navItems: NavItem[] = [
   { title: true, name: 'Tissu' },
   { title: false, name: 'Entrée', url: '/stock/entree-tissu', icon: 'feather icon-log-in' },
@@ -27,5 +28,7 @@ export const navItems: NavItem[] = [
   { title: false, name: 'Etat Actuel', url: '/stock/etat-stock-article', icon: 'feather icon-layers' },
 
   { title: true, name: 'Assistant' },
-  { title: false, name: 'Chatbot', url: '/chatbot', icon: 'feather icon-message-circle' }
+  { title: false, name: 'Chatbot', url: '/chatbot', icon: 'feather icon-message-circle' },  
+ { title: false, name: 'Se déconnecter', icon: 'feather icon-power' }
 ];
+
