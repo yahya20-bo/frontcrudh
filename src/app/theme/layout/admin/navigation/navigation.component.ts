@@ -25,7 +25,50 @@ export class NavigationComponent {
     localStorage.removeItem('token');         // ⛔ Supprime le JWT
     this.router.navigate(['/login']);         // 🔁 Redirige vers la page de login
   }
+ shouldDisplay(item: any): boolean {
+  const url = item.url || '';
+  const name = item.name.toLowerCase();
+
+  // Always visible
+  if (!url || name.includes('chatbot') || name.includes('se déconnecter')) return true;
+
+  if (url.includes('tissu')) {
+    return this.authService.isTissuUser() || this.authService.isAdmin();
+  }
+
+  if (url.includes('fourniture')) {
+    return this.authService.isFournitureUser() || this.authService.isAdmin();
+  }
+
+  if (url.includes('divers')) {
+    return this.authService.isDiversUser() || this.authService.isAdmin();
+  }
+
+  if (url.includes('article')) {
+    return (
+      this.authService.isTissuUser() ||
+      this.authService.isFournitureUser() ||
+      this.authService.isDiversUser() ||
+      this.authService.isAdmin()
+    );
+  }
+
+  return false;
+}
+
+
+  isVisible(name: string): boolean {
+  const lowered = name.toLowerCase();
+  return (
+    (lowered.includes('tissu') && (this.authService.isTissuUser() || this.authService.isAdmin())) ||
+    (lowered.includes('fourniture') && (this.authService.isFournitureUser() || this.authService.isAdmin())) ||
+    (lowered.includes('divers') && (this.authService.isDiversUser() || this.authService.isAdmin())) ||
+    (lowered.includes('article') || lowered.includes('chatbot') || lowered.includes('assistant') || lowered.includes('se déconnecter'))
+  );
+}
+
 }  
+
 export interface NavItem {
   title: boolean;
   name: string;
