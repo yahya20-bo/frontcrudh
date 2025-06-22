@@ -30,7 +30,7 @@ export class LoginComponent {
       .subscribe({
         next: res => {
           localStorage.setItem('token', res.token);
-          this.router.navigate(['/']);
+          this.router.navigate(['stock/entree-tissu']);
         },
         error: err => {
           this.errorMessage = 'Identifiants invalides ou accès refusé (403)';
