@@ -41,6 +41,7 @@ const decoded = jwtDecode<JwtPayload>(token);
   );
 }
 
+
   isFournitureUser(): boolean {
     const username = this.getUsernameFromToken();
     return !!username && username.toLowerCase().includes('fourniture');

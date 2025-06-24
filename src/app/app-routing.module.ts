@@ -41,7 +41,13 @@ export const routes: Routes = [
         redirectTo: 'stock/entree-tissu',
         pathMatch: 'full'
       },
+      {
+  path: 'admin/ajout-admin',
+  loadComponent: () =>
+    import('./pages/admin/ajoutadmin/ajout-admin.component').then(m => m.AjoutAdminComponent)
+},
 
+      
       // ✅ PAGE ADMIN HOME
       {
         path: 'admin/home',

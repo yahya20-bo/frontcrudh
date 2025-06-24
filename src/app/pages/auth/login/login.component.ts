@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router, public authService: AuthService) {
    this.loginForm = this.fb.group({
   username: ['admin', Validators.required],
   password: ['leMotDePasseOriginal', Validators.required] // exemple : admin123
@@ -26,10 +27,18 @@ export class LoginComponent {
   ngOnInit(): void {
     const token = localStorage.getItem('token');
     if (token) {
+      
       // ✅ Token exists — redirect to default page
       this.router.navigate(['/stock/entree-tissu']);
     }
   }
+  getHomeRoute(): string {
+  if (this.authService.isTissuUser()) return '/stock/entree-tissu';
+  if (this.authService.isFournitureUser()) return '/stock/entree-fourniture';
+  if (this.authService.isDiversUser()) return '/stock/entree-divers';
+  if (this.authService.isAdmin()) return '/admin/home';
+  return '/login';
+}
 
   login() {
   const credentials = this.loginForm.value;
@@ -46,8 +55,9 @@ export class LoginComponent {
         if (username === 'admin') {
           this.router.navigate(['/admin/home']);
         } else {
-          this.router.navigate(['/stock/entree-tissu']);
-        }
+const destination = this.getHomeRoute();
+  console.log('➡️ Redirection vers :', destination);
+  this.router.navigate([destination]);        }
       },
       error: err => {
         this.errorMessage = 'Identifiants invalides ou accès refusé (403)';

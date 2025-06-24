@@ -55,6 +55,15 @@ export class NavigationComponent {
 
   return false;
 }
+getHomeRoute(): string {
+  if (this.authService.isTissuUser()) return '/stock/entree-tissu';
+  if (this.authService.isFournitureUser()) return '/stock/entree-fourniture';
+  if (this.authService.isDiversUser()) return '/stock/entree-divers';
+  if (this.authService.isAdmin()) return '/admin/manage-personal-admins'; // ou autre
+
+  return '/login'; // fallback sécurité
+}
+
 
 
   isVisible(name: string): boolean {

@@ -19,8 +19,17 @@ export class AdminService {
 
   getAllAdmins(): Observable<Admin[]> {
     console.log("recuppppppppppppp");
-    console.log(this.http.get<Admin[]>(this.apiUrl));
     return this.http.get<Admin[]>(this.apiUrl);
   }
+  createAdmin(adminData: { username: string; password: string; enabled: number }): Observable<any> {
+  const url = `${this.apiUrl}/create`;
+  return this.http.post(url, adminData);
 }
-  
+
+
+  deleteAdmin(id: number): Observable<void> {
+    const url = `${this.apiUrl}/${id}`;
+    console.log('🔴 Suppression admin ID =', id);
+    return this.http.delete<void>(url);
+  }
+}
