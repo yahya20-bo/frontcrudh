@@ -5,35 +5,11 @@ import { Router } from '@angular/router';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
-import { ResultatEntreeFourniture } from 'src/app/models/resultat-entree-fourniture.model';
+import { MagasinService } from 'src/app/services/magasin.service';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-
-interface AjoutEntreeFourniturePayload {
-  numeroBE: string;
-  fournisseur: number;
-  client: number;
-  origine: string;
-  date: string;
-  responsable: string;
-  motif: string;
-  spl: string;
-  valeurBE: string;
-  etat: string;
-  facture: string;
-  magasin: string;
-  description: string;
-  articleId: number;
-  stockId: number;
-  quantite: number;
-  couleur: string;
-  lot: string;
-  oa: string;
-  laize: string;
-  qteYard: string;
-  dateMouvement?: string;
-}
+import { ResultatEntreeFourniture } from 'src/app/models/resultat-entree-fourniture.model';
 
 @Component({
   selector: 'app-ajout-entree-fourniture',
@@ -56,18 +32,28 @@ export class AjoutEntreeFournitureComponent implements OnInit {
     private articleService: ArticleService,
     private stockService: EntiteStockService,
     private mouvementService: BonMouvementService,
+    private magasinService: MagasinService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.initForm();
-    this.chargerDonnees();
+    this.loadData();
+
+    this.form.get('magasin')?.valueChanges.subscribe(magasinId => {
+      this.form.get('stockId')?.setValue(null); // Efface l'ancien stock
+      if (magasinId) {
+        this.loadStocksByMagasin(magasinId);
+      } else {
+        this.stocks = [];
+      }
+    });
   }
 
   initForm(): void {
     this.form = this.fb.group({
-      numeroBE: [''],
-      fournisseur: [''],
+      numeroBE: ['', Validators.required],
+      fournisseur: [null],
       client: [''],
       origine: [''],
       date: ['', Validators.required],
@@ -77,11 +63,11 @@ export class AjoutEntreeFournitureComponent implements OnInit {
       valeurBE: [''],
       etat: [''],
       facture: [''],
-      magasin: [''],
+      magasin: [null],
       description: [''],
-      articleId: ['', Validators.required],
-      stockId: ['', Validators.required],
-      quantite: ['', [Validators.required, Validators.min(1)]],
+      articleId: [null, Validators.required],
+      stockId: [null, Validators.required],
+      quantite: [0, Validators.required],
       couleur: [''],
       lot: [''],
       oa: [''],
@@ -90,128 +76,163 @@ export class AjoutEntreeFournitureComponent implements OnInit {
     });
   }
 
-  chargerDonnees(): void {
-    this.articleService.getAll().subscribe({
-      next: res => this.articles = Array.isArray(res) ? res : [],
-      error: err => {
-        this.articles = [];
-        console.error('❌ Erreur articles', err);
-      }
+  loadData(): void {
+    this.articleService.getAll().subscribe(res => {
+      this.articles = res || [];
+      console.log('Articles chargés :', this.articles);
     });
 
-    this.articleService.getFournisseurs().subscribe({
-      next: res => this.fournisseurs = Array.isArray(res) ? res : [],
-      error: err => {
-        this.fournisseurs = [];
-        console.error('❌ Erreur fournisseurs', err);
-      }
+    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res || []);
+    this.articleService.getClients().subscribe(res => this.clients = res || []);
+    this.magasinService.getAll().subscribe(res => {
+      this.magasins = res.magasins || [];
+      console.log('Magasins chargés :', this.magasins);
     });
 
-    this.articleService.getClients().subscribe({
-      next: res => this.clients = Array.isArray(res) ? res : [],
-      error: err => {
-        this.clients = [];
-        console.error('❌ Erreur clients', err);
-      }
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = res || [];
+      console.log('Stocks chargés :', this.stocks);
     });
+  }
 
-    this.stockService.getAll().subscribe({
-      next: res => {
-        const data = Array.isArray(res) ? res : [];
-        this.stocks = data;
-        this.magasins = data;
+  loadStocksByMagasin(magasinId: number): void {
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = (res || []).filter(stock => stock.magasinId !== undefined && +stock.magasinId === +magasinId);
+      console.log('Stocks filtrés :', this.stocks);
+    });
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      console.warn('❌ Formulaire invalide. Champs invalides :');
+      Object.keys(this.form.controls).forEach(key => {
+        const control = this.form.get(key);
+        if (control && control.invalid) {
+          console.warn(`- Champ "${key}" est invalide. Erreurs:`, control.errors);
+        }
+      });
+      this.form.markAllAsTouched();
+      alert('❌ Veuillez remplir tous les champs requis.');
+      return;
+    }
+
+    const formValue = this.form.value;
+
+    const payload = {
+      numero: formValue.numeroBE,
+      fournisseurId: formValue.fournisseur,
+      client: formValue.client,
+      origine: formValue.origine,
+      date: new Date(formValue.date),
+      responsable: formValue.responsable,
+      raisonMouvementDesignation: formValue.motif,
+      spl: formValue.spl,
+      valeur: +formValue.valeurBE,
+      etat: formValue.etat,
+      daeFacture: formValue.facture,
+      magasinId: formValue.magasin,
+      description: formValue.description,
+      produitId: formValue.articleId,
+      entiteStockId: formValue.stockId,
+      resultatQte: +formValue.quantite,
+      couleur: formValue.couleur,
+      refProduit: formValue.lot,
+      numOF: formValue.oa,
+      codeConception: formValue.laize,
+      qteTotalePhysique: +formValue.qteYard,
+      sortie: false,
+      type: 'ENTREE_FOURNITURE',
+      validation: false
+    };
+    delete payload.entiteStockId; // ✅ Supprime le champ du payload
+    console.log('Payload à envoyer :', payload);
+    delete payload.entiteStockId;
+    delete payload.couleur; // ✅ corrige l’erreur actuelle
+
+
+    this.mouvementService.create('entrees/fourniture', payload).subscribe({
+      next: (res) => {
+        alert('✅ Entrée Fourniture ajoutée avec succès');
+const resultat: ResultatEntreeFourniture = {
+  produitId: payload.produitId,
+  entiteStockId: payload.entiteStockId,
+  resultatQte: payload.resultatQte,
+  date: (payload.date instanceof Date) ? payload.date.toISOString() : String(payload.date),
+  fournisseurId: 0,
+  clientId: 0,
+  numeroBE: '',
+  origine: '',
+  responsable: '',
+  motif: '',
+  spl: '',
+  valeurBE: 0,
+  etat: '',
+  reference: '',
+  designation: '',
+  quantite: payload.resultatQte ,
+  entiteStock: ''
+};
+this.resultats.push(resultat);
+        this.form.reset();
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
       },
-      error: err => {
-        this.stocks = [];
-        this.magasins = [];
-        console.error('❌ Erreur stocks', err);
+      error: (err) => {
+        console.error('Erreur lors de l’ajout :', err);
+        alert('❌ Erreur lors de l’enregistrement');
       }
     });
   }
 
- onSubmit(): void {
-  if (this.form.invalid) return;
-
-  const formValue = this.form.value;
-
-  // 🔄 Construction d'un objet compatible avec BonMouvement (et pas AjoutEntreeFourniturePayload)
-  const payload = {
-    numero: formValue.numeroBE,
-    fournisseurId: formValue.fournisseur,
-    client: formValue.client,
-    origine: formValue.origine,
-    date: new Date(formValue.date), // ✅ requis par le modèle
-    dateMouvement: formValue.date,  // string ou Date selon ton backend
-    responsable: formValue.responsable,
-    raisonMouvementDesignation: formValue.motif,
-    spl: formValue.spl,
-    valeur: +formValue.valeurBE,
-    etat: formValue.etat,
-    daeFacture: formValue.facture,
-    magasinId: formValue.magasin ? +formValue.magasin : undefined,
-
-    description: formValue.description,
-    produitId: formValue.articleId,
-    entiteStockId: formValue.stockId,
-    resultatQte: formValue.quantite,
-    couleur: formValue.couleur,
-    lot: formValue.lot,
-    oa: formValue.oa,
-    laize: formValue.laize,
-    qteYard: formValue.qteYard,
-    sortie: false
-  };
-
-  this.mouvementService.create('entrees/fourniture', payload).subscribe(() => {
-    alert('✅ Entrée Fourniture ajoutée avec succès');
-
-    const resultat: ResultatEntreeFourniture = {
-      reference: this.getArticleRef(payload.produitId),
-      designation: this.getArticleDesignation(payload.produitId),
-      quantite: payload.resultatQte,
-      entiteStock: this.getStockNom(payload.entiteStockId),
-      date: payload.dateMouvement
-    };
-
-    this.resultats.push(resultat);
-    this.form.reset();
-  });
+  exportToExcelFourniture(): void {
+  const worksheet = XLSX.utils.json_to_sheet(this.resultats.map(r => ({
+    Référence: this.getRefFourniture(r.produitId),
+    Désignation: this.getDesignationFourniture(r.produitId),
+    Quantité: r.resultatQte,
+    Stock: this.getNomStockFourniture(r.entiteStockId),
+    Date: r.date
+  })));
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Fourniture');
+  XLSX.writeFile(workbook, 'rapport_entree_fourniture.xlsx');
 }
 
 
-  getArticleRef(id: number): string {
-    const a = this.articles.find(a => a.id === id);
-    return a?.ref || '-';
-  }
-
-  getArticleDesignation(id: number): string {
-    const a = this.articles.find(a => a.id === id);
-    return a?.designation || a?.libelle || '-';
-  }
-
-  getStockNom(id: number): string {
-    const s = this.stocks.find(s => s.id === id);
-    return s?.nom || s?.designation || '-';
-  }
-
-  exportToExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(this.resultats);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Fourniture');
-    XLSX.writeFile(workbook, 'entrees-fourniture.xlsx');
-  }
-
-  exportToPDF(): void {
-    const doc = new jsPDF();
-    const head = [["Réf", "Désignation", "Quantité", "Stock", "Date"]];
-    const body = this.resultats.map(r => [
-      r.reference,
-      r.designation,
-      r.quantite,
-      r.entiteStock,
+ exportToPdfFourniture(): void {
+  const doc = new jsPDF();
+  autoTable(doc, {
+    head: [['Référence', 'Désignation', 'Quantité', 'Stock', 'Date']],
+    body: this.resultats.map(r => [
+      this.getRefFourniture(r.produitId),
+      this.getDesignationFourniture(r.produitId),
+      r.resultatQte,
+      this.getNomStockFourniture(r.entiteStockId),
       r.date
-    ]);
-    autoTable(doc, { head, body });
-    doc.save('entrees-fourniture.pdf');
+    ])
+  });
+  doc.save('rapport_entree_fourniture.pdf');
+}
+
+  getRefFourniture(id: number): string {
+  const article = this.articles.find(a => a.id === id);
+  return article?.ref || '-';
+}
+
+getDesignationFourniture(id: number): string {
+  const article = this.articles.find(a => a.id === id);
+  return article?.designation || article?.libelle || '-';
+}
+
+getNomStockFourniture(id: number): string {
+  const stock = this.stocks.find(s => s.id === id);
+  return stock?.nom || stock?.designation || '-';
+}
+  getNomMagasinFourniture(id: number): string {
+    const magasin = this.magasins.find(m => m.id === id);
+    return magasin?.nom || '-';
+  }
+
+  retour(): void {
+    this.router.navigate(['/stock/entree-fourniture']);
   }
 }

@@ -4,24 +4,20 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BonMouvement } from '../models/bon-mouvement.model';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class BonMouvementService {
-
   private apiUrl = 'http://localhost:8080/api/bonmouvement';
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Ajouter un mouvement (type = 'sorties/fourniture' ou 'entrees/fourniture')
-create(type: string, data: BonMouvement): Observable<any> {
-  return this.http.post(`${this.apiUrl}/${type}/create`, data);
-}
+  // ✅ Ajouter un mouvement (tous types : ex. 'entrees/article', 'sorties/fourniture')
+  create(type: string, data: BonMouvement): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${type}/create`, data);
+  }
 
-
-
-  // ✅ Rechercher des mouvements (type = 'sorties/fourniture' ou 'entrees/fourniture')
+  // ✅ Rechercher des mouvements (tous types)
   search(type: string, criteria: any): Observable<any[]> {
     return this.http.post<any[]>(`${this.apiUrl}/${type}/search`, criteria);
   }
@@ -31,14 +27,34 @@ create(type: string, data: BonMouvement): Observable<any> {
     return this.http.get<any[]>(`${this.apiUrl}/${type}`);
   }
 
-  // ✅ Requête spécifique aux entrées tissu (pour conserver Excel/PDF)
+  // ✅ Entrée Tissu spécifique : GET (pour affichage)
   getEntreesTissu(): Observable<any[]> {
     return this.http.get<any>(`${this.apiUrl}/entree-tissu`).pipe(
       map(res => res?.bonMouvements ?? [])
     );
   }
 
-  // ✅ Exports : Entrée Tissu — Excel
+  // ✅ Sortie Tissu spécifique : GET
+  getSortiesTissu(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/sorties/tissu`);
+  }
+
+  // ✅ Rechercher les entrées tissu
+  rechercherEntreesTissu(criteria: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/entree-tissu/recherche`, criteria);
+  }
+
+  // ✅ Rechercher les sorties tissu
+  rechercherSortiesTissu(criteria: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/sorties/tissu/search`, criteria);
+  }
+
+  // ✅ Ajouter une sortie tissu (ex. depuis 'ajout-sortie-tissu')
+  ajouterSortieTissu(data: BonMouvement): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sorties/tissu/create`, data);
+  }
+
+  // ✅ Exports Excel / PDF pour Entrée Tissu
   exporterEntreeTissuExcel(resultats: any[]): void {
     this.http.post(`${this.apiUrl}/entree-tissu/export/excel`, resultats, {
       responseType: 'blob'
@@ -52,7 +68,6 @@ create(type: string, data: BonMouvement): Observable<any> {
     });
   }
 
-  // ✅ Exports : Entrée Tissu — PDF
   exporterEntreeTissuPDF(resultats: any[]): void {
     this.http.post(`${this.apiUrl}/entree-tissu/export/pdf`, resultats, {
       responseType: 'blob'
@@ -64,26 +79,31 @@ create(type: string, data: BonMouvement): Observable<any> {
       a.click();
       window.URL.revokeObjectURL(url);
     });
-  } 
-  // ✅ Ajouter une sortie tissu (utilisé dans ajout-sortie-tissu)
-ajouterSortieTissu(data: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/sorties/tissu`, data);
-}
+  }
 
-// ✅ Rechercher des entrées tissu (utilisé dans entree-tissu.component.ts)
-rechercherEntreesTissu(criteria: any): Observable<any> {
-  return this.http.post<any[]>(`${this.apiUrl}/entree-tissu/recherche`, criteria);
-}
+  // ✅ Entrée Article : pour affichage table
+  getEntreesArticle(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/entrees/article`).pipe(
+      map(res => res?.bonMouvements ?? res ?? [])
+    );
+  }
 
-// ✅ Récupérer toutes les sorties tissu (utilisé dans sortie-tissu.component.ts)
-getSortiesTissu(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/sorties/tissu`);
-}
+  // ✅ Entrée Fourniture : pour affichage table
+  getEntreesFourniture(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/entrees/fourniture`);
+  }
 
-// ✅ Rechercher des sorties tissu (utilisé dans sortie-tissu.component.ts)
-// Corrigez l'URL pour qu'elle corresponde au backend
-rechercherSortiesTissu(criteria: any): Observable<any> {
-  return this.http.post<any[]>(`${this.apiUrl}/sorties/tissu/search`, criteria);
-}
+  // ✅ Sortie Fourniture : pour affichage table
+  getSortiesFourniture(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/sorties/fourniture`);
+  }
 
+  // ✅ Divers
+  getEntreesDivers(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/entrees/divers`);
+  }
+
+  getSortiesDivers(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/sorties/divers`);
+  }
 }

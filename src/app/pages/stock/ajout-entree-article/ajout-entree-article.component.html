@@ -45,11 +45,11 @@
         </div>
 
         <div class="col-md-2">
-          <label class="form-label">Motif</label>
+          <label class="form-label">Raison </label>
           <select class="form-select" formControlName="motif">
             <option value="">--</option>
-            <option value="ACHAT">ACHAT</option>
-            <option value="DON">DON</option>
+            <option value="1">ACHAT(1)</option>
+            <option value="2">DON(2)</option>
           </select>
         </div>
 
@@ -76,8 +76,7 @@
         <div class="col-md-2">
           <label class="form-label">Magasin</label>
           <select class="form-select" formControlName="magasin">
-            <option value="">--</option>
-            <option *ngFor="let m of magasins || []" [value]="m.id || m.nom">{{ m.nom }}</option>
+<option *ngFor="let m of magasins" [value]="m.id">{{ m.designation }}</option>
           </select>
         </div>
 
@@ -92,7 +91,6 @@
         <div class="col-md-3">
           <label class="form-label">Article</label>
           <select class="form-select" formControlName="articleId">
-            <option value="">--</option>
             <option *ngFor="let a of articles || []" [value]="a.id">
               {{ a.reference }} - {{ a.designation }}
 
@@ -103,9 +101,11 @@
         <div class="col-md-3">
           <label class="form-label">Entité de stock</label>
           <select class="form-select" formControlName="stockId">
-            <option value="">--</option>
-            <option *ngFor="let s of stocks" [value]="s.id">
-{{ s.nom }}</option>
+             <option *ngIf="stocks.length === 0" disabled>Aucune entité disponible</option>
+<option *ngFor="let stock of stocks" [value]="stock.id">
+  {{ stock.libelleArticle }} - {{ stock.referenceArticle }}
+</option>
+
           </select>
         </div>
 
@@ -141,7 +141,7 @@
 
         <!-- Boutons -->
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button type="submit" class="btn btn-success" [disabled]="form.invalid">
+          <button type="submit" class="btn btn-success" >
             <i class="bi bi-check-circle me-1"></i> Valider
           </button>
           <button type="button" class="btn btn-outline-success" (click)="exportToExcel()">

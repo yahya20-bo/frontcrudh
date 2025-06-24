@@ -1,99 +1,162 @@
-<div class="container mt-5">
+<div class="container mt-4">
   <div class="card p-4 shadow-sm">
-    <h5 class="mb-4 text-success">
-      <i class="bi bi-plus-circle me-2"></i> Ajouter Sortie Fourniture
+    <h5 class="mb-4 text-primary">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une sortie fourniture
     </h5>
 
-    <form [formGroup]="addForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="row g-3">
 
-        <!-- Ligne 1 -->
-        <div class="col-md-2"><label class="form-label">N° BE</label><input class="form-control" formControlName="numeroBE" /></div>
-        <div class="col-md-2"><label class="form-label">Fournisseur</label>
+        <!-- 🟦 Bloc : Informations générales -->
+        <div class="col-md-2">
+          <label class="form-label">N° BE</label>
+          <input type="text" class="form-control" formControlName="numeroBE" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
-            <option *ngFor="let x of fournisseurs" [value]="x">{{ x.nom }}</option>
-
+            <option [ngValue]="null">--</option>
+            <option *ngFor="let f of fournisseurs" [ngValue]="f.id">{{ f.nom || f }}</option>
           </select>
         </div>
-        <div class="col-md-2"><label class="form-label">Client</label>
+
+        <div class="col-md-2">
+          <label class="form-label">Client</label>
           <select class="form-select" formControlName="client">
-            <option *ngFor="let c of clients" [value]="c">{{ c }}</option>
+            <option [ngValue]="null">--</option>
+            <option *ngFor="let c of clients" [ngValue]="c.id">{{ c.nom || c }}</option>
           </select>
         </div>
-        <div class="col-md-2"><label class="form-label">Origine</label><input class="form-control" formControlName="origine" /></div>
-        <div class="col-md-2"><label class="form-label">Date Sortie</label><input type="date" class="form-control" formControlName="dateSortie" /></div>
-        <div class="col-md-2"><label class="form-label">Responsable</label><input class="form-control" formControlName="responsable" /></div>
 
-        <!-- Ligne 2 -->
-        <div class="col-md-2"><label class="form-label">SPL</label><input class="form-control" formControlName="spl" /></div>
-        <div class="col-md-2"><label class="form-label">Valeur BE</label><input class="form-control" formControlName="valeurBE" /></div>
-        <div class="col-md-2"><label class="form-label">État</label><input class="form-control" formControlName="etat" /></div>
-        <div class="col-md-2"><label class="form-label">DAE / Facture</label><input class="form-control" formControlName="facture" /></div>
-        <div class="col-md-2"><label class="form-label">Magasin</label>
+        <div class="col-md-2">
+          <label class="form-label">Origine</label>
+          <input type="text" class="form-control" formControlName="origine" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Date Entrée <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" formControlName="date" />
+          <div class="text-danger small" *ngIf="form.get('date')?.invalid && form.get('date')?.touched">
+            Champ requis
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Responsable</label>
+          <input type="text" class="form-control" formControlName="responsable" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Raison</label>
+          <select class="form-select" formControlName="motif">
+            <option [ngValue]="null">--</option>
+            <option value="1">ACHAT(1)</option>
+            <option value="2">DON(2)</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">SPL</label>
+          <input type="text" class="form-control" formControlName="spl" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Valeur BE</label>
+          <input type="text" class="form-control" formControlName="valeurBE" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">État</label>
+          <input type="text" class="form-control" formControlName="etat" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Facture / DAE</label>
+          <input type="text" class="form-control" formControlName="facture" />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Magasin</label>
           <select class="form-select" formControlName="magasin">
-            <option *ngFor="let m of magasins" [value]="m.nom">{{ m.nom }}</option>
+            <option [ngValue]="null">--</option>
+            <option *ngFor="let m of magasins" [ngValue]="m.id">{{ m.designation }}</option>
           </select>
         </div>
 
-        <!-- Description -->
-        <div class="col-md-12"><label class="form-label">Description</label>
-          <textarea class="form-control" rows="2" formControlName="description"></textarea>
+        <div class="col-md-12">
+          <label class="form-label">Description</label>
+          <textarea rows="2" class="form-control" formControlName="description"></textarea>
         </div>
 
-        <!-- Ligne 3 -->
-        <div class="col-md-3"><label class="form-label">Article</label>
+        <hr class="my-3">
+
+        <!-- 🟦 Bloc : Article -->
+        <div class="col-md-3">
+          <label class="form-label">Article <span class="text-danger">*</span></label>
           <select class="form-select" formControlName="articleId">
-            <option *ngFor="let article of articles" [value]="article.id">
-              {{ article.ref }} - {{ article.designation }}
+            <option [ngValue]="null">-- Sélectionner un article --</option>
+            <option *ngFor="let a of articles" [ngValue]="a.id">
+              {{ a.reference }} - {{ a.designation }}
             </option>
           </select>
+          <div class="text-danger small" *ngIf="form.get('articleId')?.invalid && form.get('articleId')?.touched">
+            Article requis
+          </div>
         </div>
 
-        <div class="col-md-3"><label class="form-label">Entité de stock</label>
+        <div class="col-md-3">
+          <label class="form-label">Entité de stock <span class="text-danger">*</span></label>
           <select class="form-select" formControlName="stockId">
-            <option *ngFor="let s of stocks" [value]="s.id">{{ s.nom }}</option>
+            <option [ngValue]="null">-- Sélectionner un stock --</option>
+            <option *ngFor="let s of stocks" [ngValue]="s.id">
+              {{ s.libelleArticle }} - {{ s.referenceArticle }}
+            </option>
           </select>
+          <div class="text-danger small" *ngIf="form.get('stockId')?.invalid && form.get('stockId')?.touched">
+            Stock requis
+          </div>
         </div>
 
-        <div class="col-md-2"><label class="form-label">Quantité</label>
+        <div class="col-md-2">
+          <label class="form-label">Quantité</label>
           <input type="number" class="form-control" formControlName="quantite" />
         </div>
 
-        <div class="col-md-2"><label class="form-label">Couleur</label>
+        <div class="col-md-2">
+          <label class="form-label">Couleur</label>
           <input type="text" class="form-control" formControlName="couleur" />
         </div>
 
-        <div class="col-md-2"><label class="form-label">Lot</label>
+        <div class="col-md-2">
+          <label class="form-label">Lot</label>
           <input type="text" class="form-control" formControlName="lot" />
         </div>
 
-        <div class="col-md-2"><label class="form-label">OA</label>
+        <div class="col-md-2">
+          <label class="form-label">OA</label>
           <input type="text" class="form-control" formControlName="oa" />
         </div>
 
-        <div class="col-md-2"><label class="form-label">Laize</label>
+        <div class="col-md-2">
+          <label class="form-label">Laize</label>
           <input type="text" class="form-control" formControlName="laize" />
         </div>
 
-        <div class="col-md-2"><label class="form-label">Qte Yard</label>
+        <div class="col-md-2">
+          <label class="form-label">Qte Yard</label>
           <input type="text" class="form-control" formControlName="qteYard" />
         </div>
-      </div>
 
-      <!-- Boutons -->
-      <div class="row mt-4">
-        <div class="col-md-4">
-          <button class="btn btn-success w-100" type="submit">
-            <i class="bi bi-check-circle me-1"></i> Enregistrer
+        <!-- 🟩 Boutons -->
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> Valider
           </button>
-        </div>
-        <div class="col-md-4">
-          <button type="button" class="btn btn-outline-success w-100" (click)="exportToExcel()">
+          <button type="button" class="btn btn-outline-success" (click)="exportToExcelFourniture()">
             <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
           </button>
-        </div>
-        <div class="col-md-4">
-          <button type="button" class="btn btn-outline-danger w-100" (click)="exportToPDF()">
+          <button type="button" class="btn btn-outline-danger" (click)="exportToPdfFourniture()">
             <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
           </button>
         </div>

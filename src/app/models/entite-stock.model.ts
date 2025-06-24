@@ -8,5 +8,7 @@ export interface EntiteStock {
   dateEntree?: Date;
   emplacement?: string;
   blSuppression?: boolean;
-  article?: Article;                       // ✅ si vous affichez info article (libelle, réf...)
+  article?: Article;   
+  magasinId?: number; // important
+                    // ✅ si vous affichez info article (libelle, réf...)
 }

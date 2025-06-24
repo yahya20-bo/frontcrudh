@@ -1,9 +1,9 @@
-import { Site } from './site.model'; // ✅ Ajoute cette ligne
+import { Site } from './site.model';
 
 export interface Magasin {
   id?: number;
   designation?: string;
-  siteEntite?: Site; // ✅ Site utilisé ici
+  siteEntite?: Site;
   blSuppression?: boolean;
   dateCreation?: Date;
   dateModification?: Date;
@@ -15,5 +15,10 @@ export interface Magasin {
   divers?: boolean;
   inputEmplacementTissu?: boolean;
   inputEmplacement?: boolean;
+}
+
+// ✅ Ajoute ce modèle pour la réponse du backend
+export interface MagasinResponse {
   magasins: Magasin[];
+  totalResults: number;
 }

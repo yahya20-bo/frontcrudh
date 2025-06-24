@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from './layout/auth-layout.component';
 import { MainLayoutComponent } from './layout/main-layout.component';
-import { AuthGuard } from './guards/auth.guard'; // ✅ IMPORT
-
+import { AuthGuard } from './guards/auth.guard';
+import {ManagePersonalAdminsComponent} from './pages/admin/manage-personal-admins/manage-personal-admins.component';
 export const routes: Routes = [
 
-  // 🔐 Auth layout (public login page)
+  // 🔐 Layout pour l'authentification
   {
     path: '',
     component: AuthLayoutComponent,
@@ -30,22 +30,37 @@ export const routes: Routes = [
     ]
   },
 
-  // 🧭 Main layout (protected by AuthGuard)
+  // 🧭 Layout principal protégé par AuthGuard
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [AuthGuard], // ✅ PROTECT all children
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
         redirectTo: 'stock/entree-tissu',
         pathMatch: 'full'
       },
+
+      // ✅ PAGE ADMIN HOME
+      {
+        path: 'admin/home',
+        loadComponent: () =>
+          import('./pages/admin/admin-home/admin-home.component').then(m => m.AdminHomeComponent)
+      },
+
+      // 🧾 STOCK - TISSU
       {
         path: 'stock/entree-tissu',
         loadComponent: () =>
           import('./pages/stock/entree-tissu/entree-tissu.component').then(m => m.EntreeTissuComponent)
       },
+      {
+  path: 'admin/manage-personal-admins',
+  loadComponent: () =>
+    import('./pages/admin/manage-personal-admins/manage-personal-admins.component').then(m => m.ManagePersonalAdminsComponent)
+      },
+
       {
         path: 'stock/sortie-tissu',
         loadComponent: () =>
@@ -56,6 +71,8 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/stock/etat-stock-tissu/etat-stock-tissu.component').then(m => m.EtatStockTissuComponent)
       },
+
+      // 🧾 STOCK - FOURNITURE
       {
         path: 'stock/entree-fourniture',
         loadComponent: () =>
@@ -71,6 +88,8 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/stock/etat-stock-fourniture/etat-stock-fourniture.component').then(m => m.EtatStockFournitureComponent)
       },
+
+      // 🧾 STOCK - DIVERS
       {
         path: 'stock/entree-divers',
         loadComponent: () =>
@@ -86,6 +105,8 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/stock/etat-stock-divers/etat-stock-divers.component').then(m => m.EtatStockDiversComponent)
       },
+
+      // 🧾 STOCK - ARTICLE
       {
         path: 'stock/entree-article',
         loadComponent: () =>
@@ -106,6 +127,8 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/stock/etat-stock-article/etat-stock-article.component').then(m => m.EtatStockArticleComponent)
       },
+
+      // ➕ AJOUT
       {
         path: 'ajout-entree-tissu',
         loadComponent: () =>
@@ -146,6 +169,8 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/stock/ajout-sortie-article/ajout-sortie-article.component').then(m => m.AjoutSortieArticleComponent)
       },
+
+      // 🤖 Chatbot
       {
         path: 'chatbot',
         loadComponent: () =>

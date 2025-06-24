@@ -6,6 +6,11 @@ import { Router } from '@angular/router';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
+import { MagasinService } from 'src/app/services/magasin.service';
+
+import { Article } from 'src/app/models/article.model';
+import { EntiteStock } from 'src/app/models/entite-stock.model';
+import { Magasin } from 'src/app/models/magasin.model';
 
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -20,24 +25,26 @@ import autoTable from 'jspdf-autotable';
 })
 export class AjoutSortieArticleComponent implements OnInit {
   form!: FormGroup;
-  articles: any[] = [];
+  articles: Article[] = [];
   fournisseurs: any[] = [];
   clients: any[] = [];
-  stocks: any[] = [];
-  magasins: any[] = [];
+  stocks: EntiteStock[] = [];
+  magasins: Magasin[] = [];
+  resultats: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
-    private mouvementService: BonMouvementService,
+    private bonMouvementService: BonMouvementService,
+    private magasinService: MagasinService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      numeroBE: [''],
-      fournisseur: [''],
+      numeroBE: ['', Validators.required],
+      fournisseur: [null],
       client: [''],
       origine: [''],
       date: ['', Validators.required],
@@ -47,11 +54,11 @@ export class AjoutSortieArticleComponent implements OnInit {
       valeurBE: [''],
       etat: [''],
       facture: [''],
-      magasin: [''],
+      magasin: [null],
       description: [''],
-      articleId: ['', Validators.required],
-      stockId: ['', Validators.required],
-      quantite: ['', [Validators.required, Validators.min(1)]],
+      articleId: [null, Validators.required],
+      stockId: [null, Validators.required],
+      quantite: [0, Validators.required],
       couleur: [''],
       lot: [''],
       oa: [''],
@@ -59,42 +66,101 @@ export class AjoutSortieArticleComponent implements OnInit {
       qteYard: ['']
     });
 
-    this.articleService.getAll().subscribe(res => this.articles = res);
-    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res);
-    this.articleService.getClients().subscribe(res => this.clients = res);
+    // Filtrer les entités de stock en fonction du magasin sélectionné
+    this.form.get('magasin')?.valueChanges.subscribe(magasinId => {
+      if (magasinId) {
+        this.loadStocksByMagasin(magasinId);
+      } else {
+        this.stocks = [];
+      }
+    });
+
+    this.chargerDonnees();
+  }
+
+  loadStocksByMagasin(magasinId: number): void {
     this.stockService.getAll().subscribe(res => {
-      this.stocks = res;
-      this.magasins = res;
+      this.stocks = (res || []).filter(stock => stock.magasinId !== undefined && +stock.magasinId === +magasinId);
+    });
+  }
+
+  chargerDonnees(): void {
+    this.articleService.getAll().subscribe(data => this.articles = data || []);
+    this.articleService.getFournisseurs().subscribe(res => this.fournisseurs = res || []);
+    this.articleService.getClients().subscribe(res => this.clients = res || []);
+
+    this.stockService.getAll().subscribe(res => this.stocks = res || []);
+    this.magasinService.getAll().subscribe(res => {
+      this.magasins = res.magasins || [];
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid) return;
+    const formValue = this.form.value;
 
     const payload = {
-      ...this.form.value,
-      dateMouvement: this.form.value.date
+      numero: formValue.numeroBE,
+      fournisseurId: formValue.fournisseur,
+      client: formValue.client,
+      origine: formValue.origine,
+      date: new Date(formValue.date),
+      responsable: formValue.responsable,
+      raisonMouvementId: formValue.motif,
+      spl: formValue.spl,
+      valeur: +formValue.valeurBE,
+      etat: formValue.etat,
+      daeFacture: formValue.facture,
+      magasinId: formValue.magasin,
+      description: formValue.description,
+      produitId: formValue.articleId,
+      entiteStockDesignation: formValue.stockId,
+      quantite: +formValue.quantite,
+      couleurDesignation: formValue.couleur,
+      refProduit: formValue.lot,
+      numOF: formValue.oa,
+      codeConception: formValue.laize,
+      qteTotalePhysique: +formValue.qteYard,
+      sortie: true,
+      type: 'SORTIE_ARTICLE',
+      validation: false
     };
 
-    this.mouvementService.create('sorties/article', payload).subscribe(() => {
-      alert('✅ Sortie article enregistrée avec succès');
-      this.form.reset();
+    this.bonMouvementService.create('sorties/article', payload).subscribe({
+      next: (res) => {
+        alert('✅ Sortie article enregistrée avec succès');
+        this.resultats = [res];
+        this.form.reset();
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+      },
+      error: (err) => {
+        console.error('Erreur lors de l’enregistrement :', err);
+        alert('❌ Échec de l’opération');
+      }
     });
   }
 
   exportToExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet([this.form.value]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'SortieArticle');
-    XLSX.writeFile(workbook, 'sortie-article.xlsx');
+    const ws = XLSX.utils.json_to_sheet(this.resultats);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sortie Article');
+    XLSX.writeFile(wb, 'rapport_sortie_article.xlsx');
   }
 
   exportToPDF(): void {
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [['Champ', 'Valeur']],
-      body: Object.entries(this.form.value)
+      head: [['Article', 'Quantité', 'Date']],
+      body: this.resultats.map(item => [
+        item.produitDesignation || '',
+        item.quantite || '',
+        item.date || ''
+      ])
     });
-    doc.save('sortie-article.pdf');
+    doc.save('rapport_sortie_article.pdf');
+  }
+
+  retour(): void {
+    this.router.navigate(['/stock/sortie-article']);
   }
 }

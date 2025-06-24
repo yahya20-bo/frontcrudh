@@ -1,0 +1,39 @@
+<div class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <h4 class="text-primary mb-4">
+      👤 Gestion des administrateurs
+    </h4>
+
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn btn-success" (click)="ajouterAdmin()">
+        ➕ Ajouter un administrateur
+      </button>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped mt-3" *ngIf="admins && admins.length > 0">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nom d'utilisateur</th>
+        <th>Mot de passe (haché)</th>
+        <th>Actif ?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let admin of admins">
+        <td>{{ admin.id }}</td>
+        <td>{{ admin.username }}</td>
+        <td>{{ admin.password }}</td>
+        <td>
+          <span class="badge" [ngClass]="admin.enabled ? 'bg-success' : 'bg-danger'">
+            {{ admin.enabled ? 'Oui' : 'Non' }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+    </div>
+  </div>
+</div>

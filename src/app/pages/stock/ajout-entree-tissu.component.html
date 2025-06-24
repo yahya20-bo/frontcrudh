@@ -1,133 +1,76 @@
 <div class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-4 text-primary">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée tissu
+    </h5>
 
-  <!-- 📋 Résultats -->
-  <div *ngIf="resultats.length > 0" class="card shadow-sm p-4 mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <h5 class="mb-0">📋 Résultats trouvés : {{ resultats.length }}</h5>
-      <div>
-        <button type="button" class="btn btn-outline-success me-2" (click)="exporterExcel()">
-  📊 Exporter Excel
-</button>
-
-<button type="button" class="btn btn-outline-danger" (click)="exporterPDF()">
-  🧾 Exporter PDF
-</button>
-
-      </div>
-    </div>
-
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle text-center">
-        <thead class="table-light">
-          <tr>
-            <th>Ref Fournisseur</th>
-            <th>Réf.</th>
-            <th>Désignation</th>
-            <th>Couleur</th>
-            <th>Lot</th>
-            <th>OA</th>
-            <th>Laize</th>
-            <th>Qte Yard</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of resultats">
-            <td>{{ item.refFournisseur || '-' }}</td>
-            <td>{{ item.reference || '-' }}</td>
-            <td>{{ item.libelle || '-' }}</td>
-            <td>{{ item.couleur || '-' }}</td>
-            <td>{{ item.lot || '-' }}</td>
-            <td>{{ item.oa || '-' }}</td>
-            <td>{{ item.laize || '-' }}</td>
-            <td>{{ item.qteYard || '-' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ➕ Formulaire d'ajout -->
-  <div class="card shadow-sm p-4 mt-5">
-    <h4 class="mb-4">➕ Ajouter une entrée tissu</h4>
-    <form [formGroup]="addForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="row g-3">
-
-        <div class="col-md-2"><label>N° BE</label><input class="form-control" formControlName="numero" /></div>
-        <div class="col-md-2"><label>Fournisseur</label>
+        <!-- Bloc 1 : Infos générales -->
+        <div class="col-md-2"><label class="form-label">N° BE</label><input class="form-control" formControlName="numeroBE" /></div>
+        <div class="col-md-2"><label class="form-label">Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f.nom }}</option>
+            <option value="">--</option>
+            <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
           </select>
         </div>
-        <div class="col-md-2"><label>Client</label>
+        <div class="col-md-2"><label class="form-label">Client</label>
           <select class="form-select" formControlName="client">
-            <option *ngFor="let c of clients" [value]="c">{{ c.nom }}</option>
+            <option value="">--</option>
+            <option *ngFor="let c of clients" [value]="c.id">{{ c.nom }}</option>
           </select>
         </div>
-        <div class="col-md-2"><label>Origine</label><input class="form-control" formControlName="origine" /></div>
-        <div class="col-md-2"><label>Date Entrée</label><input type="date" class="form-control" formControlName="dateEntree" /></div>
-        <div class="col-md-2"><label>Responsable</label><input class="form-control" formControlName="responsable" /></div>
+        <div class="col-md-2"><label class="form-label">Origine</label><input class="form-control" formControlName="origine" /></div>
+        <div class="col-md-2"><label class="form-label">Date Entrée</label><input type="date" class="form-control" formControlName="date" /></div>
+        <div class="col-md-2"><label class="form-label">Responsable</label><input class="form-control" formControlName="responsable" /></div>
 
-        <div class="col-md-2"><label>Raison d'entrée</label>
-          <select class="form-select" formControlName="raisonEntree">
-            <option>ACHAT DIVERS</option>
-            <option>DONS</option>
-            <option>RETOUR</option>
+        <div class="col-md-2"><label class="form-label">Raison</label>
+          <select class="form-select" formControlName="motif">
+            <option value="">--</option>
+            <option value="1">ACHAT</option>
+            <option value="2">DON</option>
+            <option value="3">RETOUR</option>
           </select>
         </div>
-        <div class="col-md-2"><label>SPL</label><input class="form-control" formControlName="spl" /></div>
-        <div class="col-md-2"><label>Valeur BE</label><input class="form-control" formControlName="valeurBE" /></div>
-        <div class="col-md-2"><label>État</label><input class="form-control" formControlName="etat" /></div>
-        <div class="col-md-2"><label>DAE / Facture</label><input class="form-control" formControlName="facture" /></div>
-        <div class="col-md-2"><label>Magasin</label>
+        <div class="col-md-2"><label class="form-label">SPL</label><input class="form-control" formControlName="spl" /></div>
+        <div class="col-md-2"><label class="form-label">Valeur BE</label><input class="form-control" formControlName="valeurBE" /></div>
+        <div class="col-md-2"><label class="form-label">État</label><input class="form-control" formControlName="etat" /></div>
+        <div class="col-md-2"><label class="form-label">Facture / DAE</label><input class="form-control" formControlName="facture" /></div>
+        <div class="col-md-2"><label class="form-label">Magasin</label>
           <select class="form-select" formControlName="magasin">
-            <option *ngFor="let m of magasins" [value]="m.nom">{{ m.nom }}</option>
+            <option *ngFor="let m of magasins" [value]="m.id">{{ m.designation }}</option>
           </select>
         </div>
 
-        <div class="col-md-12"><label>Description</label>
-          <textarea class="form-control" rows="2" formControlName="description"></textarea>
-        </div>
+        <div class="col-md-12"><label class="form-label">Description</label><textarea rows="2" class="form-control" formControlName="description"></textarea></div>
 
-        <hr class="my-2">
+        <hr class="my-3">
 
-        <div class="col-md-3"><label>Article</label>
+        <!-- Bloc 2 : Article -->
+        <div class="col-md-3"><label class="form-label">Article</label>
           <select class="form-select" formControlName="articleId">
-            <option *ngFor="let a of articles" [value]="a.id">{{ a.ref }} - {{ a.libelle }}</option>
+<option *ngFor="let a of articles" [value]="a.id">{{ a.ref }} - {{ a.designation }}</option>
           </select>
         </div>
-        <div class="col-md-3"><label>Entité de stock</label>
-          <select class="form-select" formControlName="entiteStockId">
-            <option *ngFor="let s of magasins" [value]="s.id">{{ s.nom }}</option>
+        <div class="col-md-3"><label class="form-label">Entité de stock</label>
+          <select class="form-select" formControlName="stockId">
+            <option *ngFor="let stock of stocks" [value]="stock.id">{{ stock.libelleArticle }} - {{ stock.referenceArticle }}</option>
           </select>
         </div>
-        <div class="col-md-3"><label>Quantité</label><input type="number" class="form-control" formControlName="quantite" /></div>
-        <div class="col-md-3"><label>Date</label><input type="date" class="form-control" formControlName="date" /></div>
+        <div class="col-md-2"><label class="form-label">Quantité</label><input type="number" class="form-control" formControlName="quantite" /></div>
+        <div class="col-md-2"><label class="form-label">Couleur</label><input type="text" class="form-control" formControlName="couleur" /></div>
+        <div class="col-md-2"><label class="form-label">Lot</label><input type="text" class="form-control" formControlName="lot" /></div>
+        <div class="col-md-2"><label class="form-label">OA</label><input type="text" class="form-control" formControlName="oa" /></div>
+        <div class="col-md-2"><label class="form-label">Laize</label><input type="text" class="form-control" formControlName="laize" /></div>
+        <div class="col-md-2"><label class="form-label">Qte Yard</label><input type="text" class="form-control" formControlName="qteYard" /></div>
 
-        <div class="col-md-2"><label>Couleur</label><input class="form-control" formControlName="couleur" /></div>
-        <div class="col-md-2"><label>Lot</label><input class="form-control" formControlName="lot" /></div>
-        <div class="col-md-2"><label>OA</label><input class="form-control" formControlName="oa" /></div>
-        <div class="col-md-2"><label>Laize</label><input class="form-control" formControlName="laize" /></div>
-        <div class="col-md-2"><label>Qte Yard</label><input class="form-control" formControlName="qteYard" /></div>
-
-        <div class="col-12 text-end mt-3">
-          <button type="submit" class="btn btn-success">
-            <i class="bi bi-check-circle me-1"></i> Valider
-          </button>
+        <!-- Boutons -->
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button type="submit" class="btn btn-success"><i class="bi bi-check-circle me-1"></i> Valider</button>
+          <button type="button" class="btn btn-outline-success" (click)="exportToExcel()"><i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel</button>
+          <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()"><i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF</button>
         </div>
-
       </div>
     </form>
-    <!-- 🔽 Boutons Export Excel/PDF sous le formulaire -->
-<div class="col-12 text-end mt-4">
-  <button type="button" class="btn btn-outline-success me-2" (click)="exporterExcel()"
->
-    <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
-  </button>
-  <button type="button" class="btn btn-outline-danger" (click)="exporterPDF()"
->
-    <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
-  </button>
-</div>
-
   </div>
 </div>

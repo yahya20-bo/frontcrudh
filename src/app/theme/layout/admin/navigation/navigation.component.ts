@@ -18,7 +18,7 @@ export class NavigationComponent {
   constructor(private router: Router , public authService: AuthService) {}
 
   isLoginPage(): boolean {
-    return this.router.url === '/login';
+    return this.router.url === '/login'; // Vérifie si l'URL actuelle est la page de login
   }
 
   logout(): void {
@@ -31,7 +31,7 @@ export class NavigationComponent {
 
   // Always visible
   if (!url || name.includes('chatbot') || name.includes('se déconnecter')) return true;
-
+  if ( this.router.url === '/admin/home' || this.router.url === '/admin/manage-personal-admins') return false;
   if (url.includes('tissu')) {
     return this.authService.isTissuUser() || this.authService.isAdmin();
   }

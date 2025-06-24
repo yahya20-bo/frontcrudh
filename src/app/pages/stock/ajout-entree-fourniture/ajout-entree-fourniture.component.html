@@ -1,165 +1,166 @@
 <div class="container mt-4">
   <div class="card p-4 shadow-sm">
-    <h5 class="mb-4 text-success">
-      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée de fourniture
+    <h5 class="mb-4 text-primary">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée fourniture
     </h5>
 
-    <!-- Formulaire d'ajout -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="row g-3">
-        <!-- Première ligne -->
+
+        <!-- 🟦 Bloc : Informations générales -->
         <div class="col-md-2">
           <label class="form-label">N° BE</label>
           <input type="text" class="form-control" formControlName="numeroBE" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
-            <option value="">-- Sélectionner --</option>
-            <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
-
+            <option [ngValue]="null">--</option>
+            <option *ngFor="let f of fournisseurs" [ngValue]="f.id">{{ f.nom || f }}</option>
           </select>
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Client</label>
           <select class="form-select" formControlName="client">
-            <option value="">-- Sélectionner --</option>
-            <option *ngFor="let c of clients || []" [value]="c.id">{{ c.nom }}</option>
+            <option [ngValue]="null">--</option>
+            <option *ngFor="let c of clients" [ngValue]="c.id">{{ c.nom || c }}</option>
           </select>
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Origine</label>
           <input type="text" class="form-control" formControlName="origine" />
         </div>
+
         <div class="col-md-2">
-          <label class="form-label">Date Entrée</label>
+          <label class="form-label">Date Entrée <span class="text-danger">*</span></label>
           <input type="date" class="form-control" formControlName="date" />
+          <div class="text-danger small" *ngIf="form.get('date')?.invalid && form.get('date')?.touched">
+            Champ requis
+          </div>
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Responsable</label>
           <input type="text" class="form-control" formControlName="responsable" />
         </div>
 
-        <!-- Ligne 2 -->
         <div class="col-md-2">
-          <label class="form-label">Motif</label>
-          <input type="text" class="form-control" formControlName="motif" />
+          <label class="form-label">Raison</label>
+          <select class="form-select" formControlName="motif">
+            <option [ngValue]="null">--</option>
+            <option value="1">ACHAT(1)</option>
+            <option value="2">DON(2)</option>
+          </select>
         </div>
+
         <div class="col-md-2">
           <label class="form-label">SPL</label>
           <input type="text" class="form-control" formControlName="spl" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Valeur BE</label>
           <input type="text" class="form-control" formControlName="valeurBE" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">État</label>
           <input type="text" class="form-control" formControlName="etat" />
         </div>
+
         <div class="col-md-2">
-          <label class="form-label">DAE / Facture</label>
+          <label class="form-label">Facture / DAE</label>
           <input type="text" class="form-control" formControlName="facture" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Magasin</label>
           <select class="form-select" formControlName="magasin">
-            <option value="">-- Sélectionner --</option>
-            <option *ngFor="let m of magasins || []" [value]="m.nom">{{ m.nom }}</option>
+            <option [ngValue]="null">--</option>
+            <option *ngFor="let m of magasins" [ngValue]="m.id">{{ m.designation }}</option>
           </select>
         </div>
 
-        <!-- Ligne 3 -->
         <div class="col-md-12">
           <label class="form-label">Description</label>
           <textarea rows="2" class="form-control" formControlName="description"></textarea>
         </div>
 
-        <hr class="mt-4 mb-2" />
+        <hr class="my-3">
 
-        <!-- Ligne 4 : Article / Stock -->
+        <!-- 🟦 Bloc : Article -->
         <div class="col-md-3">
-          <label class="form-label">Article</label>
+          <label class="form-label">Article <span class="text-danger">*</span></label>
           <select class="form-select" formControlName="articleId">
-            <option value="">-- Sélectionner --</option>
-            <option *ngFor="let a of articles || []" [value]="a.id">{{ a.ref }} - {{ a.designation }}</option>
+            <option [ngValue]="null">-- Sélectionner un article --</option>
+            <option *ngFor="let a of articles" [ngValue]="a.id">
+              {{ a.reference }} - {{ a.designation }}
+            </option>
           </select>
+          <div class="text-danger small" *ngIf="form.get('articleId')?.invalid && form.get('articleId')?.touched">
+            Article requis
+          </div>
         </div>
+
         <div class="col-md-3">
-          <label class="form-label">Entité de stock</label>
+          <label class="form-label">Entité de stock <span class="text-danger">*</span></label>
           <select class="form-select" formControlName="stockId">
-            <option value="">-- Sélectionner --</option>
-            <option *ngFor="let s of stocks || []" [value]="s.id">{{ s.nom }}</option>
+            <option [ngValue]="null">-- Sélectionner un stock --</option>
+            <option *ngFor="let s of stocks" [ngValue]="s.id">
+              {{ s.libelleArticle }} - {{ s.referenceArticle }}
+            </option>
           </select>
+          <div class="text-danger small" *ngIf="form.get('stockId')?.invalid && form.get('stockId')?.touched">
+            Stock requis
+          </div>
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Quantité</label>
           <input type="number" class="form-control" formControlName="quantite" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Couleur</label>
           <input type="text" class="form-control" formControlName="couleur" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Lot</label>
           <input type="text" class="form-control" formControlName="lot" />
         </div>
 
-        <!-- Ligne 5 : Autres détails -->
         <div class="col-md-2">
           <label class="form-label">OA</label>
           <input type="text" class="form-control" formControlName="oa" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Laize</label>
           <input type="text" class="form-control" formControlName="laize" />
         </div>
+
         <div class="col-md-2">
           <label class="form-label">Qte Yard</label>
           <input type="text" class="form-control" formControlName="qteYard" />
         </div>
 
-        <!-- Boutons -->
-        <div class="col-12 text-end mt-4">
-          <button type="submit" class="btn btn-success me-2">
-            <i class="bi bi-check-circle me-1"></i> Enregistrer
+        <!-- 🟩 Boutons -->
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> Valider
           </button>
-          <button type="button" class="btn btn-outline-success me-2" (click)="exportToExcel()">
+          <button type="button" class="btn btn-outline-success" (click)="exportToExcelFourniture()">
             <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
           </button>
-          <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()">
+          <button type="button" class="btn btn-outline-danger" (click)="exportToPdfFourniture()">
             <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
           </button>
         </div>
       </div>
     </form>
-
-    <!-- Tableau des résultats -->
-    <div *ngIf="resultats && resultats.length" class="card mt-5 p-3 shadow-sm">
-      <h6 class="text-secondary mb-3">📋 Entrées enregistrées : {{ resultats.length }}</h6>
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover text-center align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Réf</th>
-              <th>Désignation</th>
-              <th>Quantité</th>
-              <th>Stock</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let r of resultats || []">
-              <td>{{ r.reference }}</td>
-              <td>{{ r.designation }}</td>
-              <td>{{ r.quantite }}</td>
-              <td>{{ r.entiteStock }}</td>
-              <td>{{ r.date }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
   </div>
 </div>

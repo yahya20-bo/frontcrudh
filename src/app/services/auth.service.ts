@@ -27,6 +27,10 @@ const decoded = jwtDecode<JwtPayload>(token);
     const username = this.getUsernameFromToken();
     return !!username && username.toLowerCase().includes('tissu');
   }
+  isAdminManagingadmins(): boolean {
+    const username = this.getUsernameFromToken();
+    return !!username && username.toLowerCase().includes('admin');
+  }
   isAdmin(): boolean {
   const username = this.getUsernameFromToken();
   return (
