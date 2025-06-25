@@ -21,10 +21,8 @@ export class AjoutEntreeDiversComponent implements OnInit {
   articles: any[] = [];
   stocks: any[] = [];
   resultats: any[] = [];
-
-  // ✅ Champs manquants pour le template
-  fournisseurs: string[] = ['Fournisseur A', 'Fournisseur B', 'Fournisseur C'];
-  clients: string[] = ['Client X', 'Client Y', 'Client Z'];
+  fournisseurs: any[] = [];
+  clients: any[] = [];
   magasins: any[] = [];
 
   constructor(
@@ -36,23 +34,23 @@ export class AjoutEntreeDiversComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ Formulaire complet avec tous les champs affichés
     this.addForm = this.fb.group({
-      numeroBE: [''],
-      fournisseur: [''],
+      numeroBE: ['', Validators.required],
+      fournisseur: [null],
       client: [''],
       origine: [''],
       date: ['', Validators.required],
       responsable: [''],
+      motif: [''],
       spl: [''],
       valeurBE: [''],
       etat: [''],
       facture: [''],
-      magasin: [''],
+      magasin: [null],
       description: [''],
-      articleId: ['', Validators.required],
-      stockId: ['', Validators.required],
-      quantite: ['', Validators.required],
+      articleId: [null, Validators.required],
+      stockId: [null, Validators.required],
+      quantite: [0, Validators.required],
       couleur: [''],
       lot: [''],
       oa: [''],
@@ -60,50 +58,110 @@ export class AjoutEntreeDiversComponent implements OnInit {
       qteYard: ['']
     });
 
-    // 📦 Chargement des données
-    this.articleService.getAll().subscribe((data: any) => {
-      this.articles = data.articles || data;
+    this.addForm.get('magasin')?.valueChanges.subscribe(magasinId => {
+      if (magasinId) {
+        this.loadStocksByMagasin(magasinId);
+      } else {
+        this.stocks = [];
+      }
     });
 
-    this.stockService.getAll().subscribe((data: any) => {
-      this.stocks = data;
-      this.magasins = data.map((s: any) => ({ nom: s.nom }));
-    });
-
+    this.chargerDonnees();
     this.fetchResultats();
   }
 
-  // ✅ Soumission du formulaire
+  loadStocksByMagasin(magasinId: number): void {
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = (res || []).filter(stock => stock.magasinId !== undefined && +stock.magasinId === +magasinId);
+    });
+  }
+
+  chargerDonnees(): void {
+    this.articleService.getAll().subscribe(data => {
+      this.articles = data || [];
+    });
+
+    this.articleService.getFournisseurs().subscribe(res => {
+      this.fournisseurs = res || [];
+    });
+
+    this.articleService.getClients().subscribe(res => {
+      this.clients = res || [];
+    });
+
+    this.stockService.getAll().subscribe(res => {
+      this.stocks = res || [];
+      console.log('STOCKS :', this.stocks);
+
+      this.magasins = [...new Map(
+        this.stocks
+          .filter(s => s.magasinId)
+          .map(s => [s.magasinId, {
+            id: s.magasinId,
+            designation: s.nomMagasin || s.designation || ('Magasin ' + s.magasinId)
+          }])
+      ).values()];
+
+      console.log('MAGASINS CONSTRUITS :', this.magasins);
+    });
+  }
+
   onSubmit(): void {
     if (this.addForm.invalid) {
       alert('❌ Veuillez remplir tous les champs obligatoires.');
       return;
     }
 
+    const formValue = this.addForm.value;
+
     const payload = {
-      ...this.addForm.value,
-      dateMouvement: this.addForm.value.date
+      numero: formValue.numeroBE,
+      fournisseurId: formValue.fournisseur,
+      client: formValue.client,
+      origine: formValue.origine,
+      date: new Date(formValue.date),
+      responsable: formValue.responsable,
+      raisonMouvementId: formValue.motif,
+      spl: formValue.spl,
+      valeur: +formValue.valeurBE,
+      etat: formValue.etat,
+      daeFacture: formValue.facture,
+      magasinId: formValue.magasin,
+      description: formValue.description,
+      produitId: formValue.articleId,
+      entiteStockDesignation: formValue.stockId,
+      quantite: +formValue.quantite,
+      couleurDesignation: formValue.couleur,
+      refProduit: formValue.lot,
+      numOF: formValue.oa,
+      codeConception: formValue.laize,
+      qteTotalePhysique: +formValue.qteYard,
+      sortie: false,
+      type: 'ENTREE_DIVERS',
+      validation: false
     };
 
     this.mouvementService.create('entrees/divers', payload).subscribe({
-      next: () => {
+      next: (res) => {
         alert('✅ Entrée Divers enregistrée avec succès');
+        this.resultats = [res];
         this.addForm.reset();
-        this.fetchResultats();
+        this.addForm.markAsPristine();
+        this.addForm.markAsUntouched();
       },
-      error: () => alert('❌ Une erreur est survenue lors de l\'enregistrement.')
+      error: (err) => {
+        console.error('Erreur lors de l’enregistrement :', err);
+        alert('❌ Erreur : ' + (err.error?.message || err.message || 'Erreur inconnue'));
+      }
     });
   }
 
-  // ✅ Récupération des résultats
   fetchResultats(): void {
-  this.mouvementService.getAll('entrees/divers').subscribe((data: any) => {
-    this.resultats = data?.bonMouvements ?? [];
-  });
-}
+    this.mouvementService.getAll('entrees/divers').subscribe((data: any) => {
+      this.resultats = data?.bonMouvements ?? [];
+    });
+  }
 
-
-  // ✅ Export Excel
   exportToExcel(): void {
     const worksheet = XLSX.utils.json_to_sheet(this.resultats);
     const workbook = XLSX.utils.book_new();
@@ -111,14 +169,12 @@ export class AjoutEntreeDiversComponent implements OnInit {
     XLSX.writeFile(workbook, 'entree_divers.xlsx');
   }
 
-  // ✅ Export PDF
   exportToPDF(): void {
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [['Réf', 'Désignation', 'Quantité', 'Stock', 'Date']],
+      head: [['Article', 'Quantité', 'Stock', 'Date']],
       body: this.resultats.map(item => [
-        item.reference || '',
-        item.designation || '',
+        item.article?.designation || '',
         item.quantite || '',
         item.entiteStock || '',
         item.dateMouvement || ''
@@ -127,7 +183,6 @@ export class AjoutEntreeDiversComponent implements OnInit {
     doc.save('entree_divers.pdf');
   }
 
-  // 🔁 Redirection si besoin
   retourAccueil(): void {
     this.router.navigate(['/stock/entree-divers']);
   }

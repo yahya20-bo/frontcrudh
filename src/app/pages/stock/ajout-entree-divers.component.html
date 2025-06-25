@@ -1,159 +1,136 @@
-<div class="container mt-5">
+<div class="container mt-4">
   <div class="card p-4 shadow-sm">
-    <h5 class="mb-4 text-success">
-      <i class="bi bi-plus-circle me-2"></i> Ajouter une Entrée Divers
+    <h5 class="mb-4 text-primary">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une entrée divers
     </h5>
 
     <form [formGroup]="addForm" (ngSubmit)="onSubmit()">
       <div class="row g-3">
 
-        <!-- Informations générales -->
+        <!-- Champ obligatoire : N° BE -->
         <div class="col-md-2">
           <label class="form-label">N° BE</label>
-          <input class="form-control" formControlName="numeroBE" />
+          <input class="form-control" formControlName="numeroBE"
+            [ngClass]="{'is-invalid': addForm.get('numeroBE')?.invalid && addForm.get('numeroBE')?.touched}" />
+          <div class="invalid-feedback" *ngIf="addForm.get('numeroBE')?.invalid && addForm.get('numeroBE')?.touched">
+            Champ requis
+          </div>
         </div>
+
+        <!-- Fournisseur -->
         <div class="col-md-2">
           <label class="form-label">Fournisseur</label>
           <select class="form-select" formControlName="fournisseur">
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+            <option value="">--</option>
+            <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
           </select>
         </div>
+
+        <!-- Client -->
         <div class="col-md-2">
           <label class="form-label">Client</label>
           <select class="form-select" formControlName="client">
-            <option *ngFor="let c of clients" [value]="c">{{ c }}</option>
+            <option value="">--</option>
+            <option *ngFor="let c of clients" [value]="c.id">{{ c.nom }}</option>
           </select>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Origine</label>
-          <input class="form-control" formControlName="origine" />
-        </div>
+
+        <div class="col-md-2"><label class="form-label">Origine</label><input class="form-control" formControlName="origine" /></div>
+
+        <!-- Champ obligatoire : Date Entrée -->
         <div class="col-md-2">
           <label class="form-label">Date Entrée</label>
-          <input type="date" class="form-control" formControlName="date" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Responsable</label>
-          <input class="form-control" formControlName="responsable" />
+          <input type="date" class="form-control" formControlName="date"
+            [ngClass]="{'is-invalid': addForm.get('date')?.invalid && addForm.get('date')?.touched}" />
+          <div class="invalid-feedback" *ngIf="addForm.get('date')?.invalid && addForm.get('date')?.touched">
+            Date requise
+          </div>
         </div>
 
-        <!-- Informations complémentaires -->
-        <div class="col-md-2">
-          <label class="form-label">SPL</label>
-          <input class="form-control" formControlName="spl" />
+        <div class="col-md-2"><label class="form-label">Responsable</label><input class="form-control" formControlName="responsable" /></div>
+
+        <div class="col-md-2"><label class="form-label">Raison</label>
+          <select class="form-select" formControlName="motif">
+            <option value="">--</option>
+            <option value="1">ACHAT</option>
+            <option value="2">DON</option>
+            <option value="3">RETOUR</option>
+          </select>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Valeur BE</label>
-          <input class="form-control" formControlName="valeurBE" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">État</label>
-          <input class="form-control" formControlName="etat" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">DAE / Facture</label>
-          <input class="form-control" formControlName="facture" />
-        </div>
+
+        <div class="col-md-2"><label class="form-label">SPL</label><input class="form-control" formControlName="spl" /></div>
+        <div class="col-md-2"><label class="form-label">Valeur BE</label><input class="form-control" formControlName="valeurBE" /></div>
+        <div class="col-md-2"><label class="form-label">État</label><input class="form-control" formControlName="etat" /></div>
+        <div class="col-md-2"><label class="form-label">Facture / DAE</label><input class="form-control" formControlName="facture" /></div>
+
         <div class="col-md-2">
           <label class="form-label">Magasin</label>
           <select class="form-select" formControlName="magasin">
-            <option *ngFor="let m of magasins" [value]="m.nom">{{ m.nom }}</option>
-          </select>
-        </div>
-
-        <!-- Description -->
-        <div class="col-md-12">
-          <label class="form-label">Description</label>
-          <textarea class="form-control" rows="2" formControlName="description"></textarea>
-        </div>
-
-        <!-- Article et stock -->
-        <div class="col-md-3">
-          <label class="form-label">Article</label>
-          <select class="form-select" formControlName="articleId">
-            <option *ngFor="let article of articles" [value]="article.id">
-              {{ article.ref }} - {{ article.designation }}
+            <option value="">-- Sélectionner --</option>
+            <option *ngFor="let m of magasins || []" [value]="m.id">
+              {{ m.designation }}
             </option>
           </select>
         </div>
+
+        <div class="col-md-12">
+          <label class="form-label">Description</label>
+          <textarea rows="2" class="form-control" formControlName="description"></textarea>
+        </div>
+
+        <hr class="my-3">
+
+        <!-- Article requis -->
+        <div class="col-md-3">
+          <label class="form-label">Article</label>
+          <select class="form-select" formControlName="articleId"
+            [ngClass]="{'is-invalid': addForm.get('articleId')?.invalid && addForm.get('articleId')?.touched}">
+            <option value="">-- Sélectionner --</option>
+            <option *ngFor="let a of articles" [value]="a.id">{{ a.ref }} - {{ a.designation }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="addForm.get('articleId')?.invalid && addForm.get('articleId')?.touched">
+            Article requis
+          </div>
+        </div>
+
+        <!-- Stock requis -->
         <div class="col-md-3">
           <label class="form-label">Entité de stock</label>
-          <select class="form-select" formControlName="stockId">
-            <option *ngFor="let s of stocks" [value]="s.id">{{ s.nom }}</option>
+          <select class="form-select" formControlName="stockId"
+            [ngClass]="{'is-invalid': addForm.get('stockId')?.invalid && addForm.get('stockId')?.touched}">
+            <option value="">-- Sélectionner --</option>
+            <option *ngFor="let stock of stocks" [value]="stock.id">
+              {{ stock.libelleArticle }} - {{ stock.referenceArticle }}
+            </option>
           </select>
+          <div class="invalid-feedback" *ngIf="addForm.get('stockId')?.invalid && addForm.get('stockId')?.touched">
+            Stock requis
+          </div>
         </div>
+
+        <!-- Quantité requise -->
         <div class="col-md-2">
           <label class="form-label">Quantité</label>
-          <input type="number" class="form-control" formControlName="quantite" />
+          <input type="number" class="form-control" formControlName="quantite"
+            [ngClass]="{'is-invalid': addForm.get('quantite')?.invalid && addForm.get('quantite')?.touched}" />
+          <div class="invalid-feedback" *ngIf="addForm.get('quantite')?.invalid && addForm.get('quantite')?.touched">
+            Quantité requise (min 1)
+          </div>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Couleur</label>
-          <input type="text" class="form-control" formControlName="couleur" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Lot</label>
-          <input type="text" class="form-control" formControlName="lot" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">OA</label>
-          <input type="text" class="form-control" formControlName="oa" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Laize</label>
-          <input type="text" class="form-control" formControlName="laize" />
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Qte Yard</label>
-          <input type="text" class="form-control" formControlName="qteYard" />
-        </div>
-      </div>
 
-      <!-- Boutons -->
-      <div class="row mt-4">
-        <div class="col-md-4">
-          <button class="btn btn-success w-100" type="submit">
-            <i class="bi bi-check-circle me-1"></i> Enregistrer
-          </button>
-        </div>
-        <div class="col-md-4">
-          <button type="button" class="btn btn-outline-success w-100" (click)="exportToExcel()">
-            <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
-          </button>
-        </div>
-        <div class="col-md-4">
-          <button type="button" class="btn btn-outline-danger w-100" (click)="exportToPDF()">
-            <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
-          </button>
+        <div class="col-md-2"><label class="form-label">Couleur</label><input type="text" class="form-control" formControlName="couleur" /></div>
+        <div class="col-md-2"><label class="form-label">Lot</label><input type="text" class="form-control" formControlName="lot" /></div>
+        <div class="col-md-2"><label class="form-label">OA</label><input type="text" class="form-control" formControlName="oa" /></div>
+        <div class="col-md-2"><label class="form-label">Laize</label><input type="text" class="form-control" formControlName="laize" /></div>
+        <div class="col-md-2"><label class="form-label">Qte Yard</label><input type="text" class="form-control" formControlName="qteYard" /></div>
+
+        <!-- Boutons -->
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button type="submit" class="btn btn-success"><i class="bi bi-check-circle me-1"></i> Valider</button>
+          <button type="button" class="btn btn-outline-success" (click)="exportToExcel()"><i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel</button>
+          <button type="button" class="btn btn-outline-danger" (click)="exportToPDF()"><i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF</button>
         </div>
       </div>
     </form>
-
-    <!-- Résultats -->
-    <div class="table-responsive mt-5" *ngIf="resultats.length > 0">
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>Article</th>
-            <th>Quantité</th>
-            <th>Stock</th>
-            <th>Date</th>
-            <th>Couleur</th>
-            <th>Lot</th>
-            <th>OA</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let r of resultats">
-            <td>{{ r.article?.designation }}</td>
-            <td>{{ r.quantite }}</td>
-            <td>{{ r.entiteStock }}</td>
-            <td>{{ r.dateMouvement | date:'shortDate' }}</td>
-            <td>{{ r.couleur }}</td>
-            <td>{{ r.lot }}</td>
-            <td>{{ r.oa }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </div>
