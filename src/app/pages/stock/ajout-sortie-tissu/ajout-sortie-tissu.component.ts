@@ -123,7 +123,7 @@ export class AjoutSortieTissuComponent implements OnInit {
       description: formValue.description,
       produitId: formValue.articleId,
       entiteStockDesignation: formValue.stockId,
-      quantite: +formValue.quantite,
+      quantite: formValue.quantite,
       couleurDesignation: formValue.couleur,
       refProduit: formValue.lot,
       numOF: formValue.oa,
@@ -133,11 +133,16 @@ export class AjoutSortieTissuComponent implements OnInit {
       type: 'SORTIE_TISSU',
       validation: false
     };
+console.log (this.form.value);
+    console.log('Payload de la sortie tissu :', payload);
+    console.log(this.form.get('quantite')?.value);
+    console.log('Quantité saisie :', formValue.quantite);
 
     this.bonMouvementService.create('sortie-tissu', payload).subscribe({
       next: (res) => {
         alert('✅ Sortie tissu ajoutée avec succès');
         this.resultats = [res];
+        console.log('Sortie tissu ajoutée :', this.resultats);
         this.form.reset();
         this.form.markAsPristine();
         this.form.markAsUntouched();

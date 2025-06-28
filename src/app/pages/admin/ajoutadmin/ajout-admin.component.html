@@ -43,16 +43,15 @@
           (change)="onToggleEnabled()"
         />
         <label class="form-check-label">
-          {{ form.get('enabled')?.value ? '✅ Compte activé' : '❌ Compte désactivé' }}
+          {{ form.get('enabled')?.value ? ' Compte activé' : ' Compte désactivé' }}
         </label>
       </div>
 
       <!-- Boutons -->
       <div class="d-flex gap-2">
         <button type="submit" class="btn btn-success">Créer</button>
-        <button type="button" class="btn btn-secondary" (click)="redirigerVersAjout()">
-          ↩️ Retour
-        </button>
+       
+      
       </div>
 
     </form>

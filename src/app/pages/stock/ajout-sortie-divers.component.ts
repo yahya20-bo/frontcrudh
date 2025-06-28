@@ -138,7 +138,7 @@ export class AjoutSortieDiversComponent implements OnInit {
       type: 'SORTIE_DIVERS',
       validation: false
     };
-
+ console.log("payload", payload)
     this.mouvementService.create('sorties/divers', payload).subscribe({
       next: (res) => {
         alert('✅ Sortie Divers ajoutée avec succès');

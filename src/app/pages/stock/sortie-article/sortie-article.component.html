@@ -4,95 +4,155 @@
       <i class="bi bi-search me-2"></i> Recherche des sorties article
     </h5>
 
-    <form [formGroup]="searchForm" class="row g-3">
-      <div class="col-md-3"><label>Article</label>
+  
+    <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="row g-3 align-items-end">
+      <!-- Formulaire avec tous les champs -->
+      <div class="col-md-3">
+        <label class="form-label">Article</label>
         <select class="form-select" formControlName="articleId">
           <option value="">-- Tous les articles --</option>
-          <option *ngFor="let a of articles" [value]="a.id">{{ a.designation }}</option>
+          <option *ngFor="let article of articles" [value]="article.id">{{ article.designation }}</option>
         </select>
       </div>
-      <div class="col-md-3"><label>Date min</label><input type="date" class="form-control" formControlName="dateMin" /></div>
-      <div class="col-md-3"><label>Date max</label><input type="date" class="form-control" formControlName="dateMax" /></div>
-      <div class="col-md-3"><label>N° BE</label><input type="text" class="form-control" formControlName="numeroBE" /></div>
+      <div class="col-md-3">
+        <label class="form-label">Date min</label>
+        <input type="date" class="form-control" formControlName="dateMin" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Date max</label>
+        <input type="date" class="form-control" formControlName="dateMax" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">N° BE</label>
+        <input type="text" class="form-control" formControlName="numeroBE" />
+      </div>
 
-      <div class="col-md-3"><label>Fournisseur</label>
+      <div class="col-md-3">
+        <label class="form-label">Fournisseur</label>
         <select class="form-select" formControlName="fournisseurId">
           <option value="">-- Tous --</option>
           <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
         </select>
       </div>
-      <div class="col-md-3"><label>Client</label><input type="text" class="form-control" formControlName="client" /></div>
-      <div class="col-md-3"><label>Origine</label><input type="text" class="form-control" formControlName="origine" /></div>
-      <div class="col-md-3"><label>Responsable</label><input type="text" class="form-control" formControlName="responsable" /></div>
+       <div class="col-md-2">
+          <label class="form-label">Client</label>
+          <select class="form-select" formControlName="client">
+            <option value="">--</option>
+            <option *ngFor="let c of clients || []" [value]="c.id">{{ c.nom || c }}</option>
+          </select>
+        </div>
+      <div class="col-md-3">
+        <label class="form-label">Origine</label>
+        <input type="text" class="form-control" formControlName="origine" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Responsable</label>
+        <input type="text" class="form-control" formControlName="responsable" />
+      </div>
 
-      <div class="col-md-3"><label>Raison de sortie</label>
-        <select class="form-select" formControlName="raisonSortie">
+      <div class="col-md-3">
+        <label class="form-label">Raison d’entrée</label>
+        <select class="form-select" formControlName="raisonEntree">
           <option value="">-- Toutes --</option>
-          <option value="UTILISATION">UTILISATION</option>
-          <option value="RETOUR">RETOUR</option>
+          <option value="ACHAT DIVERS">ACHAT DIVERS</option>
+          <option value="DON">DON</option>
         </select>
       </div>
-      <div class="col-md-3"><label>SPL</label><input type="text" class="form-control" formControlName="spl" /></div>
-      <div class="col-md-3"><label>Magasin</label>
-        <select class="form-select" formControlName="magasinId">
-          <option value="">-- Tous --</option>
-          <option *ngFor="let m of stocks" [value]="m.id">{{ m.nom }}</option>
-        </select>
+      <div class="col-md-3">
+        <label class="form-label">SPL</label>
+        <input type="text" class="form-control" formControlName="spl" />
       </div>
-      <div class="col-md-3"><label>Valeur BE</label><input type="text" class="form-control" formControlName="valeurBE" /></div>
+      <div class="col-md-2">
+          <label class="form-label">Magasin</label>
+          <select class="form-select" formControlName="magasin">
+<option *ngFor="let m of magasins" [value]="m.id">{{ m.designation }}</option>
+          </select>
+        </div>
+      <div class="col-md-3">
+        <label class="form-label">Valeur BE</label>
+        <input type="number" class="form-control" formControlName="valeurBE" />
+      </div>
 
-      <div class="col-md-3"><label>État</label>
+      <div class="col-md-3">
+        <label class="form-label">État</label>
         <select class="form-select" formControlName="etat">
           <option value="">-- Tous --</option>
           <option value="BON">BON</option>
           <option value="MAUVAIS">MAUVAIS</option>
         </select>
       </div>
-      <div class="col-md-3"><label>DAE / Facture</label><input type="text" class="form-control" formControlName="facture" /></div>
+      <div class="col-md-3">
+        <label class="form-label">DAE / Facture</label>
+        <input type="text" class="form-control" formControlName="facture" />
+      </div>
 
-      <div class="col-12 d-flex justify-content-end mt-3 gap-2">
-        <button type="button" class="btn btn-primary" (click)="rechercher()">🔍 Rechercher</button>
-        <button type="button" class="btn btn-outline-danger" (click)="annuler()">❌ Annuler</button>
+      <div class="col-md-6 d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search me-1"></i> Rechercher
+        </button>
+        <button type="button" class="btn btn-outline-danger" (click)="annuler()">
+          <i class="bi bi-x-circle me-1"></i> Annuler
+        </button>
       </div>
     </form>
   </div>
 
+  <!-- Bouton ajout -->
   <div class="mt-4 d-flex justify-content-end">
-    <button class="btn btn-success" (click)="goToAjout()">➕ Ajouter une sortie article</button>
+    <a [routerLink]="['/ajout-sortie-article']" class="btn btn-success">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une sortie article
+    </a>
   </div>
 
+  <!-- Résultats -->
   <div class="card p-4 shadow-sm mt-4">
     <h5 class="mb-3 text-info">
       <i class="bi bi-card-checklist me-2"></i> Liste des sorties
     </h5>
 
     <div class="table-responsive">
-      <table class="table table-bordered table-hover text-center align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Article</th>
-            <th>Stock</th>
-            <th>Quantité</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of resultats">
-            <td>{{ item.designation }}</td>
-            <td>{{ item.stock }}</td>
-            <td>{{ item.quantite }}</td>
-            <td>{{ item.date }}</td>
-          </tr>
-          <tr *ngIf="resultats.length === 0">
-            <td colspan="4" class="text-muted text-center">Aucune sortie trouvée.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Désignation</th>
+        <th>Réf</th>
+        <th>Prix unitaire</th>
+        <th>Poids brut</th>
+        <th>PMP</th>
+        <th>Besoin</th>
+        <th>TVA</th>
+        
+        <th>Date création</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let e of resultats">
+        <td>{{ e.articleId }}</td>
+        <td>{{ e.articleDesignation }}</td>
+        <td>{{ e.ref }}</td>
+        <td>{{ e.prixUnitaire }}</td>
+        <td>{{ e.poidsBrut }}</td>
+        <td>{{ e.pmp }}</td>
+        <td>{{ e.besoin }}</td>
+        <td>{{ e.tva }}</td>
+        <td>{{ e.date | date : 'yyyy-MM-dd' }}</td>
+      </tr>
+      <tr *ngIf="resultats.length === 0">
+        <td colspan="10" class="text-muted text-center">Aucune sortie trouvée.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
     <div class="d-flex justify-content-end gap-2 mt-3">
-      <button class="btn btn-outline-success" (click)="exportExcel()">📊 Exporter Excel</button>
-      <button class="btn btn-outline-danger" (click)="exportPDF()">📄 Exporter PDF</button>
+      <button class="btn btn-outline-success" (click)="exportExcel()">
+        <i class="bi bi-file-earmark-excel me-1"></i> Exporter Excel
+      </button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">
+        <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
+      </button>
     </div>
   </div>
 </div>

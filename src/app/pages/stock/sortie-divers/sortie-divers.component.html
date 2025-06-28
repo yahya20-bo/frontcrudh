@@ -1,140 +1,150 @@
 <div class="container mt-4">
-  <!-- Recherche -->
-  <div class="card p-4 shadow-sm mb-4">
-    <h5 class="mb-3 text-primary">
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-4 text-primary">
       <i class="bi bi-search me-2"></i> Recherche des sorties divers
     </h5>
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-3 align-items-end">
+
+    <form [formGroup]="searchForm" (ngSubmit)="rechercher()" class="row g-3 align-items-end">
       <div class="col-md-3">
-        <label class="form-label">Référence</label>
-        <input formControlName="ref" type="text" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Désignation</label>
-        <input formControlName="designation" type="text" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Date début</label>
-        <input formControlName="dateDebut" type="date" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Date fin</label>
-        <input formControlName="dateFin" type="date" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Responsable</label>
-        <input formControlName="responsable" type="text" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">SPL</label>
-        <input formControlName="spl" type="text" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Origine</label>
-        <input formControlName="origine" type="text" class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Raison</label>
-        <select class="form-select" formControlName="raison">
-          <option value="">-- Toutes --</option>
-          <option *ngFor="let r of ['Dons', 'Perte', 'Casse', 'Divers']" [value]="r">{{ r }}</option>
+        <label class="form-label">Article</label>
+        <select class="form-select" formControlName="articleId">
+          <option value="">-- Tous les articles --</option>
+          <option *ngFor="let article of articles" [value]="article.id">
+            {{ article.libelle || article.designation }}
+          </option>
         </select>
       </div>
+
       <div class="col-md-3">
-        <label class="form-label">Fournisseur</label>
-        <select class="form-select" formControlName="fournisseur">
-          <option value="">-- Tous --</option>
-          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
-        </select>
+        <label class="form-label">Date min</label>
+        <input type="date" class="form-control" formControlName="dateMin" />
       </div>
       <div class="col-md-3">
-        <label class="form-label">Magasin</label>
-        <select class="form-select" formControlName="magasin">
-          <option value="">-- Tous --</option>
-          <option *ngFor="let m of stocks" [value]="m.id">{{ m.nom }}</option>
-        </select>
+        <label class="form-label">Date max</label>
+        <input type="date" class="form-control" formControlName="dateMax" />
       </div>
       <div class="col-md-3">
         <label class="form-label">N° BE</label>
-        <input formControlName="numeroBE" type="text" class="form-control" />
+        <input type="text" class="form-control" formControlName="numeroBE" />
       </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Fournisseur</label>
+        <select class="form-select" formControlName="fournisseurId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom || f.libelle }}</option>
+        </select>
+      </div>
+
       <div class="col-md-3">
         <label class="form-label">Client</label>
-        <input formControlName="client" type="text" class="form-control" />
+        <input type="text" class="form-control" formControlName="client" />
       </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Origine</label>
+        <input type="text" class="form-control" formControlName="origine" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Responsable</label>
+        <input type="text" class="form-control" formControlName="responsable" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Raison d’entrée</label>
+        <select class="form-select" formControlName="raisonEntree">
+          <option value="">-- Toutes --</option>
+          <option value="ACHAT DIVERS">ACHAT DIVERS</option>
+          <option value="DON">DON</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">SPL</label>
+        <input type="text" class="form-control" formControlName="spl" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Magasin</label>
+        <select class="form-select" formControlName="magasinId">
+          <option value="">-- Tous --</option>
+          <option *ngFor="let m of magasins" [value]="m.id">{{ m.designation }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Valeur BE</label>
+        <input type="number" class="form-control" formControlName="valeurBE" />
+      </div>
+
       <div class="col-md-3">
         <label class="form-label">État</label>
         <select class="form-select" formControlName="etat">
           <option value="">-- Tous --</option>
-          <option *ngFor="let e of ['Neuf', 'Usé', 'Endommagé']" [value]="e">{{ e }}</option>
+          <option value="BON">BON</option>
+          <option value="MAUVAIS">MAUVAIS</option>
         </select>
       </div>
+
       <div class="col-md-3">
         <label class="form-label">DAE / Facture</label>
-        <input formControlName="facture" type="text" class="form-control" />
+        <input type="text" class="form-control" formControlName="facture" />
       </div>
-      <div class="col-md-3">
-        <label class="form-label">Valeur BE</label>
-        <input formControlName="valeurBE" type="text" class="form-control" />
-      </div>
-      <div class="col-12 text-end">
-        <button type="submit" class="btn btn-primary me-2">
-          🔍 Rechercher
-        </button>
-        <button type="button" class="btn btn-outline-danger" (click)="resetSearch()">
-          ❌ Réinitialiser
-        </button>
+
+      <div class="col-md-6 d-flex justify-content-end gap-2">
+        <button type="submit" (click)="rechercher()" class="btn btn-primary">🔍 Rechercher</button>
+        <button type="button" class="btn btn-outline-danger" (click)="annulerRecherche()">❌ Annuler</button>
       </div>
     </form>
   </div>
 
-  <!-- Bouton vers ajout -->
-  <div class="d-flex justify-content-end mb-4">
+  <div class="mt-4 d-flex justify-content-end">
     <a [routerLink]="['/ajout-sortie-divers']" class="btn btn-success">
-      <i class="bi bi-plus-circle me-2"></i> Ajouter une sortie
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une sortie divers
     </a>
   </div>
 
-  <!-- Résultats -->
-  <div class="card p-4 shadow-sm">
+  <div class="card p-4 shadow-sm mt-4">
     <h5 class="mb-3 text-info">
-      📦 Liste des sorties divers
+      <i class="bi bi-card-checklist me-2"></i> Liste des sorties divers
     </h5>
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped align-middle">
+
+    <div class="table-responsive" *ngIf="resultats">
+      <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr>
-            <th>Réf</th>
-            <th>Désignation</th>
-            <th>Quantité</th>
-            <th>Stock</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let mvt of mouvements">
-            <td>{{ mvt.article?.ref }}</td>
-            <td>{{ mvt.article?.designation }}</td>
-            <td>{{ mvt.quantite }}</td>
-            <td>{{ mvt.entiteStock?.nom }}</td>
-            <td>{{ mvt.dateMouvement | date: 'yyyy-MM-dd' }}</td>
-          </tr>
-          <tr *ngIf="mouvements.length === 0">
-            <td colspan="5" class="text-center text-muted">Aucun mouvement trouvé</td>
+    <th>ID</th>
+    <th>Article</th>
+    <th>Quantité</th>
+    <th>Magasin</th>
+    <th>Fournisseur</th>
+    <th>Valeur BE</th>
+    <th>État</th>
+    <th>Date</th>
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor="let r of resultats">
+    <td>{{ r.id }}</td>
+    <td>{{ r.articleDesignation }}</td>
+    <td>{{ r.quantite }}</td>
+    <td>{{ r.entiteStockDesignation }}</td>
+    <td>{{ r.fournisseurAbreviation }}</td>
+    <td>{{ r.valeur }}</td>
+    <td>{{ r.etat }}</td>
+    <td>{{ r.date | date: 'yyyy-MM-dd' }}</td>
+  </tr>
+          <tr *ngIf="resultats.length == 0">
+            <td colspan="4" class="text-muted text-center">Aucune sortie trouvée.</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <!-- 📤 Export -->
-<div class="d-flex justify-content-end gap-2 mt-3">
-  <button class="btn btn-outline-success" (click)="exportExcel()">
-    📊 Exporter Excel
-  </button>
-  <button class="btn btn-outline-danger" (click)="exportPDF()">
-    🧾 Exporter PDF
-  </button>
-</div>
 
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button class="btn btn-outline-success" (click)="exportExcel()">📊 Exporter Excel</button>
+      <button class="btn btn-outline-danger" (click)="exportPDF()">🧾 Exporter PDF</button>
+    </div>
   </div>
-  
 </div>

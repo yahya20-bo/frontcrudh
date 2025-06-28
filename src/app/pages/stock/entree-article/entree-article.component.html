@@ -33,10 +33,13 @@
           <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
         </select>
       </div>
-      <div class="col-md-3">
-        <label class="form-label">Client</label>
-        <input type="text" class="form-control" formControlName="client" />
-      </div>
+       <div class="col-md-2">
+          <label class="form-label">Client</label>
+          <select class="form-select" formControlName="client">
+            <option value="">--</option>
+            <option *ngFor="let c of clients || []" [value]="c.id">{{ c.nom || c }}</option>
+          </select>
+        </div>
       <div class="col-md-3">
         <label class="form-label">Origine</label>
         <input type="text" class="form-control" formControlName="origine" />
@@ -58,13 +61,12 @@
         <label class="form-label">SPL</label>
         <input type="text" class="form-control" formControlName="spl" />
       </div>
-      <div class="col-md-3">
-        <label class="form-label">Magasin</label>
-        <select class="form-select" formControlName="magasinId">
-          <option value="">-- Tous --</option>
-          <option *ngFor="let m of stocks" [value]="m.id">{{ m.nom }}</option>
-        </select>
-      </div>
+      <div class="col-md-2">
+          <label class="form-label">Magasin</label>
+          <select class="form-select" formControlName="magasin">
+<option *ngFor="let m of magasins" [value]="m.id">{{ m.designation }}</option>
+          </select>
+        </div>
       <div class="col-md-3">
         <label class="form-label">Valeur BE</label>
         <input type="number" class="form-control" formControlName="valeurBE" />
@@ -108,28 +110,40 @@
     </h5>
 
     <div class="table-responsive">
-      <table class="table table-bordered table-hover text-center align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Article</th>
-            <th>Stock</th>
-            <th>Quantité</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let e of resultats">
-            <td>{{ e.articleDesignation }}</td>
-            <td>{{ e.entiteStockDesignation }}</td>
-            <td>{{ e.quantite }}</td>
-            <td>{{ e.date | date : 'yyyy-MM-dd' }}</td>
-          </tr>
-          <tr *ngIf="resultats.length === 0">
-            <td colspan="4" class="text-muted text-center">Aucune entrée trouvée.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Désignation</th>
+        <th>Réf</th>
+        <th>Prix unitaire</th>
+        <th>Poids brut</th>
+        <th>PMP</th>
+        <th>Besoin</th>
+        <th>TVA</th>
+        
+        <th>Date création</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let e of resultats">
+        <td>{{ e.articleId }}</td>
+        <td>{{ e.articleDesignation }}</td>
+        <td>{{ e.ref }}</td>
+        <td>{{ e.prixUnitaire }}</td>
+        <td>{{ e.poidsBrut }}</td>
+        <td>{{ e.pmp }}</td>
+        <td>{{ e.besoin }}</td>
+        <td>{{ e.tva }}</td>
+        <td>{{ e.date | date : 'yyyy-MM-dd' }}</td>
+      </tr>
+      <tr *ngIf="resultats.length === 0">
+        <td colspan="10" class="text-muted text-center">Aucune entrée trouvée.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
     <div class="d-flex justify-content-end gap-2 mt-3">
       <button class="btn btn-outline-success" (click)="exportExcel()">

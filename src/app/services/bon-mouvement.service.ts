@@ -26,6 +26,10 @@ export class BonMouvementService {
   getAll(type: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${type}`);
   }
+    getById(id: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}`);
+  }
+
 
   // ✅ Entrée Tissu spécifique : GET (pour affichage)
   getEntreesTissu(): Observable<any[]> {
@@ -43,10 +47,21 @@ export class BonMouvementService {
   rechercherEntreesTissu(criteria: any): Observable<any[]> {
     return this.http.post<any[]>(`${this.apiUrl}/entree-tissu/recherche`, criteria);
   }
-
+  rechercherEntreesFourniture(criteria: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/entrees/fourniture/search`, criteria);
+    }
+    rechercherSortiesForniture(criteria: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/sorties/fourniture/search`, criteria);
+  }
   // ✅ Rechercher les sorties tissu
   rechercherSortiesTissu(criteria: any): Observable<any[]> {
     return this.http.post<any[]>(`${this.apiUrl}/sorties/tissu/search`, criteria);
+  }
+  rechercherEntreesDivers(criteria: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/entrees/divers/search`, criteria);
+  }
+  rechercherSortiesDivers(criteria: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/sorties/divers/search`, criteria);
   }
 
   // ✅ Ajouter une sortie tissu (ex. depuis 'ajout-sortie-tissu')

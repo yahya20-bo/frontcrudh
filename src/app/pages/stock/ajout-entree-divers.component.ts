@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ArticleService } from 'src/app/services/article.service';
 import { EntiteStockService } from 'src/app/services/entite-stock.service';
 import { BonMouvementService } from 'src/app/services/bon-mouvement.service';
+import { MagasinService } from 'src/app/services/magasin.service';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -14,51 +15,53 @@ import autoTable from 'jspdf-autotable';
   standalone: true,
   templateUrl: './ajout-entree-divers.component.html',
   styleUrls: ['./ajout-entree-divers.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
 })
 export class AjoutEntreeDiversComponent implements OnInit {
-  addForm!: FormGroup;
+  form!: FormGroup;
   articles: any[] = [];
-  stocks: any[] = [];
-  resultats: any[] = [];
   fournisseurs: any[] = [];
   clients: any[] = [];
   magasins: any[] = [];
+  stocks: any[] = [];
+  resultats: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
     private mouvementService: BonMouvementService,
+    private magasinService: MagasinService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.addForm = this.fb.group({
-      numeroBE: ['', Validators.required],
-      fournisseur: [null],
-      client: [''],
-      origine: [''],
-      date: ['', Validators.required],
-      responsable: [''],
-      motif: [''],
-      spl: [''],
-      valeurBE: [''],
-      etat: [''],
-      facture: [''],
-      magasin: [null],
-      description: [''],
-      articleId: [null, Validators.required],
-      stockId: [null, Validators.required],
-      quantite: [0, Validators.required],
-      couleur: [''],
-      lot: [''],
-      oa: [''],
-      laize: [''],
-      qteYard: ['']
-    });
+    this.form = this.fb.group({
+  numeroBE: [''],
+  fournisseur: [''],
+  client: [''],
+  origine: [''],
+  date: [''], // ✅ Obligatoire pour éviter l'erreur
+  responsable: [''],
+  motif: [''],
+  spl: [''],
+  valeurBE: [''],
+  etat: [''],
+  facture: [''],
+  magasin: [''],
+  description: [''],
+  articleId: [''],
+  stockId: [''],
+  quantite: [''],
+  couleur: [''],
+  lot: [''],
+  oa: [''],
+  laize: [''],
+  qteYard: ['']
+});
 
-    this.addForm.get('magasin')?.valueChanges.subscribe(magasinId => {
+
+    this.form.get('magasin')?.valueChanges.subscribe(magasinId => {
       if (magasinId) {
         this.loadStocksByMagasin(magasinId);
       } else {
@@ -67,7 +70,6 @@ export class AjoutEntreeDiversComponent implements OnInit {
     });
 
     this.chargerDonnees();
-    this.fetchResultats();
   }
 
   loadStocksByMagasin(magasinId: number): void {
@@ -91,35 +93,31 @@ export class AjoutEntreeDiversComponent implements OnInit {
 
     this.stockService.getAll().subscribe(res => {
       this.stocks = res || [];
-      console.log('STOCKS :', this.stocks);
+    });
 
-      this.magasins = [...new Map(
-        this.stocks
-          .filter(s => s.magasinId)
-          .map(s => [s.magasinId, {
-            id: s.magasinId,
-            designation: s.nomMagasin || s.designation || ('Magasin ' + s.magasinId)
-          }])
-      ).values()];
+    this.magasinService.getAll().subscribe(res => {
+      this.magasins = res.magasins || [];
+    });
 
-      console.log('MAGASINS CONSTRUITS :', this.magasins);
+    this.mouvementService.getAll('entrees/divers').subscribe((data: any) => {
+      this.resultats = Array.isArray(data?.bonMouvements) ? data.bonMouvements : [];
     });
   }
 
   onSubmit(): void {
-    if (this.addForm.invalid) {
+    if (this.form.invalid) {
       alert('❌ Veuillez remplir tous les champs obligatoires.');
+      console.warn('Formulaire invalide', this.form.value);
       return;
     }
 
-    const formValue = this.addForm.value;
-
+    const formValue = this.form.value;
     const payload = {
       numero: formValue.numeroBE,
       fournisseurId: formValue.fournisseur,
       client: formValue.client,
       origine: formValue.origine,
-      date: new Date(formValue.date),
+      date: new Date(formValue.dateMouvement),
       responsable: formValue.responsable,
       raisonMouvementId: formValue.motif,
       spl: formValue.spl,
@@ -136,54 +134,43 @@ export class AjoutEntreeDiversComponent implements OnInit {
       numOF: formValue.oa,
       codeConception: formValue.laize,
       qteTotalePhysique: +formValue.qteYard,
-      sortie: false,
+      sortie: true,
       type: 'ENTREE_DIVERS',
       validation: false
     };
-
+ console.log("payload", payload)
     this.mouvementService.create('entrees/divers', payload).subscribe({
       next: (res) => {
-        alert('✅ Entrée Divers enregistrée avec succès');
+        alert('✅ entree Divers ajoutée avec succès');
         this.resultats = [res];
-        this.addForm.reset();
-        this.addForm.markAsPristine();
-        this.addForm.markAsUntouched();
+        this.form.reset();
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
       },
       error: (err) => {
-        console.error('Erreur lors de l’enregistrement :', err);
+        console.error('Erreur lors de l’ajout :', err);
         alert('❌ Erreur : ' + (err.error?.message || err.message || 'Erreur inconnue'));
       }
-    });
-  }
-
-  fetchResultats(): void {
-    this.mouvementService.getAll('entrees/divers').subscribe((data: any) => {
-      this.resultats = data?.bonMouvements ?? [];
     });
   }
 
   exportToExcel(): void {
     const worksheet = XLSX.utils.json_to_sheet(this.resultats);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Divers');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'entrees Divers');
     XLSX.writeFile(workbook, 'entree_divers.xlsx');
   }
 
   exportToPDF(): void {
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [['Article', 'Quantité', 'Stock', 'Date']],
+      head: [['Article', 'Quantité', 'Date']],
       body: this.resultats.map(item => [
-        item.article?.designation || '',
+        item.produitDesignation || '',
         item.quantite || '',
-        item.entiteStock || '',
-        item.dateMouvement || ''
+        item.date || ''
       ])
     });
     doc.save('entree_divers.pdf');
-  }
-
-  retourAccueil(): void {
-    this.router.navigate(['/stock/entree-divers']);
   }
 }

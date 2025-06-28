@@ -27,6 +27,7 @@ export interface BonMouvement {
     nbrErrQteTotale?: number;
     resultatNbrRlx?: number;
     nbrErrRlx?: number;
+    articleDesignation?: string;
     qteTotaleCalculer?: number;
     qteTotalePhysique?: number;
     resultatGlobale?: string;

@@ -12,6 +12,8 @@ import { EntreeArticleResult } from 'src/app/models/entree-article-result.model'
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Magasin } from 'src/app/models/magasin.model';
+import { MagasinService } from 'src/app/services/magasin.service';
 
 @Component({
   selector: 'app-entree-article',
@@ -26,13 +28,18 @@ export class EntreeArticleComponent implements OnInit {
   articles: Article[] = [];
   resultats: EntreeArticleResult[] = [];
   stocks: any[] = [];
+    clients: any[] = [];
+  magasins: Magasin[] = [];
+
   fournisseurs: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private articleService: ArticleService,
     private stockService: EntiteStockService,
-    private router: Router
+    private router: Router ,
+     private magasinService: MagasinService
+
   ) {}
 
   ngOnInit(): void {
@@ -56,25 +63,54 @@ export class EntreeArticleComponent implements OnInit {
     this.loadArticles();
     this.loadStocks();
     this.loadFournisseurs();
+    this.chargerDonnees(); // Charger les données des clients
+    this.loadMagasins(); // Charger les données des magasins
   }
+  
 
   loadArticles(): void {
     this.articleService.getAll().subscribe((res: Article[]) => {
       this.articles = res || [];
+      console.log('Articles chargés :', this.articles); // ← Ajoute ça pour voir dans la console
 
       // Simulation des résultats (à remplacer par un appel réel à BonMouvement)
-      this.resultats = this.articles.map((a) => ({
-        articleDesignation: a.designation,
-        entiteStockDesignation: a.magasin?.nom || 'Inconnu',
-        quantite: Math.floor(Math.random() * 50) + 1,
-        date: a.dateCreation || '2025-01-01'
-      }));
-    });
+   this.resultats = this.articles.map((a) => ({
+  articleId: a.id,
+  articleDesignation: a.designation,
+  ref: a.ref || '',
+  reference: a.reference || '',
+  prixUnitaire: a.prixUnitaire || 0,
+  poidsBrut: a.poidsBrut || 0,
+  pmp: a.pmp || 0,
+  besoin: a.besoin || 0,
+  tva: a.tva || 0,
+  date: a.dateCreation || '2025-01-01',
+
+  entiteStockDesignation: a.magasin?.nom || 'Inconnu',
+  quantite: Math.floor(Math.random() * 50) + 1,
+
+  fournisseurNom: a.fournisseur?.nom || 'Inconnu',
+  client: a.client || '',
+  origine: a.origine || '',
+  responsable: a.responsable || '',
+  raisonEntree: a.raisonEntree || '',
+  valeurBE: typeof a.valeurBe === 'number' ? a.valeurBe : 0,
+  etat: a.etat || '',
+  spl: a.spl || ''
+}));
+
+  } );
   }
 
   loadStocks(): void {
     this.stockService.getAll().subscribe((res) => {
       this.stocks = res || [];
+    });
+  }
+  loadMagasins(): void {
+    this.magasinService.getAll().subscribe(res => {
+  console.log('Magasins chargés :', res); // ← Ajoute ça pour voir dans la console
+this.magasins = res.magasins || [];
     });
   }
 
@@ -92,6 +128,14 @@ export class EntreeArticleComponent implements OnInit {
       (!criteria.dateMax || new Date(r.date) <= new Date(criteria.dateMax))
     );
   }
+  chargerDonnees(): void {
+    
+    this.articleService.getClients().subscribe(res => {
+      this.clients = res || [];
+    });
+
+    
+  }
 
   annuler(): void {
     this.searchForm.reset();
@@ -101,25 +145,41 @@ export class EntreeArticleComponent implements OnInit {
   goToAjout(): void {
     this.router.navigate(['/ajout-entree-article']);
   }
+exportExcel(): void {
+  const exportData = this.resultats.map((item) => ({
+    ID: item.articleId,
+    Désignation: item.articleDesignation,
+    Réf: item.ref,
+    'Prix unitaire': item.prixUnitaire,
+    'Poids brut': item.poidsBrut,
+    PMP: item.pmp,
+    Besoin: item.besoin,
+    TVA: item.tva,
+    'Date création': item.date
+  }));
 
-  exportExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet(this.resultats);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Article');
-    XLSX.writeFile(workbook, 'entrees_article.xlsx');
-  }
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Entrées Article');
+  XLSX.writeFile(workbook, 'entrees_article.xlsx');
+}
 
-  exportPDF(): void {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [['Article', 'Stock', 'Quantité', 'Date']],
-      body: this.resultats.map((item) => [
-        item.articleDesignation,
-        item.entiteStockDesignation,
-        item.quantite,
-        item.date
-      ])
-    });
-    doc.save('entrees_article.pdf');
-  }
+exportPDF(): void {
+  const doc = new jsPDF();
+  autoTable(doc, {
+    head: [['ID', 'Désignation', 'Réf', 'Prix unitaire', 'Poids brut', 'PMP', 'Besoin', 'TVA', 'Date création']],
+    body: this.resultats.map((item) => [
+      item.articleId || '',
+      item.articleDesignation || '',
+      item.ref || '',
+      item.prixUnitaire || '',
+      item.poidsBrut || '',
+      item.pmp || '',
+      item.besoin || '',
+      item.tva || '',
+      item.date || ''
+    ])
+  });
+  doc.save('entrees_article.pdf');
+}
 }
